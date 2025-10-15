@@ -1,0 +1,182 @@
+// 전체 화면 배경
+body, html, #root {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #bae6fd, #bfdbfe, #93c5fd);
+}
+
+// App의 중앙 컨테이너
+.app-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+// 카드 UI
+.card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+}
+
+// 제목 스타일
+.card h1, .card h2 {
+    margin-bottom: 1rem;
+    color: #1e40af;
+}
+
+.card p {
+    margin-bottom: 1.5rem;
+    color: #374151;
+}
+
+.card .error {
+    color: #dc2626; // 빨간색
+    font-size: 0.875rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+    text-align: left;
+}
+
+// 버튼 스타일
+.button {
+    padding: 0.75rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    margin: 0.5rem;
+    transition: all 0.2s;
+
+    &:hover {
+        background-color: #2563eb;
+        transform: scale(1.05);
+    }
+
+    &.outline {
+        background: white;
+        color: #374151;
+        border: 1px solid #9ca3af;
+
+        &:hover {
+            background: #f3f4f6;
+        }
+    }
+}
+
+// 입력 필드 스타일
+input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+}
+
+.game-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+// Components Panel
+.components-panel {
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    padding: 1rem;
+}
+
+.component-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+        background-color: #e0f2fe;
+    }
+
+    &.selected {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .icon {
+        margin-right: 0.5rem;
+    }
+}
+
+// Assembly Zone
+.assembly-zone {
+    flex: 1;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    .drop-zone {
+        width: 100%;
+        height: 100px;
+        border: 2px dashed #9ca3af;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        border-radius: 0.5rem;
+    }
+
+    .selected-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .selected-item {
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        background-color: #f3f4f6;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        .remove-icon {
+            margin-left: auto;
+            color: #ef4444;
+        }
+    }
+}
+
+
+// 반응형 예시
+@media (max-width: 768px) {
+    .card {
+        padding: 1.5rem;
+    }
+}
