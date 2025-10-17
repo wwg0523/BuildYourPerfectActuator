@@ -1,9 +1,13 @@
+$app-bg: #f0f4f8;
+$card-bg: #ffffff;
+$primary-color: #4f46e5;
+$error-color: #dc2626;
+
 // 전체 화면 배경
-body, html, #root {
-    height: 100%;
+body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #bae6fd, #bfdbfe, #93c5fd);
+    background-color: $app-bg;
 }
 
 // App의 중앙 컨테이너
@@ -17,17 +21,18 @@ body, html, #root {
 
 // 카드 UI
 .card {
-    background: #ffffff;
+    background-color: $card-bg;
     padding: 2rem;
     border-radius: 1.5rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     max-width: 800px;
     width: 100%;
     text-align: center;
 }
 
 // 제목 스타일
-.card h1, .card h2 {
+.card h1,
+.card h2 {
     margin-bottom: 1rem;
     color: #1e40af;
 }
@@ -96,14 +101,36 @@ input {
     margin-top: 1rem;
 }
 
-// Components Panel
-.components-panel {
+.types-panel {
     flex: 1;
-    max-height: 300px;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.type-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
     border: 1px solid #d1d5db;
-    border-radius: 0.75rem;
+    background-color: #f9fafb;
+    cursor: pointer;
+    font-weight: bold;
+
+    &.active {
+        background-color: $primary-color;
+        color: #ffffff;
+        border-color: $primary-color;
+    }
+}
+
+.components-panel {
+    flex: 2;
+    background-color: #f9fafb;
+    border-radius: 8px;
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .component-item {
@@ -166,6 +193,7 @@ input {
         display: flex;
         align-items: center;
         cursor: pointer;
+
         .remove-icon {
             margin-left: auto;
             color: #ef4444;
