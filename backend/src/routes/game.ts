@@ -58,7 +58,7 @@ router.post('/submit', async (req, res) => {
 
         await pool.query(
             `INSERT INTO game_results (id, user_id, selected_components, compatible_applications, success_rate, completion_time)
-       VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6)`,
+            VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6)`,
             [id, userId, selectedComponentsJson, compatibleApplicationsJson, successRate, completionTime]
         );
         res.status(201).json({ message: 'Game result saved successfully', id });
@@ -82,10 +82,10 @@ router.get('/submit', async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT gr.*, gu.name, gu.company
-       FROM game_results gr
-       JOIN game_users gu ON gr.user_id = gu.id
-       ORDER BY gr.success_rate DESC, gr.completion_time ASC
-       LIMIT 10`
+            FROM game_results gr
+            JOIN game_users gu ON gr.user_id = gu.id
+            ORDER BY gr.success_rate DESC, gr.completion_time ASC
+            LIMIT 10`
         );
         res.json(result.rows);
     } catch (err) {
