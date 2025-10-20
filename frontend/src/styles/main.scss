@@ -94,6 +94,44 @@ input {
     }
 }
 
+// 약관 동의 섹션
+.terms-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    width: 100%;
+    
+    input[type="checkbox"] {
+        width: 1.2rem;
+        height: 1.2rem;
+        cursor: pointer;
+        accent-color: $primary-color;
+        border-radius: 0.25rem;
+        position: relative;
+        top: -0.4rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+        color: #374151;
+        cursor: pointer;
+        line-height: 1.2rem;
+        
+        a {
+            color: $primary-color;
+            text-decoration: none;
+            font-weight: 600;
+
+            &:hover {
+                text-decoration: underline;
+                color: $hover-color;
+            }
+        }
+    }
+}
+
 // 게임 영역
 .game-container {
     display: flex;
@@ -204,6 +242,27 @@ input {
             }
         }
     }
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    max-width: 400px;
 }
 
 // ------------------- 반응형 / 태블릿 최적화 -------------------

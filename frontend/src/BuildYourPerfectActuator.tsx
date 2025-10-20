@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles/main.scss';
+import compatibilityMatrixJson from './data/compatibilityMatrix.json';
 
 interface GameComponent {
     id: string;
@@ -38,18 +39,22 @@ const COMPONENTS: GameComponent[] = [
     { id: 'servo_motor', name: 'Servo Motor', type: 'motor', icon: '🔧', description: 'Servo motor for precise control' },
     { id: 'stepper_motor', name: 'Stepper Motor', type: 'motor', icon: '🔧', description: 'Stepper motor for incremental motion' },
     { id: 'ac_motor', name: 'AC Motor', type: 'motor', icon: '🔧', description: 'AC motor for industrial automation' },
+
     // GEARBOX
     { id: 'harmonic_gearbox', name: 'Harmonic Gearbox', type: 'gearbox', icon: '⚙️', description: 'High-precision gearbox' },
     { id: 'planetary_gearbox', name: 'Planetary Gearbox', type: 'gearbox', icon: '⚙️', description: 'High torque planetary gearbox' },
     { id: 'spur_gearbox', name: 'Spur Gearbox', type: 'gearbox', icon: '⚙️', description: 'Simple spur gearbox' },
+
     // ENCODER
     { id: 'absolute_encoder', name: 'Absolute Encoder', type: 'encoder', icon: '📊', description: 'Measures absolute position' },
     { id: 'optical_encoder', name: 'Optical Encoder', type: 'encoder', icon: '📊', description: 'High-precision optical encoder' },
     { id: 'incremental_encoder', name: 'Incremental Encoder', type: 'encoder', icon: '📊', description: 'Measures incremental rotation' },
+
     // DRIVE
     { id: 'servo_drive', name: 'Servo Drive', type: 'drive', icon: '🔌', description: 'Controls servo motor' },
     { id: 'stepper_drive', name: 'Stepper Drive', type: 'drive', icon: '🔌', description: 'Controls stepper motor' },
     { id: 'ac_drive', name: 'AC Drive', type: 'drive', icon: '🔌', description: 'Controls AC motor' },
+
     // BEARING
     { id: 'ball_bearing', name: 'Ball Bearing', type: 'bearing', icon: '⚡', description: 'Reduces friction' },
     { id: 'roller_bearing', name: 'Roller Bearing', type: 'bearing', icon: '⚡', description: 'Supports radial load' },
@@ -57,25 +62,7 @@ const COMPONENTS: GameComponent[] = [
 ];
 
 // ------------------- COMPATIBILITY -------------------
-const compatibilityMatrix: Record<string, string[]> = {
-    robot_arm_joint: ['servo_motor', 'harmonic_gearbox', 'absolute_encoder'],
-    automotive_steering: ['stepper_motor', 'planetary_gearbox', 'optical_encoder'],
-    industrial_automation: ['ac_motor', 'spur_gearbox', 'incremental_encoder'],
-    precision_robotics: ['servo_motor', 'planetary_gearbox', 'absolute_encoder'],
-    automated_conveyor: ['ac_motor', 'spur_gearbox', 'incremental_encoder'],
-    medical_robot_arm: ['servo_motor', 'harmonic_gearbox', 'optical_encoder'],
-    cnc_machine: ['ac_motor', 'spur_gearbox', 'incremental_encoder'],
-    drone_actuator: ['stepper_motor', 'planetary_gearbox', 'absolute_encoder'],
-
-    precision_manipulator: ['servo_motor', 'harmonic_gearbox', 'optical_encoder', 'servo_drive', 'ball_bearing'],
-    autonomous_vehicle_suspension: ['stepper_motor', 'planetary_gearbox', 'absolute_encoder', 'stepper_drive', 'roller_bearing'],
-    factory_conveyor_system: ['ac_motor', 'spur_gearbox', 'incremental_encoder', 'ac_drive', 'thrust_bearing'],
-    medical_scanner_rotation: ['servo_motor', 'planetary_gearbox', 'optical_encoder', 'servo_drive', 'thrust_bearing'],
-    drone_camera_gimbal: ['stepper_motor', 'harmonic_gearbox', 'absolute_encoder', 'stepper_drive', 'ball_bearing'],
-    wind_turbine_blade_adjuster: ['ac_motor', 'planetary_gearbox', 'incremental_encoder', 'ac_drive', 'roller_bearing'],
-    cnc_milling_spindle: ['servo_motor', 'spur_gearbox', 'optical_encoder', 'servo_drive', 'ball_bearing'],
-    robotic_vacuum_mobility: [ 'stepper_motor', 'planetary_gearbox', 'incremental_encoder', 'stepper_drive', 'thrust_bearing'],
-};
+const compatibilityMatrix: Record<string, string[]> = compatibilityMatrixJson;
 
 // ------------------- HELPER -------------------
 function checkCompatibility(selectedComponents: GameComponent[]): string[] {
@@ -86,6 +73,7 @@ function checkCompatibility(selectedComponents: GameComponent[]): string[] {
     });
 }
 
+// ------------------- MAIN COMPONENT -------------------
 export default function BuildYourPerfectActuator() {
     const [screen, setScreen] = useState<'welcome' | 'info' | 'game' | 'result' | 'leaderboard'>('welcome');
     const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -100,6 +88,9 @@ export default function BuildYourPerfectActuator() {
     const [compatibleApps, setCompatibleApps] = useState<string[]>([]);
     const [gameStartTime, setGameStartTime] = useState<number | null>(null);
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [showEmailModal, setShowEmailModal] = useState(false);
 
     // 정규식
     const koreanRegex = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
@@ -135,11 +126,17 @@ export default function BuildYourPerfectActuator() {
     const handleStartGame = () => {
         setUserInfo({ name: '', company: '', email: '', phone: '' });
         setErrors({});
+        setTermsAccepted(false);
         setScreen('info');
     };
 
     const handleContinue = async () => {
         if (!validate()) return;
+
+        if (!termsAccepted) {
+            alert('You must accept the Terms and Conditions to continue.');
+            return;
+        }
 
         try {
             const userToSave = {
@@ -152,15 +149,10 @@ export default function BuildYourPerfectActuator() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userToSave),
             });
-
-            if (!response.ok) {
-                throw new Error(`Failed to save user info: ${response.statusText}`);
-            }
+            if (!response.ok) throw new Error(`Failed to save user info: ${response.statusText}`);
 
             const savedUser = await response.json();
-            if (!savedUser.id) {
-                throw new Error('Server did not return a valid user ID');
-            }
+            if (!savedUser.id) throw new Error('Server did not return a valid user ID');
 
             setUserInfo(prev => ({ ...prev, id: savedUser.id }));
             setSelectedComponents([]);
@@ -177,6 +169,7 @@ export default function BuildYourPerfectActuator() {
     const handleBack = () => {
         setUserInfo({ name: '', company: '', email: '', phone: '' });
         setErrors({});
+        setTermsAccepted(false);
         setScreen('welcome');
     };
 
@@ -232,11 +225,14 @@ export default function BuildYourPerfectActuator() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(gameResultPayload),
             });
+            if (!response.ok) throw new Error('Failed to save game result');
 
-            if (!response.ok) {
-                throw new Error('Failed to save game result');
-            }
             setScreen('result');
+            if (apps.length > 0) {
+                setTimeout(() => {
+                    setShowEmailModal(true);
+                }, 2000);
+            }
         } catch (error) {
             console.error('Error saving game result:', error);
             alert('Failed to save game result. Please try again.');
@@ -251,19 +247,55 @@ export default function BuildYourPerfectActuator() {
         setScreen('game');
     };
 
+    const sendEmail = async () => {
+        if (!userInfo.email) {
+            alert('No email address available.');
+            return;
+        }
+
+        const appsHtml = compatibleApps.map(app => `<p>🏆 ${app}</p>`).join('');
+
+        const emailHtml = `
+            <div style="text-align: center; font-family: Arial, sans-serif;">
+                <h2>Result</h2>
+                <br>
+                <p>Compatible Applications:</p>
+                <br>
+                ${appsHtml}
+                <br>
+                <p style="font-size:0.8em; color:#888;">© LeBot</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch('http://localhost:4000/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: userInfo.email,
+                    subject: 'Your Actuator Game Result',
+                    body: emailHtml
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to send email');
+
+            alert('Email has been sent successfully!');
+            setShowEmailModal(false);
+        } catch (error) {
+            console.error(error);
+            alert('Failed to send email.');
+        }
+    };
+
     // 리더보드 데이터 가져오기
     useEffect(() => {
         if (screen === 'leaderboard') {
             const fetchLeaderboard = async () => {
                 try {
-                    const response = await fetch('http://localhost:4000/api/game/leaderboard', {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' },
-                    });
+                    const response = await fetch('http://localhost:4000/api/game/leaderboard', { method: 'GET' });
 
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch leaderboard data');
-                    }
+                    if (!response.ok) throw new Error('Failed to fetch leaderboard data');
 
                     const data = await response.json();
                     setLeaderboardData(data);
@@ -278,10 +310,7 @@ export default function BuildYourPerfectActuator() {
     }, [screen]);
 
     // 성공률을 별점으로 변환
-    const renderStars = (successRate: number) => {
-        const stars = Math.round(successRate * 5); // 0.0~1.0을 0~5별로 변환
-        return '⭐'.repeat(stars);
-    };
+    const renderStars = (successRate: number) => '⭐'.repeat(Math.round(successRate * 5));
 
     // 타입 배열 (타입 안정성 강화)
     const types = ['motor', 'gearbox', 'encoder', 'drive', 'bearing'] as const;
@@ -305,41 +334,33 @@ export default function BuildYourPerfectActuator() {
                 {screen === 'info' && (
                     <>
                         <h2>Enter Your Information</h2>
-                        <input
-                            type="text"
-                            placeholder="Name"
-                            value={userInfo.name}
-                            onChange={e => handleInputChange('name', e.target.value)}
-                        />
+                        <input type="text" placeholder="Name" value={userInfo.name} onChange={e => handleInputChange('name', e.target.value)} />
                         <p className="error">{errors.name || '\u00A0'}</p>
-                        <input
-                            type="text"
-                            placeholder="Company"
-                            value={userInfo.company}
-                            onChange={e => handleInputChange('company', e.target.value)}
-                        />
+
+                        <input type="text" placeholder="Company" value={userInfo.company} onChange={e => handleInputChange('company', e.target.value)} />
                         <p className="error">{errors.company || '\u00A0'}</p>
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={userInfo.email}
-                            onChange={e => handleInputChange('email', e.target.value)}
-                        />
+
+                        <input type="email" placeholder="Email" value={userInfo.email} onChange={e => handleInputChange('email', e.target.value)} />
                         <p className="error">{errors.email || '\u00A0'}</p>
-                        <input
-                            type="tel"
-                            placeholder="Phone (+CountryCodeNumber)"
-                            value={userInfo.phone}
-                            onChange={e => handleInputChange('phone', e.target.value)}
-                        />
+
+                        <input type="tel" placeholder="Phone (+CountryCodeNumber)" value={userInfo.phone} onChange={e => handleInputChange('phone', e.target.value)} />
                         <p className="error">{errors.phone || '\u00A0'}</p>
+
+                        <div className="terms-container">
+                            <input
+                                type="checkbox"
+                                checked={termsAccepted}
+                                onChange={e => setTermsAccepted(e.target.checked)}
+                                id="terms"
+                            />
+                            <label htmlFor="terms">
+                                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
+                            </label>
+                        </div>
+
                         <div>
-                            <button className="button outline" onClick={handleBack}>
-                                BACK
-                            </button>
-                            <button className="button" onClick={handleContinue}>
-                                CONTINUE
-                            </button>
+                            <button className="button outline" onClick={handleBack}>BACK</button>
+                            <button className="button" onClick={handleContinue}>CONTINUE</button>
                         </div>
                     </>
                 )}
@@ -379,9 +400,7 @@ export default function BuildYourPerfectActuator() {
                                     </div>
                                 ))}
                                 <p>Selected: {selectedComponents.length}/5</p>
-                                <button className="button" onClick={handleSubmit}>
-                                    SUBMIT
-                                </button>
+                                <button className="button" onClick={handleSubmit}>SUBMIT</button>
                             </div>
                         </div>
                     </>
@@ -393,30 +412,28 @@ export default function BuildYourPerfectActuator() {
                             <>
                                 <h2>Result</h2>
                                 <p>Compatible Applications:</p>
-                                {compatibleApps.map(app => (
-                                    <p key={app}>🏆 {app}</p>
-                                ))}
-                                <button className="button outline" onClick={handlePlayAgain}>
-                                    PLAY AGAIN
-                                </button>
+                                {compatibleApps.map(app => (<p key={app}>🏆 {app}</p>))}
+                                <button className="button outline" onClick={handlePlayAgain}>PLAY AGAIN</button>
+
+                                {showEmailModal && (
+                                    <div className="modal">
+                                        <div className="modal-content">
+                                            <p>Do you want to send the current result to your email?</p>
+                                            <button className="button outline" onClick={() => setShowEmailModal(false)}>Cancel</button>
+                                            <button className="button" onClick={sendEmail}>Send</button>
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <>
                                 <p>Oops!</p>
                                 <p>❌ No compatible applications found.</p>
-                                <p>
-                                    Your combination doesn't match
-                                    <br />
-                                    any standard robot applications
-                                </p>
-                                <button className="button outline" onClick={handlePlayAgain}>
-                                    TRY AGAIN
-                                </button>
+                                <p>Your combination doesn't match any standard robot applications</p>
+                                <button className="button outline" onClick={handlePlayAgain}>TRY AGAIN</button>
                             </>
                         )}
-                        <button className="button" onClick={() => setScreen('leaderboard')}>
-                            VIEW RECORD
-                        </button>
+                        <button className="button" onClick={() => setScreen('leaderboard')}> VIEW RECORD </button>
                     </>
                 )}
 
@@ -434,12 +451,8 @@ export default function BuildYourPerfectActuator() {
                             <p>Loading...</p>
                         )}
                         <div>
-                            <button className="button outline" onClick={() => setScreen('welcome')}>
-                                NEW GAME
-                            </button>
-                            <button className="button" onClick={() => setScreen('result')}>
-                                BACK
-                            </button>
+                            <button className="button outline" onClick={() => setScreen('welcome')}>NEW GAME</button>
+                            <button className="button" onClick={() => setScreen('result')}>BACK</button>
                         </div>
                     </>
                 )}

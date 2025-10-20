@@ -1,0 +1,19 @@
+{
+    "robot_arm_joint": ["servo_motor", "harmonic_gearbox", "absolute_encoder"],
+    "automotive_steering": ["stepper_motor", "planetary_gearbox", "optical_encoder"],
+    "industrial_automation": ["ac_motor", "spur_gearbox", "incremental_encoder"],
+    "precision_robotics": ["servo_motor", "planetary_gearbox", "absolute_encoder"],
+    "automated_conveyor": ["ac_motor", "spur_gearbox", "incremental_encoder"],
+    "medical_robot_arm": ["servo_motor", "harmonic_gearbox", "optical_encoder"],
+    "cnc_machine": ["ac_motor", "spur_gearbox", "incremental_encoder"],
+    "drone_actuator": ["stepper_motor", "planetary_gearbox", "absolute_encoder"],
+
+    "precision_manipulator": ["servo_motor", "harmonic_gearbox", "optical_encoder", "servo_drive", "ball_bearing"],
+    "autonomous_vehicle_suspension": ["stepper_motor", "planetary_gearbox", "absolute_encoder", "stepper_drive", "roller_bearing"],
+    "factory_conveyor_system": ["ac_motor", "spur_gearbox", "incremental_encoder", "ac_drive", "thrust_bearing"],
+    "medical_scanner_rotation": ["servo_motor", "planetary_gearbox", "optical_encoder", "servo_drive", "thrust_bearing"],
+    "drone_camera_gimbal": ["stepper_motor", "harmonic_gearbox", "absolute_encoder", "stepper_drive", "ball_bearing"],
+    "wind_turbine_blade_adjuster": ["ac_motor", "planetary_gearbox", "incremental_encoder", "ac_drive", "roller_bearing"],
+    "cnc_milling_spindle": ["servo_motor", "spur_gearbox", "optical_encoder", "servo_drive", "ball_bearing"],
+    "robotic_vacuum_mobility": ["stepper_motor", "planetary_gearbox", "incremental_encoder", "stepper_drive", "thrust_bearing"]
+}
