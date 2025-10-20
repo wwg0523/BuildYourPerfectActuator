@@ -83,6 +83,9 @@ DB_NAME=actuator_game
 DB_PASS=super-secret-key
 DB_PORT=5433
 PORT=4000
+
+APP_EMAIL=your-email-here
+APP_PASS=your-app-password-here
 ```
 
 ### 4. 데이터베이스 설정
@@ -126,6 +129,7 @@ build-your-perfect-actuator/
 │   │   ├── index.ts        # 서버 진입점
 │   │   ├── db.ts           # DB 연결 설정
 │   │   └── routes/
+│   ├── types/
 │   └── package.json
 │
 └── README.md
