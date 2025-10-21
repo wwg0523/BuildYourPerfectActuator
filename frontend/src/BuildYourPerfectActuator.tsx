@@ -353,9 +353,7 @@ export default function BuildYourPerfectActuator() {
                                 onChange={e => setTermsAccepted(e.target.checked)}
                                 id="terms"
                             />
-                            <label htmlFor="terms">
-                                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms and Conditions</a>
-                            </label>
+                            <label htmlFor="terms">I agree to the Terms and Conditions</label>
                         </div>
 
                         <div>
