@@ -57,13 +57,14 @@ cd build-your-perfect-actuator
 
 #### 서버 설정
 ```bash
-cd backend
+cd actuator-back
 npm install
+npx tsc
 ```
 
 #### 클라이언트 설정
 ```bash
-cd frontend
+cd actuator-front
 npm install
 ```
 
@@ -71,17 +72,17 @@ npm install
 
 #### 서버 환경변수
 ```bash
-cd backend
+cd actuator-back
 cp .env.example .env
 ```
 
 `.env` 파일을 편집하여 다음 값들을 설정하세요:
 ```env
 DB_USER=postgres
-DB_HOST=localhost
+DB_HOST=actuator-db
 DB_NAME=actuator_game
 DB_PASS=super-secret-key
-DB_PORT=5433
+DB_PORT=5432
 PORT=4000
 
 APP_EMAIL=your-email-here
@@ -91,7 +92,7 @@ APP_PASS=your-app-password-here
 ### 4. 데이터베이스 설정
 
 ```bash
-cd backend
+cd actuator-back
 
 ```
 
@@ -100,12 +101,12 @@ cd backend
 #### 개발 모드로 실행
 ```bash
 # 서버 실행 (터미널 1)
-cd backend
-npx ts-node src/index.ts
+cd actuator-back
+npm start
 
 # 클라이언트 실행 (터미널 2)
-cd frontend
-npm start
+cd actuator-front
+npx serve -s build -l 3000
 ```
 
 애플리케이션이 실행되면:
@@ -117,14 +118,14 @@ npm start
 ```
 build-your-perfect-actuator/
 │
-├── frontend/     # React + TypeScript
+├── actuator-front/     # React + TypeScript
 │   ├── src/
 │   │   ├── components/        # React 컴포넌트
 │   │   │   └ ui/
 │   │   └── styles/           	# Sass 설정
 │   └── package.json
 │
-├── backend/      # Node.js + Express + PostgreSQL
+├── actuator-back/      # Node.js + Express + PostgreSQL
 │   ├── src/
 │   │   ├── index.ts        # 서버 진입점
 │   │   ├── db.ts           # DB 연결 설정
@@ -216,3 +217,7 @@ Closes #123
 - 초기 프로젝트 설정
 - 기본 기능 구현
 - Git 저장소 설정
+
+### v0.0.2 (2025-10-22)
+- Synology NAS DDNS 호스팅
+- PostgreSQL 서비스 구현
