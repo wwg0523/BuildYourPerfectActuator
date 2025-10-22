@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './styles/main.scss';
 import compatibilityMatrixJson from './data/compatibilityMatrix.json';
 
+const BASE_URL = 'http://pillar01.synology.me:4004';
+
 interface GameComponent {
     id: string;
     name: string;
@@ -144,7 +146,7 @@ export default function BuildYourPerfectActuator() {
                 timestamp: new Date(), // 서버 저장 직전에 timestamp 추가
             };
 
-            const response = await fetch('http://localhost:4000/api/game/start', {
+            const response = await fetch(`${BASE_URL}/api/game/start`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userToSave),
@@ -220,7 +222,7 @@ export default function BuildYourPerfectActuator() {
         };
 
         try {
-            const response = await fetch('http://localhost:4000/api/game/submit', {
+            const response = await fetch(`${BASE_URL}/api/game/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(gameResultPayload),
@@ -268,7 +270,7 @@ export default function BuildYourPerfectActuator() {
         `;
 
         try {
-            const response = await fetch('http://localhost:4000/api/send-email', {
+            const response = await fetch(`${BASE_URL}/api/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -277,7 +279,6 @@ export default function BuildYourPerfectActuator() {
                     body: emailHtml
                 })
             });
-
             if (!response.ok) throw new Error('Failed to send email');
 
             alert('Email has been sent successfully!');
@@ -293,8 +294,7 @@ export default function BuildYourPerfectActuator() {
         if (screen === 'leaderboard') {
             const fetchLeaderboard = async () => {
                 try {
-                    const response = await fetch('http://localhost:4000/api/game/leaderboard', { method: 'GET' });
-
+                    const response = await fetch(`${BASE_URL}/api/game/leaderboard`, { method: 'GET' });
                     if (!response.ok) throw new Error('Failed to fetch leaderboard data');
 
                     const data = await response.json();
