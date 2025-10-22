@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './styles/main.scss';
 import compatibilityMatrixJson from './data/compatibilityMatrix.json';
 
-const BASE_URL = 'http://pillar01.synology.me:4004';
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4000';
 
 interface GameComponent {
     id: string;
@@ -146,7 +146,7 @@ export default function BuildYourPerfectActuator() {
                 timestamp: new Date(), // 서버 저장 직전에 timestamp 추가
             };
 
-            const response = await fetch(`${BASE_URL}/api/game/start`, {
+            const response = await fetch(`${backendUrl}/api/game/start`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userToSave),
@@ -222,7 +222,7 @@ export default function BuildYourPerfectActuator() {
         };
 
         try {
-            const response = await fetch(`${BASE_URL}/api/game/submit`, {
+            const response = await fetch(`${backendUrl}/api/game/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(gameResultPayload),
@@ -270,7 +270,7 @@ export default function BuildYourPerfectActuator() {
         `;
 
         try {
-            const response = await fetch(`${BASE_URL}/api/send-email`, {
+            const response = await fetch(`${backendUrl}/api/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -294,7 +294,7 @@ export default function BuildYourPerfectActuator() {
         if (screen === 'leaderboard') {
             const fetchLeaderboard = async () => {
                 try {
-                    const response = await fetch(`${BASE_URL}/api/game/leaderboard`, { method: 'GET' });
+                    const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
                     if (!response.ok) throw new Error('Failed to fetch leaderboard data');
 
                     const data = await response.json();

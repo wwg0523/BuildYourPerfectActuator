@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./actuator-front
+    container_name: actuator-front
+    ports:
+      - "5005:3000"
+    networks:
+      - actuator-network
+
+  backend:
+    build:
+      context: ./actuator-back
+    container_name: actuator-back
+    ports:
+      - "4004:4000"
+    networks:
+      - actuator-network
+
+  actuator-db:
+    image: postgres:16.10
+    container_name: actuator-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1209
+      POSTGRES_DB: actuator_game
+    volumes:
+      - /volume1/build-your-perfect-actuator/actuator-db-data:/var/lib/postgresql/data
+    networks:
+      - actuator-network
+
+networks:
+  actuator-network:
+    driver: bridge

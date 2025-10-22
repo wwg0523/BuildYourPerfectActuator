@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import testRouter from './routes/test';
-import gameRouter from './routes/game';
+import gameRouter from './routes/game.js';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -10,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/test', testRouter);
 app.use('/api/game', gameRouter);
 
 const transporter = nodemailer.createTransport({
