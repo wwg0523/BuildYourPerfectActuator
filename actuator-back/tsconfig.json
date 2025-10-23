@@ -31,7 +31,7 @@
         // Recommended Options
         "moduleResolution": "node",
         "esModuleInterop": true,
-	"forceConsistentCasingInFileNames": true,
+	    "forceConsistentCasingInFileNames": true,
         "strict": true,
         "jsx": "react-jsx",
         "isolatedModules": true,

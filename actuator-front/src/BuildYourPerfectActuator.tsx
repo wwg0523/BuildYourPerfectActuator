@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import './styles/main.scss';
+import { motion, Variants } from 'framer-motion';
 import compatibilityMatrixJson from './data/compatibilityMatrix.json';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4000';
+
+const textVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+            delay: i * 0.3,
+            duration: 0.6,
+            ease: 'easeOut',
+        },
+    }),
+};
 
 interface GameComponent {
     id: string;
@@ -92,18 +106,19 @@ export default function BuildYourPerfectActuator() {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
 
     const [termsAccepted, setTermsAccepted] = useState(false);
-    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     // 정규식
     const koreanRegex = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    const phoneRegex = /^\+?[1-9]\d{8,14}$/;
 
     // 입력 유효성 검사
     const validate = () => {
         const newErrors: { [key: string]: string } = {};
 
         if (!userInfo.name.trim()) newErrors.name = 'Name is required';
+        else if (userInfo.name.trim().length < 6) newErrors.name = 'Name must be at least 6 characters';
         else if (koreanRegex.test(userInfo.name)) newErrors.name = 'Name cannot contain Korean characters';
 
         if (!userInfo.company.trim()) newErrors.company = 'Company is required';
@@ -123,6 +138,23 @@ export default function BuildYourPerfectActuator() {
     const handleInputChange = (field: keyof UserInfo, value: string) => {
         setUserInfo(prev => ({ ...prev, [field]: value }));
     };
+
+    // ----- 약관 동의 모달 핸들러 -----
+    const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
+        e.stopPropagation();
+        if (termsAccepted) {
+            setTermsAccepted(false);
+            return;
+        }
+        setShowModal(true);
+    };
+
+    const confirmAgree = () => {
+        setTermsAccepted(true);
+        setShowModal(false);
+    };
+
+    const cancelAgree = () => setShowModal(false);
 
     // 화면 전환 핸들러
     const handleStartGame = () => {
@@ -230,11 +262,6 @@ export default function BuildYourPerfectActuator() {
             if (!response.ok) throw new Error('Failed to save game result');
 
             setScreen('result');
-            if (apps.length > 0) {
-                setTimeout(() => {
-                    setShowEmailModal(true);
-                }, 2000);
-            }
         } catch (error) {
             console.error('Error saving game result:', error);
             alert('Failed to save game result. Please try again.');
@@ -282,7 +309,6 @@ export default function BuildYourPerfectActuator() {
             if (!response.ok) throw new Error('Failed to send email');
 
             alert('Email has been sent successfully!');
-            setShowEmailModal(false);
         } catch (error) {
             console.error(error);
             alert('Failed to send email.');
@@ -320,14 +346,56 @@ export default function BuildYourPerfectActuator() {
             <div className="card">
                 {screen === 'welcome' && (
                     <>
-                        <h1>Welcome!</h1>
-                        <p>Build Your Perfect Actuator</p>
-                        <button className="button" onClick={handleStartGame}>
+                        <motion.h1
+                            custom={0}
+                            initial="hidden"
+                            animate="visible"
+                            variants={textVariants}
+                            style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold' }}
+                        >
+                            Welcome!
+                        </motion.h1>
+
+                        <motion.p
+                            custom={1}
+                            initial="hidden"
+                            animate="visible"
+                            variants={textVariants}
+                            style={{ margin: '1rem 0', fontSize: '1.25rem', color: '#4b5563' }}
+                        >
+                            Build Your Perfect Actuator
+                        </motion.p>
+
+                        <motion.button
+                            className="button"
+                            onClick={handleStartGame}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.8 }}
+                            whileHover={{
+                                scale: 1.05,
+                                transition: { type: 'spring', stiffness: 400, damping: 12, delay: 0 }
+                            }}
+                            whileTap={{
+                                scale: 0.95,
+                                transition: { type: 'spring', stiffness: 600, damping: 10, delay: 0 }
+                            }}
+                        >
                             START GAME
-                        </button>
-                        <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: '#6b7280' }}>
+                        </motion.button>
+
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 1.1, duration: 0.8 }}
+                            style={{
+                                marginTop: '1rem',
+                                fontSize: '0.875rem',
+                                color: '#6b7280',
+                            }}
+                        >
                             Powered by LeBot
-                        </p>
+                        </motion.p>
                     </>
                 )}
 
@@ -349,12 +417,28 @@ export default function BuildYourPerfectActuator() {
                         <div className="terms-container">
                             <input
                                 type="checkbox"
-                                checked={termsAccepted}
-                                onChange={e => setTermsAccepted(e.target.checked)}
                                 id="terms"
+                                checked={termsAccepted}
+                                onClick={handleCheckboxClick}
+                                readOnly
                             />
-                            <label htmlFor="terms">I agree to the Terms and Conditions</label>
+                            <label htmlFor="terms">
+                                I agree to the Terms and Conditions
+                            </label>
                         </div>
+
+                        {showModal && (
+                            <div className="modal-overlay terms-modal-overlay" onClick={cancelAgree}>
+                                <div className="modal terms-modal" onClick={e => e.stopPropagation()}>
+                                    <h3>Terms Agreement</h3>
+                                    <p>Do you agree to the Terms of Service and Privacy Policy?</p>
+                                    <div className="modal-buttons">
+                                        <button className="button outline" onClick={cancelAgree}>Cancel</button>
+                                        <button className="button" onClick={confirmAgree}>Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <div>
                             <button className="button outline" onClick={handleBack}>BACK</button>
@@ -412,16 +496,6 @@ export default function BuildYourPerfectActuator() {
                                 <p>Compatible Applications:</p>
                                 {compatibleApps.map(app => (<p key={app}>🏆 {app}</p>))}
                                 <button className="button outline" onClick={handlePlayAgain}>PLAY AGAIN</button>
-
-                                {showEmailModal && (
-                                    <div className="modal">
-                                        <div className="modal-content">
-                                            <p>Do you want to send the current result to your email?</p>
-                                            <button className="button outline" onClick={() => setShowEmailModal(false)}>Cancel</button>
-                                            <button className="button" onClick={sendEmail}>Send</button>
-                                        </div>
-                                    </div>
-                                )}
                             </>
                         ) : (
                             <>
@@ -442,7 +516,7 @@ export default function BuildYourPerfectActuator() {
                         {leaderboardData.length > 0 ? (
                             leaderboardData.map((entry, index) => (
                                 <p key={index}>
-                                    {index + 1}. {entry.name} - {entry.company} - {Math.round(entry.avg_success_rate * 5)}/5 {renderStars(entry.avg_success_rate)} ({entry.attempts} attempts)
+                                    {index + 1}. {entry.name.slice(0, entry.name.length - 2) + '**'} - {entry.company} - {Math.round(entry.avg_success_rate * 5)}/5 {renderStars(entry.avg_success_rate)} ({entry.attempts} attempts)
                                 </p>
                             ))
                         ) : (

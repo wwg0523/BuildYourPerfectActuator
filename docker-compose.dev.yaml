@@ -1,0 +1,52 @@
+services:
+  frontend:
+    build:
+      context: ./actuator-front
+      dockerfile: Dockerfile.dev
+    container_name: actuator-front
+    ports:
+      - "5006:3000"
+    networks:
+      - actuator-network
+    # ────────────────────── 개발용 볼륨 마운트 ──────────────────────
+    volumes:
+      - ./actuator-front/src:/app/src
+      - ./actuator-front/public:/app/public
+      - ./actuator-front/package.json:/app/package.json
+      - ./actuator-front/tsconfig.json:/app/tsconfig.json
+      - node_modules:/app/node_modules
+    environment:
+      - WATCHPACK_POLLING=true
+      - FAST_REFRESH=true
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./actuator-back
+    container_name: actuator-back
+    ports:
+      - "4005:4000"
+    networks:
+      - actuator-network
+
+  actuator-db:
+    image: postgres:16.10
+    container_name: actuator-db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1209
+      POSTGRES_DB: actuator_game
+    volumes:
+      - /volume1/build-your-perfect-actuator/actuator-db-data:/var/lib/postgresql/data
+    networks:
+      - actuator-network
+
+networks:
+  actuator-network:
+    driver: bridge
+
+# ────────────────────── 익명 볼륨 정의 ──────────────────────
+volumes:
+  node_modules:

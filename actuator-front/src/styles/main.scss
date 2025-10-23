@@ -59,21 +59,15 @@ body {
     background-color: #3b82f6;
     color: white;
     margin: 0.5rem;
-    transition: all 0.2s;
+    transition: background-color 0.2s ease;
 
-    &:hover {
-        background-color: $hover-color;
-        transform: scale(1.05);
-    }
+    &:hover { background-color: $hover-color; }
 
     &.outline {
         background: white;
         color: #374151;
         border: 1px solid #9ca3af;
-
-        &:hover {
-            background: #f3f4f6;
-        }
+        &:hover { background: #f3f4f6; }
     }
 }
 
@@ -244,25 +238,42 @@ input {
     }
 }
 
-.modal {
+.modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right:0;
-    bottom:0;
-    background: rgba(0,0,0,0.5);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 999;
+    justify-content: center;
+    z-index: 1000;
 }
 
-.modal-content {
-    background: #fff;
+.modal {
+    background: white;
     padding: 2rem;
-    border-radius: 1rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: center;
-    max-width: 400px;
+}
+
+.terms-modal .modal-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.terms-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+.terms-container label {
+    cursor: pointer;
+    user-select: none;
 }
 
 // ------------------- 반응형 / 태블릿 최적화 -------------------
