@@ -1,5 +1,5 @@
 $app-bg: #f0f4f8;
-$card-bg: #ffffff;
+$card-bg: #F6F9FC;
 $primary-color: #4f46e5;
 $error-color: #dc2626;
 $hover-color: #2563eb;
@@ -124,6 +124,17 @@ input {
             }
         }
     }
+}
+
+.info-box {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: #f9f9f9;
+    text-align: left;
 }
 
 // 게임 영역

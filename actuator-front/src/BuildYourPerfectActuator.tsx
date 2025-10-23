@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './styles/main.scss';
 import { motion, Variants } from 'framer-motion';
+import CryptoJS from 'crypto-js';
+import myPngImage from './components/le-bot-logo-light.png';
 import compatibilityMatrixJson from './data/compatibilityMatrix.json';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4000';
+const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
 const textVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -32,6 +35,10 @@ interface UserInfo {
     company: string;
     email: string;
     phone: string;
+}
+
+interface CompatibilityMatrix {
+    [key: string]: string[];
 }
 
 interface GameResult {
@@ -107,6 +114,8 @@ export default function BuildYourPerfectActuator() {
 
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showHintModal, setShowHintModal] = useState(false);
+    const [hintMessage, setHintMessage] = useState('');
 
     // 정규식
     const koreanRegex = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
@@ -173,30 +182,39 @@ export default function BuildYourPerfectActuator() {
         }
 
         try {
-            const userToSave = {
-                ...userInfo,
-                timestamp: new Date(), // 서버 저장 직전에 timestamp 추가
-            };
+            // 모든 필드 암호화
+            const encryptedName = CryptoJS.AES.encrypt(userInfo.name, ENCRYPTION_KEY).toString();
+            const encryptedCompany = CryptoJS.AES.encrypt(userInfo.company, ENCRYPTION_KEY).toString();
+            const encryptedEmail = CryptoJS.AES.encrypt(userInfo.email, ENCRYPTION_KEY).toString();
+            const encryptedPhone = CryptoJS.AES.encrypt(userInfo.phone, ENCRYPTION_KEY).toString();
 
-            const response = await fetch(`${backendUrl}/api/game/start`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userToSave),
+            // userInfo에 암호화된 값 저장
+            setUserInfo({
+                name: encryptedName,
+                company: encryptedCompany,
+                email: encryptedEmail,
+                phone: encryptedPhone,
             });
-            if (!response.ok) throw new Error(`Failed to save user info: ${response.statusText}`);
 
-            const savedUser = await response.json();
-            if (!savedUser.id) throw new Error('Server did not return a valid user ID');
+            // localStorage 백업 (새로고침 대비)
+            localStorage.setItem(
+                'encryptedUserInfo',
+                JSON.stringify({
+                name: encryptedName,
+                company: encryptedCompany,
+                email: encryptedEmail,
+                phone: encryptedPhone,
+                })
+            );
 
-            setUserInfo(prev => ({ ...prev, id: savedUser.id }));
             setSelectedComponents([]);
             setCompatibleApps([]);
             setSelectedType(null);
             setGameStartTime(Date.now());
             setScreen('game');
         } catch (error) {
-            console.error('Error saving user info:', error);
-            alert('Failed to save your information. Please check your network and try again.');
+            console.error('Error in continue:', error);
+            alert('An error occurred during encryption. Please try again.');
         }
     };
 
@@ -204,6 +222,7 @@ export default function BuildYourPerfectActuator() {
         setUserInfo({ name: '', company: '', email: '', phone: '' });
         setErrors({});
         setTermsAccepted(false);
+        localStorage.removeItem('encryptedUserInfo');
         setScreen('welcome');
     };
 
@@ -222,38 +241,82 @@ export default function BuildYourPerfectActuator() {
         }
     };
 
-    const removeComponent = (id: string) => {
-        setSelectedComponents(selectedComponents.filter(c => c.id !== id));
-    };
-
     const handleSubmit = async () => {
         if (selectedComponents.length < 3) {
             alert('You must select at least 3 components.');
             return;
         }
 
-        if (!userInfo.id) {
-            alert('User ID is not set. Please try again.');
+        // 암호화된 데이터 복호화
+        let decryptedData: Partial<UserInfo> = {};
+        try {
+            const storedEncrypted = localStorage.getItem('encryptedUserInfo');
+            const encryptedData = storedEncrypted
+                ? JSON.parse(storedEncrypted)
+                : {
+                    name: userInfo.name,
+                    company: userInfo.company,
+                    email: userInfo.email,
+                    phone: userInfo.phone,
+                };
+
+            if (!encryptedData.email) {
+                alert('No encrypted data found. Please start over.');
+                return;
+            }
+
+            decryptedData = {
+                name: CryptoJS.AES.decrypt(encryptedData.name, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
+                company: CryptoJS.AES.decrypt(encryptedData.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
+                email: CryptoJS.AES.decrypt(encryptedData.email, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
+                phone: CryptoJS.AES.decrypt(encryptedData.phone, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
+            };
+
+            if (!decryptedData.name || !decryptedData.company || !decryptedData.email || !decryptedData.phone) {
+                throw new Error('Failed to decrypt one or more fields');
+            }
+        } catch (error) {
+            console.error('Decryption error:', error);
+            alert('Failed to decrypt data. Please start over.');
             return;
         }
 
-        const apps = checkCompatibility(selectedComponents);
-        setCompatibleApps(apps);
-
-        const completionTime = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
-        const componentScore = (selectedComponents.length / 5) * 0.5; // 최대 0.5
-        const appScore = Math.min(apps.length * 0.25, 0.5); // 최대 0.5
-        const successRate = Number((componentScore + appScore).toFixed(2)); // 0.00 ~ 1.00
-
-        const gameResultPayload: GameResult = {
-            userId: userInfo.id,
-            selectedComponents: selectedComponents.map(c => c.id),
-            compatibleApplications: apps,
-            successRate,
-            completionTime,
-        };
-
         try {
+            // 1. 사용자 정보 저장
+            const userToSave = {
+                ...decryptedData,
+                timestamp: new Date(),
+            };
+
+            const userResponse = await fetch(`${backendUrl}/api/game/start`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userToSave),
+            });
+            if (!userResponse.ok) throw new Error(`Failed to save user info: ${userResponse.statusText}`);
+
+            const savedUser = await userResponse.json();
+            if (!savedUser.id) throw new Error('Server did not return a valid user ID');
+
+            setUserInfo((prev) => ({ ...prev, id: savedUser.id }));
+
+            // 2. 게임 결과 계산 및 저장
+            const apps = checkCompatibility(selectedComponents);
+            setCompatibleApps(apps);
+
+            const completionTime = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
+            const componentScore = (selectedComponents.length / 5) * 0.5; // 최대 0.5
+            const appScore = Math.min(apps.length * 0.25, 0.5); // 최대 0.5
+            const successRate = Number((componentScore + appScore).toFixed(2)); // 0.00 ~ 1.00
+
+            const gameResultPayload: GameResult = {
+                userId: savedUser.id,
+                selectedComponents: selectedComponents.map(c => c.id),
+                compatibleApplications: apps,
+                successRate,
+                completionTime,
+            };
+
             const response = await fetch(`${backendUrl}/api/game/submit`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -261,6 +324,53 @@ export default function BuildYourPerfectActuator() {
             });
             if (!response.ok) throw new Error('Failed to save game result');
 
+            // 3. 테이블에서 이메일 가져오기
+            if (apps.length > 0) {
+                let emailForSending = '';
+                try {
+                    const fetchEmail = await fetch(`${backendUrl}/api/user/${savedUser.id}`);
+                    if (!fetchEmail.ok) throw new Error('Failed to fetch email');
+                    const { email } = await fetchEmail.json();
+                    emailForSending = email;
+                } catch (error) {
+                    console.warn('Failed to fetch email from server, using decrypted email:', error);
+                    emailForSending = decryptedData.email!;
+                }
+
+                // 4. 이메일 전송
+                const appsHtml = apps.map((app) => `<p>🏆 ${app}</p>`).join('');
+                const emailHtml = `
+                    <div style="text-align: center; font-family: Arial, sans-serif;">
+                        <h2>Result</h2>
+                        <br>
+                        <p>Compatible Applications:</p>
+                        <br>
+                        ${appsHtml}
+                        <br>
+                        <p style="font-size:0.8em; color:#888;">© LeBot</p>
+                    </div>
+                `;
+
+                const emailResponse = await fetch(`${backendUrl}/api/send-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: emailForSending,
+                        subject: 'Your Actuator Game Result',
+                        body: emailHtml,
+                    }),
+                });
+                if (!emailResponse.ok) {
+                    console.warn('Email sending failed, but proceeding to result screen');
+                }else {
+                    console.log('Email sent successfully to:', emailForSending);
+                    localStorage.removeItem('encryptedUserInfo');
+                }
+            } else {
+                console.log('No compatible apps found, skipping email sending.');
+            }
+
+            // 5. 결과 화면으로 이동
             setScreen('result');
         } catch (error) {
             console.error('Error saving game result:', error);
@@ -276,61 +386,42 @@ export default function BuildYourPerfectActuator() {
         setScreen('game');
     };
 
-    const sendEmail = async () => {
-        if (!userInfo.email) {
-            alert('No email address available.');
-            return;
-        }
+    const removeComponent = (id: string) => {
+        setSelectedComponents((prev) => prev.filter((c) => c.id !== id));
+    };
 
-        const appsHtml = compatibleApps.map(app => `<p>🏆 ${app}</p>`).join('');
-
-        const emailHtml = `
-            <div style="text-align: center; font-family: Arial, sans-serif;">
-                <h2>Result</h2>
-                <br>
-                <p>Compatible Applications:</p>
-                <br>
-                ${appsHtml}
-                <br>
-                <p style="font-size:0.8em; color:#888;">© LeBot</p>
-            </div>
-        `;
-
-        try {
-            const response = await fetch(`${backendUrl}/api/send-email`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    to: userInfo.email,
-                    subject: 'Your Actuator Game Result',
-                    body: emailHtml
-                })
-            });
-            if (!response.ok) throw new Error('Failed to send email');
-
-            alert('Email has been sent successfully!');
-        } catch (error) {
-            console.error(error);
-            alert('Failed to send email.');
-        }
+    const generateHint = () => {
+        const apps = Object.keys(compatibilityMatrixJson);
+        const randomApp = apps[Math.floor(Math.random() * apps.length)];
+        const components = (compatibilityMatrixJson as CompatibilityMatrix)[randomApp];
+        const formattedComponents = components
+            .map((id: string) => {
+                const component = COMPONENTS.find((c) => c.id === id);
+                return component ? component.name : id;
+            })
+            .join(', ');
+        const message = `You can build a [${randomApp
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase())}] using ${formattedComponents}.`;
+        setHintMessage(message);
+        setShowHintModal(true);
     };
 
     // 리더보드 데이터 가져오기
+    const fetchLeaderboard = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
+            if (!response.ok) throw new Error('Failed to fetch leaderboard data');
+
+            const data = await response.json();
+            setLeaderboardData(data);
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+            alert('Failed to load leaderboard. Please try again.');
+        }
+    };
     useEffect(() => {
         if (screen === 'leaderboard') {
-            const fetchLeaderboard = async () => {
-                try {
-                    const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
-                    if (!response.ok) throw new Error('Failed to fetch leaderboard data');
-
-                    const data = await response.json();
-                    setLeaderboardData(data);
-                } catch (error) {
-                    console.error('Error fetching leaderboard:', error);
-                    alert('Failed to load leaderboard. Please try again.');
-                }
-            };
-
             fetchLeaderboard();
         }
     }, [screen]);
@@ -351,15 +442,12 @@ export default function BuildYourPerfectActuator() {
                             initial="hidden"
                             animate="visible"
                             variants={textVariants}
-                            style={{ margin: 0, fontSize: '2.5rem', fontWeight: 'bold' }}
+                            style={{ margin: '20px', fontSize: '2.5rem', fontWeight: 'bold' }}
                         >
                             Welcome!
                         </motion.h1>
 
                         <motion.p
-                            custom={1}
-                            initial="hidden"
-                            animate="visible"
                             variants={textVariants}
                             style={{ margin: '1rem 0', fontSize: '1.25rem', color: '#4b5563' }}
                         >
@@ -369,9 +457,6 @@ export default function BuildYourPerfectActuator() {
                         <motion.button
                             className="button"
                             onClick={handleStartGame}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.8 }}
                             whileHover={{
                                 scale: 1.05,
                                 transition: { type: 'spring', stiffness: 400, damping: 12, delay: 0 }
@@ -385,16 +470,25 @@ export default function BuildYourPerfectActuator() {
                         </motion.button>
 
                         <motion.p
+                            custom={0}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 1.1, duration: 0.8 }}
+                            variants={textVariants}
                             style={{
-                                marginTop: '1rem',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
                                 fontSize: '0.875rem',
                                 color: '#6b7280',
+                                margin: 0
                             }}
                         >
-                            Powered by LeBot
+                            Powered by
+                            <img 
+                                src={myPngImage} 
+                                alt="lebot-logo" 
+                                style={{ width: '100px', height: 'auto', marginLeft: '10px' }}
+                            />
                         </motion.p>
                     </>
                 )}
@@ -432,6 +526,17 @@ export default function BuildYourPerfectActuator() {
                                 <div className="modal terms-modal" onClick={e => e.stopPropagation()}>
                                     <h3>Terms Agreement</h3>
                                     <p>Do you agree to the Terms of Service and Privacy Policy?</p>
+                                    <motion.p
+                                        className="info-box"
+                                    >
+                                        The game results will be sent to the email you provided.
+                                        <br />
+                                        User information will be collected during this process.
+                                        <br />
+                                        If you wish to delete your data,
+                                        <br />
+                                        you can do so from the results screen.
+                                    </motion.p>
                                     <div className="modal-buttons">
                                         <button className="button outline" onClick={cancelAgree}>Cancel</button>
                                         <button className="button" onClick={confirmAgree}>Confirm</button>
@@ -496,6 +601,10 @@ export default function BuildYourPerfectActuator() {
                                 <p>Compatible Applications:</p>
                                 {compatibleApps.map(app => (<p key={app}>🏆 {app}</p>))}
                                 <button className="button outline" onClick={handlePlayAgain}>PLAY AGAIN</button>
+                                <button className="button" onClick={() => (window.open('https://lebot.co.kr', '_blank'))}
+                >
+                  VISIT OUR SITE
+                </button>
                             </>
                         ) : (
                             <>
@@ -503,9 +612,21 @@ export default function BuildYourPerfectActuator() {
                                 <p>❌ No compatible applications found.</p>
                                 <p>Your combination doesn't match any standard robot applications</p>
                                 <button className="button outline" onClick={handlePlayAgain}>TRY AGAIN</button>
+                                <button className="button outline" onClick={generateHint}>GET A HINT</button>
                             </>
                         )}
                         <button className="button" onClick={() => setScreen('leaderboard')}> VIEW RECORD </button>
+                        {showHintModal && (
+                            <div className="modal-overlay terms-modal-overlay" onClick={() => setShowHintModal(false)}>
+                                <div className="modal terms-modal" onClick={(e) => e.stopPropagation()}>
+                                    <h3>Hint</h3>
+                                    <motion.p className="info-box">💡 {hintMessage}</motion.p>
+                                    <div className="modal-buttons">
+                                        <button className="button" onClick={() => setShowHintModal(false)}>Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
 
@@ -520,10 +641,11 @@ export default function BuildYourPerfectActuator() {
                                 </p>
                             ))
                         ) : (
-                            <p>Loading...</p>
+                            <p>No leaderboard data available.</p>
                         )}
                         <div>
                             <button className="button outline" onClick={() => setScreen('welcome')}>NEW GAME</button>
+                            <button className="button outline" onClick={fetchLeaderboard}>REFRESH</button>
                             <button className="button" onClick={() => setScreen('result')}>BACK</button>
                         </div>
                     </>

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import gameRouter from './routes/game.js';
+import userRouter from './routes/user.js';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -10,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/game', gameRouter);
+app.use('/api/user', userRouter);
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
