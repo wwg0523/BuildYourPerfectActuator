@@ -14,7 +14,7 @@ services:
       - ./actuator-front/public:/app/public
       - ./actuator-front/package.json:/app/package.json
       - ./actuator-front/tsconfig.json:/app/tsconfig.json
-      - node_modules:/app/node_modules
+
     environment:
       - WATCHPACK_POLLING=true
       - FAST_REFRESH=true
@@ -46,7 +46,3 @@ services:
 networks:
   actuator-network:
     driver: bridge
-
-# ────────────────────── 익명 볼륨 정의 ──────────────────────
-volumes:
-  node_modules:

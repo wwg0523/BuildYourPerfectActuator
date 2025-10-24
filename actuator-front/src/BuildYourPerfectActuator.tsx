@@ -117,10 +117,15 @@ export default function BuildYourPerfectActuator() {
     const [showHintModal, setShowHintModal] = useState(false);
     const [hintMessage, setHintMessage] = useState('');
 
+    const [userId] = useState(CryptoJS.lib.WordArray.random(16).toString());
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [deleteStatus, setDeleteStatus] = useState<string | null>(null);
+
     // 정규식
     const koreanRegex = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const phoneRegex = /^\+?[1-9]\d{8,14}$/;
+    // E.164-ish: optional +, country code can't start with 0, total digits between 8 and 15 -> supports international formats
+    const phoneRegex = /^\+?[1-9]\d{7,14}$/;
 
     // 입력 유효성 검사
     const validate = () => {
@@ -137,7 +142,7 @@ export default function BuildYourPerfectActuator() {
         else if (!emailRegex.test(userInfo.email)) newErrors.email = 'Invalid email format';
 
         if (!userInfo.phone.trim()) newErrors.phone = 'Phone is required';
-        else if (!phoneRegex.test(userInfo.phone)) newErrors.phone = 'Invalid phone number';
+        else if (!phoneRegex.test(userInfo.phone)) newErrors.phone = 'Invalid phone number (international format supported)';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -407,6 +412,26 @@ export default function BuildYourPerfectActuator() {
         setShowHintModal(true);
     };
 
+    const handleDeleteData = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/delete-user-data`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to delete user data');
+            }
+            setDeleteStatus('Your data has been successfully deleted.');
+            setIsSubmitted(false); // 결과 화면 닫고 초기 화면으로
+        } catch (err: any) {
+            console.error(err);
+            setDeleteStatus('Failed to delete data. Please try again.');
+        }
+    };
+
     // 리더보드 데이터 가져오기
     const fetchLeaderboard = async () => {
         try {
@@ -447,12 +472,24 @@ export default function BuildYourPerfectActuator() {
                             Welcome!
                         </motion.h1>
 
-                        <motion.p
-                            variants={textVariants}
-                            style={{ margin: '1rem 0', fontSize: '1.25rem', color: '#4b5563' }}
-                        >
-                            Build Your Perfect Actuator
-                        </motion.p>
+                        {/* Animated title: each letter moves up/down slightly */}
+                        <div style={{ margin: '1rem 0', fontSize: '1.25rem', color: '#4b5563', display: 'flex', justifyContent: 'center' }}>
+                            {"Build Your Perfect Actuator".split('').map((char, i) => (
+                                <motion.span
+                                    key={`${char}-${i}`}
+                                    style={{ display: 'inline-block', whiteSpace: 'pre' }}
+                                    animate={{ y: [0, -8, 0] }}
+                                    transition={{
+                                        duration: 1.1,
+                                        repeat: 1,
+                                        ease: 'easeInOut',
+                                        delay: i * 0.06
+                                    }}
+                                >
+                                    {char}
+                                </motion.span>
+                            ))}
+                        </div>
 
                         <motion.button
                             className="button"
@@ -556,7 +593,8 @@ export default function BuildYourPerfectActuator() {
                     <>
                         <h2>Select Components</h2>
                         <div className="game-container">
-                            <div className="types-panel">
+                            <div className="left-panel">
+                                <div className="types-panel">
                                 {types.map(type => (
                                     <button
                                         key={type}
@@ -566,8 +604,8 @@ export default function BuildYourPerfectActuator() {
                                         {type.toUpperCase()}
                                     </button>
                                 ))}
-                            </div>
-                            <div className="components-panel">
+                                </div>
+                                <div className="components-panel">
                                 {selectedType &&
                                     COMPONENTS.filter(c => c.type === selectedType).map(c => (
                                         <div
@@ -578,6 +616,7 @@ export default function BuildYourPerfectActuator() {
                                             {c.icon} {c.name}
                                         </div>
                                     ))}
+                                </div>
                             </div>
                             <div className="assembly-zone">
                                 <h3>Selected Components</h3>
@@ -601,10 +640,13 @@ export default function BuildYourPerfectActuator() {
                                 <p>Compatible Applications:</p>
                                 {compatibleApps.map(app => (<p key={app}>🏆 {app}</p>))}
                                 <button className="button outline" onClick={handlePlayAgain}>PLAY AGAIN</button>
-                                <button className="button" onClick={() => (window.open('https://lebot.co.kr', '_blank'))}
-                >
-                  VISIT OUR SITE
-                </button>
+                                <button className="button" onClick={() => (window.open('http://lebot.co.kr', '_blank'))}>
+                                    VISIT OUR SITE
+                                </button>
+                                <button className="button outline" onClick={handleDeleteData}>
+                                    Delete My Data
+                                </button>
+                                {deleteStatus && <p className={deleteStatus.includes('Failed') ? 'error' : 'success'}>{deleteStatus}</p>}
                             </>
                         ) : (
                             <>

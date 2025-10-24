@@ -24,7 +24,6 @@ router.post('/start', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Database error' });
     }
-
 });
 
 // POST /api/game/submit: 게임 결과 저장
