@@ -12,6 +12,6 @@ RUN npm run build
 
 COPY .env .
 
-EXPOSE 3000
+EXPOSE 5005
 
-CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+CMD ["npx", "serve", "-s", "build", "-l", "5005"]

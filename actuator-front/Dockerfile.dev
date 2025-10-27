@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm ci
 
 # 개발 서버 포트 열기
-EXPOSE 3000
+EXPOSE 5005
 
 # 개발 서버 실행 (핫 리로드 포함)
 CMD ["npm", "run", "dev"]

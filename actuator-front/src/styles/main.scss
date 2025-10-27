@@ -88,6 +88,29 @@ input {
     }
 }
 
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 520px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+}
+
 // 약관 동의 섹션
 .terms-container {
     display: flex;
@@ -126,16 +149,88 @@ input {
     }
 }
 
-.info-box {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 14px;
-    line-height: 1.5;
-    background-color: #f9f9f9;
-    text-align: left;
+.terms-modal {
+    h2 {
+        text-align: center;
+        margin-bottom: 1rem;
+        color: #1e3a8a;
+    }
+
+    .terms-content {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        max-height: 50vh; /* ✅ 본문 스크롤 높이 제한 */
+        scrollbar-width: thin;
+        scrollbar-color: $primary-color #e5e7eb;
+
+        /* 스크롤바 커스터마이즈 (Webkit 브라우저용) */
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: $primary-color;
+            border-radius: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        h3 {
+            margin-top: 1.2rem;
+            font-size: 1.1rem;
+            color: #222;
+        }
+
+        p, li {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #374151;
+        }
+
+        ul {
+            margin-left: 1rem;
+            list-style: disc;
+        }
+    }
+
+    .consent-section {
+        margin-top: 1.5rem;
+        margin-left: 70px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #374151;
+            cursor: pointer;
+
+            input {
+                width: 18px;
+                height: 18px;
+                accent-color: $primary-color;
+                margin-top: 4px;
+            }
+        }
+    }
+
+    .modal-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
 }
+
+
+
+
 
 // 게임 영역
 .game-container {
@@ -226,10 +321,10 @@ input {
         flex-direction: column;
         align-items: center;
         gap: 1rem;
-    overflow-y: auto;
-    min-height: 0;
-    flex-basis: 20%;
-    max-width: 220px;
+        overflow-y: auto;
+        min-height: 0;
+        flex-basis: 20%;
+        max-width: 220px;
 
         .drop-zone {
             width: 100%;
@@ -294,43 +389,7 @@ input {
     }
 }
 
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
 
-.modal {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 420px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    text-align: center;
-}
-
-.terms-modal .modal-buttons {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.terms-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 1rem 0;
-}
-.terms-container label {
-    cursor: pointer;
-    user-select: none;
-}
 
 // ------------------- 반응형 / 태블릿 최적화 -------------------
 @media (max-width: 1024px) {

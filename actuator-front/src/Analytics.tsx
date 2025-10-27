@@ -24,7 +24,7 @@ interface GameAnalytics {
     successRateByExperience: { [key: string]: number } | null;
 }
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4000';
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 
 const Analytics: React.FC = () => {
     const [analyticsData, setAnalyticsData] = useState<GameAnalytics | null>(null);

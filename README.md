@@ -82,8 +82,8 @@ DB_USER=postgres
 DB_HOST=actuator-db
 DB_NAME=actuator_game
 DB_PASS=super-secret-key
-DB_PORT=5432
-PORT=4000
+DB_PORT=5433
+PORT=4004
 
 APP_EMAIL=your-email-here
 APP_PASS=your-app-password-here
@@ -106,12 +106,12 @@ npm start
 
 # 클라이언트 실행 (터미널 2)
 cd actuator-front
-npx serve -s build -l 3000
+npm run dev
 ```
 
 애플리케이션이 실행되면:
-- **프론트엔드**: http://localhost:3000
-- **백엔드 API**: http://localhost:4000
+- **프론트엔드**: http://localhost:5005
+- **백엔드 API**: http://localhost:4004
 
 ## 📁 프로젝트 구조
 

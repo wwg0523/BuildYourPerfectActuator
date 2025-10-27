@@ -12,6 +12,6 @@ RUN npx tsc
 
 COPY .env .
 
-EXPOSE 4000
+EXPOSE 4004
 
 CMD ["npm", "start"]

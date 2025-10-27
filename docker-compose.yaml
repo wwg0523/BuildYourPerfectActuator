@@ -6,7 +6,7 @@ services:
       context: ./actuator-front
     container_name: actuator-front
     ports:
-      - "5005:3000"
+      - "5005:5005"
     networks:
       - actuator-network
 
@@ -15,7 +15,7 @@ services:
       context: ./actuator-back
     container_name: actuator-back
     ports:
-      - "4004:4000"
+      - "4004:4004"
     networks:
       - actuator-network
 
@@ -23,7 +23,7 @@ services:
     image: postgres:16.10
     container_name: actuator-db
     ports:
-      - "5433:5432"
+      - "5433:5433"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1209
