@@ -1,83 +1,120 @@
-import React from 'react';
-import { GameComponent } from '../lib/utils';
+import React, { useState, useEffect } from 'react';
+import { GameSession, GameQuestion, UserAnswer, GameEngine } from '../lib/utils';
+import '../styles/main.scss';
 
 interface GameProps {
-    selectedComponents: GameComponent[];
-    selectedType: 'motor' | 'gearbox' | 'encoder' | 'drive' | 'bearing' | null;
-    handleTypeSelect: (type: 'motor' | 'gearbox' | 'encoder' | 'drive' | 'bearing') => void;
-    handleComponentSelect: (component: GameComponent) => void;
+    gameSession: GameSession;
+    setGameSession: React.Dispatch<React.SetStateAction<GameSession>>;
     handleSubmit: () => void;
-    removeComponent: (id: string) => void;
 }
 
-const types = ['motor', 'gearbox', 'encoder', 'drive', 'bearing'] as const;
-const COMPONENTS: GameComponent[] = [
-    { id: 'servo_motor', name: 'Servo Motor', type: 'motor', icon: '🔧', description: 'Servo motor for precise control' },
-    { id: 'stepper_motor', name: 'Stepper Motor', type: 'motor', icon: '🔧', description: 'Stepper motor for incremental motion' },
-    { id: 'ac_motor', name: 'AC Motor', type: 'motor', icon: '🔧', description: 'AC motor for industrial automation' },
-    { id: 'harmonic_gearbox', name: 'Harmonic Gearbox', type: 'gearbox', icon: '⚙️', description: 'High-precision gearbox' },
-    { id: 'planetary_gearbox', name: 'Planetary Gearbox', type: 'gearbox', icon: '⚙️', description: 'High torque planetary gearbox' },
-    { id: 'spur_gearbox', name: 'Spur Gearbox', type: 'gearbox', icon: '⚙️', description: 'Simple spur gearbox' },
-    { id: 'absolute_encoder', name: 'Absolute Encoder', type: 'encoder', icon: '📊', description: 'Measures absolute position' },
-    { id: 'optical_encoder', name: 'Optical Encoder', type: 'encoder', icon: '📊', description: 'High-precision optical encoder' },
-    { id: 'incremental_encoder', name: 'Incremental Encoder', type: 'encoder', icon: '📊', description: 'Measures incremental rotation' },
-    { id: 'servo_drive', name: 'Servo Drive', type: 'drive', icon: '🔌', description: 'Controls servo motor' },
-    { id: 'stepper_drive', name: 'Stepper Drive', type: 'drive', icon: '🔌', description: 'Controls stepper motor' },
-    { id: 'ac_drive', name: 'AC Drive', type: 'drive', icon: '🔌', description: 'Controls AC motor' },
-    { id: 'ball_bearing', name: 'Ball Bearing', type: 'bearing', icon: '⚡', description: 'Reduces friction' },
-    { id: 'roller_bearing', name: 'Roller Bearing', type: 'bearing', icon: '⚡', description: 'Supports radial load' },
-    { id: 'thrust_bearing', name: 'Thrust Bearing', type: 'bearing', icon: '⚡', description: 'Supports axial load' },
-];
+const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit }) => {
+    const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
+    const [timeLeft, setTimeLeft] = useState<number>(60); // 기본값 60초
+    const currentQuestion = gameSession.questions[gameSession.currentQuestionIndex];
+    const gameEngine = new GameEngine();
 
-const Game: React.FC<GameProps> = ({
-    selectedComponents,
-    selectedType,
-    handleTypeSelect,
-    handleComponentSelect,
-    handleSubmit,
-    removeComponent,
-}) => {
+    useEffect(() => {
+        if (!currentQuestion) return; // currentQuestion이 없으면 타이머 설정 안 함
+
+        setTimeLeft(currentQuestion.timeLimit);
+        const timer = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 0) {
+                    handleAnswerSubmit();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [gameSession.currentQuestionIndex, currentQuestion]);
+
+    const handleComponentToggle = (componentId: string) => {
+        setSelectedComponents(prev =>
+            prev.includes(componentId)
+                ? prev.filter(id => id !== componentId)
+                : [...prev, componentId]
+        );
+    };
+
+    const handleAnswerSubmit = () => {
+        if (!currentQuestion) return; // 안전하게 currentQuestion 확인
+
+        const isCorrect = gameEngine.checkAnswer(currentQuestion.id, selectedComponents);
+        const answer: UserAnswer = {
+            questionId: currentQuestion.id,
+            selectedComponents,
+            isCorrect,
+            answerTime: (currentQuestion.timeLimit - timeLeft) * 1000,
+            timestamp: new Date(),
+        };
+
+        setGameSession(prev => ({
+            ...prev,
+            answers: [...prev.answers, answer],
+            currentQuestionIndex: prev.currentQuestionIndex + 1,
+        }));
+
+        setSelectedComponents([]);
+        if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
+            setGameSession(prev => ({
+                ...prev,
+                endTime: new Date(),
+                totalScore: prev.answers.filter(a => a.isCorrect).length,
+            }));
+            handleSubmit();
+        }
+    };
+
+    if (!currentQuestion) {
+        return <div>Loading question...</div>;
+    }
+
     return (
-        <>
-            <h2>Select Components</h2>
-            <div className="game-container">
-                <div className="left-panel">
-                    <div className="types-panel">
-                        {types.map(type => (
-                            <button
-                                key={type}
-                                className={`type-btn ${selectedType === type ? 'active' : ''}`}
-                                onClick={() => handleTypeSelect(type)}
-                            >
-                                {type.toUpperCase()}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="components-panel">
-                        {selectedType &&
-                            COMPONENTS.filter(c => c.type === selectedType).map(c => (
-                                <div
-                                    key={c.id}
-                                    className={`component-item ${selectedComponents.some(sel => sel.id === c.id) ? 'selected' : ''}`}
-                                    onClick={() => handleComponentSelect(c)}
-                                >
-                                    {c.icon} {c.name}
-                                </div>
-                            ))}
-                    </div>
-                </div>
-                <div className="assembly-zone">
-                    <h3>Selected Components</h3>
-                    {selectedComponents.map(c => (
-                        <div key={c.id} className="selected-item" onClick={() => removeComponent(c.id)}>
-                            {c.icon} {c.name} ❌
-                        </div>
+        <div className="game-container" style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+            <div className="question-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <h2>Question {gameSession.currentQuestionIndex + 1}/5</h2>
+                <span>⏱️ {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+            </div>
+            <div className="question-content">
+                <h3>🤖 {currentQuestion.robotPart.description}</h3>
+                <img
+                    src={currentQuestion.robotPart.image}
+                    alt={currentQuestion.robotPart.name}
+                    style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', margin: '10px 0' }}
+                />
+                <p>Select the correct components:</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    {currentQuestion.availableComponents.map(component => (
+                        <label key={component.id} style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                                type="checkbox"
+                                checked={selectedComponents.includes(component.id)}
+                                onChange={() => handleComponentToggle(component.id)}
+                            />
+                            <span style={{ marginLeft: '8px' }}>{component.name}</span>
+                        </label>
                     ))}
-                    <p>Selected: {selectedComponents.length}/5</p>
-                    <button className="button" onClick={handleSubmit}>SUBMIT</button>
                 </div>
             </div>
-        </>
+            <button
+                onClick={handleAnswerSubmit}
+                disabled={selectedComponents.length === 0}
+                style={{
+                    marginTop: '20px',
+                    padding: '10px 20px',
+                    background: selectedComponents.length === 0 ? '#ccc' : '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: selectedComponents.length === 0 ? 'not-allowed' : 'pointer',
+                }}
+            >
+                SUBMIT ANSWER
+            </button>
+        </div>
     );
 };
 

@@ -71,6 +71,27 @@ body {
     }
 }
 
+.home-header {
+    position: relative;
+}
+
+.home-header-button {
+    display: flex;
+    justify-content: flex-start;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.home-header-button:hover {
+    background: #0056b3;
+}
+
 // 입력 필드
 input {
     width: 100%;
@@ -377,6 +398,48 @@ input {
         align-self: stretch;
         align-items: stretch;
     }
+}
+
+.participant-count-badge {
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.count-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.count-label {
+        font-size: 14px;
+        color: #666;
+}
+
+.status-indicator {
+    font-size: 16px;
+}
+
+.online { color: green; }
+.offline { color: red; }
+
+.count-display {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.count-number {
+    color: #333;
+}
+
+.count-suffix {
+    font-size: 14px;
+    color: #999;
+    margin-left: 4px;
 }
 
 /* Large screens: avoid too much empty space, keep everything centered */

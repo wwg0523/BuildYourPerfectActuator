@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './styles/main.scss';
+import '../styles/main.scss';
 import { motion } from 'framer-motion';
 import {
     BarChart,

@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: actuator-front
     ports:
-      - "5006:5005"
+      - "5006:5006"
     networks:
       - actuator-network
     # ────────────────────── 개발용 볼륨 마운트 ──────────────────────
@@ -25,7 +25,7 @@ services:
       context: ./actuator-back
     container_name: actuator-back
     ports:
-      - "4005:4004"
+      - "4005:4005"
     networks:
       - actuator-network
 
@@ -33,7 +33,7 @@ services:
     image: postgres:16.10
     container_name: actuator-db
     ports:
-      - "5434:5433"
+      - "5434:5434"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1209

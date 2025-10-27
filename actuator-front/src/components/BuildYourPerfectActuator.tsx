@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './styles/main.scss';
+import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
-import Home from './pages/Home';
-import Info from './pages/Info';
-import Game from './pages/Game';
-import Result from './pages/Result';
-import Leaderboard from './pages/Leaderboard';
-import { GameComponent, UserInfo, LeaderboardEntry, IdleDetector, COMPONENTS, compatibilityMatrix, checkCompatibility } from './lib/utils';
+import Home from '../pages/Home';
+import Info from '../pages/Info';
+import Game from '../pages/Game';
+import Result from '../pages/Result';
+import Leaderboard from '../pages/Leaderboard';
+import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager } from '../lib/utils';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
@@ -20,20 +20,12 @@ export default function BuildYourPerfectActuator() {
         phone: '',
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    const [selectedComponents, setSelectedComponents] = useState<GameComponent[]>([]);
-    const [selectedType, setSelectedType] = useState<'motor' | 'gearbox' | 'encoder' | 'drive' | 'bearing' | null>(null);
-    const [compatibleApps, setCompatibleApps] = useState<string[]>([]);
-    const [gameStartTime, setGameStartTime] = useState<number | null>(null);
-    const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
-
+    const [gameSession, setGameSession] = useState<GameSession | null>(null);
+    const [leaderboardEntry, setLeaderboardEntry] = useState<LeaderboardEntry | null>(null);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [agreeMarketing, setAgreeMarketing] = useState(false);
-
-    const [showHintModal, setShowHintModal] = useState(false);
-    const [hintMessage, setHintMessage] = useState('');
-
     const [userId] = useState(CryptoJS.lib.WordArray.random(16).toString());
     const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -48,6 +40,9 @@ export default function BuildYourPerfectActuator() {
     const currentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const warningTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const finalTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const gameEngine = new GameEngine();
+    const leaderboardManager = new LeaderboardManager();
 
     const clearAllTimers = () => {
         if (countdownTimeoutRef.current) {
@@ -126,12 +121,28 @@ export default function BuildYourPerfectActuator() {
             const encryptedEmail = CryptoJS.AES.encrypt(userInfo.email, ENCRYPTION_KEY).toString();
             const encryptedPhone = CryptoJS.AES.encrypt(userInfo.phone, ENCRYPTION_KEY).toString();
 
-            setUserInfo({
+            const userToSave = {
                 name: encryptedName,
                 company: encryptedCompany,
                 email: encryptedEmail,
                 phone: encryptedPhone,
+                timestamp: new Date(),
+            };
+
+            const userResponse = await fetch(`${backendUrl}/api/game/start`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userToSave),
             });
+            if (!userResponse.ok) throw new Error(`Failed to save user info: ${userResponse.statusText}`);
+
+            const savedUser = await userResponse.json();
+            if (!savedUser.id) throw new Error('Server did not return a valid user ID');
+
+            setUserInfo(prev => ({
+                ...prev,
+                id: savedUser.id,
+            }));
 
             localStorage.setItem(
                 'encryptedUserInfo',
@@ -140,17 +151,15 @@ export default function BuildYourPerfectActuator() {
                     company: encryptedCompany,
                     email: encryptedEmail,
                     phone: encryptedPhone,
+                    id: savedUser.id,
                 })
             );
 
-            setSelectedComponents([]);
-            setCompatibleApps([]);
-            setSelectedType(null);
-            setGameStartTime(Date.now());
+            setGameSession(gameEngine.generateGameSession());
             setScreen('game');
         } catch (error) {
             console.error('Error in continue:', error);
-            alert('An error occurred during encryption. Please try again.');
+            alert('An error occurred. Please try again.');
         }
     };
 
@@ -163,177 +172,81 @@ export default function BuildYourPerfectActuator() {
         setAgreeTerms(false);
         setAgreeMarketing(false);
         localStorage.removeItem('encryptedUserInfo');
+        setGameSession(null);
+        setLeaderboardEntry(null);
         setScreen('home');
     };
 
-    const handleTypeSelect = (type: 'motor' | 'gearbox' | 'encoder' | 'drive' | 'bearing') => {
-        setSelectedType(type);
-    };
-
-    const handleComponentSelect = (component: GameComponent) => {
-        const existing = selectedComponents.find(c => c.type === component.type);
-        if (existing && existing.id === component.id) {
-            setSelectedComponents(selectedComponents.filter(c => c.id !== component.id));
-        } else {
-            const filtered = selectedComponents.filter(c => c.type !== component.type);
-            setSelectedComponents([...filtered, component]);
-        }
-    };
-
     const handleSubmit = async () => {
-        if (selectedComponents.length < 3) {
-            alert('You must select at least 3 components.');
-            return;
-        }
-
-        let decryptedData: Partial<UserInfo> = {};
+        if (!gameSession) return;
         try {
-            const storedEncrypted = localStorage.getItem('encryptedUserInfo');
-            const encryptedData = storedEncrypted
-                ? JSON.parse(storedEncrypted)
-                : {
-                    name: userInfo.name,
-                    company: userInfo.company,
-                    email: userInfo.email,
-                    phone: userInfo.phone,
-                };
-
-            if (!encryptedData.email) {
-                alert('No encrypted data found. Please start over.');
-                return;
-            }
-
-            decryptedData = {
-                name: CryptoJS.AES.decrypt(encryptedData.name, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
-                company: CryptoJS.AES.decrypt(encryptedData.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
-                email: CryptoJS.AES.decrypt(encryptedData.email, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
-                phone: CryptoJS.AES.decrypt(encryptedData.phone, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8),
+            // useState의 복호화된 데이터 사용
+            const userForLeaderboard: UserInfo = {
+                id: userInfo.id,
+                name: userInfo.name,
+                company: userInfo.company,
+                email: userInfo.email,
+                phone: userInfo.phone,
             };
 
-            if (!decryptedData.name || !decryptedData.company || !decryptedData.email || !decryptedData.phone) {
-                throw new Error('Failed to decrypt one or more fields');
-            }
-        } catch (error) {
-            console.error('Decryption error:', error);
-            alert('Failed to decrypt data. Please start over.');
-            return;
-        }
-
-        try {
-            const userToSave = { ...decryptedData, timestamp: new Date() };
-            const userResponse = await fetch(`${backendUrl}/api/game/start`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userToSave),
-            });
-            if (!userResponse.ok) throw new Error(`Failed to save user info: ${userResponse.statusText}`);
-
-            const savedUser = await userResponse.json();
-            if (!savedUser.id) throw new Error('Server did not return a valid user ID');
-
-            setUserInfo((prev) => ({ ...prev, id: savedUser.id }));
-
-            const apps = checkCompatibility(selectedComponents);
-            setCompatibleApps(apps);
-
-            const completionTime = gameStartTime ? Math.floor((Date.now() - gameStartTime) / 1000) : 0;
-            const componentScore = (selectedComponents.length / 5) * 0.5;
-            const appScore = Math.min(apps.length * 0.25, 0.5);
-            const successRate = Number((componentScore + appScore).toFixed(2));
-
-            const gameResultPayload = {
-                userId: savedUser.id,
-                selectedComponents: selectedComponents.map(c => c.id),
-                compatibleApplications: apps,
-                successRate,
-                completionTime,
-            };
-
-            const response = await fetch(`${backendUrl}/api/game/submit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(gameResultPayload),
-            });
-            if (!response.ok) throw new Error('Failed to save game result');
-
-            if (apps.length > 0) {
-                let emailForSending = '';
-                try {
-                    const fetchEmail = await fetch(`${backendUrl}/api/user/${savedUser.id}`);
-                    if (!fetchEmail.ok) throw new Error('Failed to fetch email');
-                    const { email } = await fetchEmail.json();
-                    emailForSending = email;
-                } catch (error) {
-                    console.warn('Failed to fetch email from server, using decrypted email:', error);
-                    emailForSending = decryptedData.email!;
-                }
-
-                const appsHtml = apps.map((app) => `<p>🏆 ${app}</p>`).join('');
-                const emailHtml = `
-                    <div style="text-align: center; font-family: Arial, sans-serif;">
-                        <h2>Result</h2>
-                        <br>
-                        <p>Compatible Applications:</p>
-                        <br>
-                        ${appsHtml}
-                        <br>
-                        <p style="font-size:0.8em; color:#888;">© LeBot</p>
-                    </div>
-                `;
-
-                const emailResponse = await fetch(`${backendUrl}/api/send-email`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        to: emailForSending,
-                        subject: 'Your Actuator Game Result',
-                        body: emailHtml,
-                    }),
-                });
-                if (!emailResponse.ok) {
-                    console.warn('Email sending failed, but proceeding to result screen');
-                } else {
-                    console.log('Email sent successfully to:', emailForSending);
-                    localStorage.removeItem('encryptedUserInfo');
-                }
-            } else {
-                console.log('No compatible apps found, skipping email sending.');
-            }
-
+            const entry = await leaderboardManager.submitScore(gameSession, userForLeaderboard);
+            setLeaderboardEntry(entry);
             setScreen('result');
         } catch (error) {
-            console.error('Error saving game result:', error);
+            console.error('Error submitting game result:', error);
             alert('Failed to save game result. Please try again.');
+            setScreen('result');
         }
+
+            // if (apps.length > 0) {
+            //     let emailForSending = '';
+            //     try {
+            //         const fetchEmail = await fetch(`${backendUrl}/api/user/${savedUser.id}`);
+            //         if (!fetchEmail.ok) throw new Error('Failed to fetch email');
+            //         const { email } = await fetchEmail.json();
+            //         emailForSending = email;
+            //     } catch (error) {
+            //         console.warn('Failed to fetch email from server, using decrypted email:', error);
+            //         emailForSending = decryptedData.email!;
+            //     }
+
+            //     const appsHtml = apps.map((app) => `<p>🏆 ${app}</p>`).join('');
+            //     const emailHtml = `
+            //         <div style="text-align: center; font-family: Arial, sans-serif;">
+            //             <h2>Result</h2>
+            //             <br>
+            //             <p>Compatible Applications:</p>
+            //             <br>
+            //             ${appsHtml}
+            //             <br>
+            //             <p style="font-size:0.8em; color:#888;">© LeBot</p>
+            //         </div>
+            //     `;
+
+            //     const emailResponse = await fetch(`${backendUrl}/api/send-email`, {
+            //         method: 'POST',
+            //         headers: { 'Content-Type': 'application/json' },
+            //         body: JSON.stringify({
+            //             to: emailForSending,
+            //             subject: 'Your Actuator Game Result',
+            //             body: emailHtml,
+            //         }),
+            //     });
+            //     if (!emailResponse.ok) {
+            //         console.warn('Email sending failed, but proceeding to result screen');
+            //     } else {
+            //         console.log('Email sent successfully to:', emailForSending);
+            //         localStorage.removeItem('encryptedUserInfo');
+            //     }
+            // } else {
+            //     console.log('No compatible apps found, skipping email sending.');
+            // }
     };
 
     const handlePlayAgain = () => {
-        setSelectedComponents([]);
-        setSelectedType(null);
-        setCompatibleApps([]);
-        setGameStartTime(Date.now());
+        setGameSession(gameEngine.generateGameSession());
+        setLeaderboardEntry(null);
         setScreen('game');
-    };
-
-    const removeComponent = (id: string) => {
-        setSelectedComponents((prev) => prev.filter((c) => c.id !== id));
-    };
-
-    const generateHint = () => {
-        const apps = Object.keys(compatibilityMatrix);
-        const randomApp = apps[Math.floor(Math.random() * apps.length)];
-        const components = compatibilityMatrix[randomApp];
-        const formattedComponents = components
-            .map((id: string) => {
-                const component = COMPONENTS.find((c) => c.id === id);
-                return component ? component.name : id;
-            })
-            .join(', ');
-        const message = `You can build a [${randomApp
-            .replace(/_/g, ' ')
-            .replace(/\b\w/g, (c) => c.toUpperCase())}] using ${formattedComponents}.`;
-        setHintMessage(message);
-        setShowHintModal(true);
     };
 
     const fetchLeaderboard = async () => {
@@ -341,7 +254,7 @@ export default function BuildYourPerfectActuator() {
             const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch leaderboard data');
             const data = await response.json();
-            setLeaderboardData(data);
+            setLeaderboardEntry(data);
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
             alert('Failed to load leaderboard. Please try again.');
@@ -496,7 +409,7 @@ export default function BuildYourPerfectActuator() {
 
     useEffect(() => {
         const events = ['touchstart', 'click', 'keypress'] as const;
-        if (screen === 'home' || screen === 'leaderboard') {
+        if (screen === 'home' || screen === 'game' || screen === 'leaderboard') {
             clearAllTimers();
             hideWarningMessage();
             return;
@@ -517,9 +430,21 @@ export default function BuildYourPerfectActuator() {
         };
     }, [screen]);
 
+    const renderHeader = () => {
+        if (screen === 'home') return null;
+        return (
+            <div className="home-header">
+                <button className="home-header-button" onClick={handleBack}>
+                    🏠 HOME
+                </button>
+            </div>
+        );
+    };
+
     return (
         <div className="app-container">
             <div className="card">
+                {renderHeader()}
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'info' && (
                     <Info
@@ -539,25 +464,19 @@ export default function BuildYourPerfectActuator() {
                         handleContinue={handleContinue}
                     />
                 )}
-                {screen === 'game' && (
+                {screen === 'game' && gameSession && (
                     <Game
-                        selectedComponents={selectedComponents}
-                        selectedType={selectedType}
-                        handleTypeSelect={handleTypeSelect}
-                        handleComponentSelect={handleComponentSelect}
+                        gameSession={gameSession}
+                        setGameSession={setGameSession}
                         handleSubmit={handleSubmit}
-                        removeComponent={removeComponent}
                     />
                 )}
-                {screen === 'result' && (
+                {screen === 'result' && gameSession && (
                     <Result
-                        compatibleApps={compatibleApps}
+                        gameSession={gameSession}
+                        leaderboardEntry={leaderboardEntry}
                         handlePlayAgain={handlePlayAgain}
-                        showHintModal={showHintModal}
-                        hintMessage={hintMessage}
-                        setShowHintModal={setShowHintModal}
                         setScreen={setScreen}
-                        generateHint={generateHint}
                     />
                 )}
                 {screen === 'leaderboard' && (

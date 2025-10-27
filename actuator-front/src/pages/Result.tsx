@@ -1,63 +1,52 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { GameSession, LeaderboardEntry } from '../lib/utils';
+import '../styles/main.scss';
 
 interface ResultProps {
-    compatibleApps: string[];
+    gameSession: GameSession;
+    leaderboardEntry?: LeaderboardEntry;
     handlePlayAgain: () => void;
-    showHintModal: boolean;
-    hintMessage: string;
-    setShowHintModal: (show: boolean) => void;
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
-    generateHint: () => void;
 }
 
-const Result: React.FC<ResultProps> = ({
-    compatibleApps,
-    handlePlayAgain,
-    showHintModal,
-    hintMessage,
-    setShowHintModal,
-    setScreen,
-    generateHint,
-}) => {
-    return (
-        <>
-            {compatibleApps.length > 0 ? (
-                <>
-                    <h2>Result</h2>
-                    <p>Compatible Applications:</p>
-                    {compatibleApps.map(app => (
-                        <p key={app}>🏆 {app}</p>
-                    ))}
-                    <button className="button outline" onClick={handlePlayAgain}>PLAY AGAIN</button>
-                    <button className="button" onClick={() => window.open('http://lebot.co.kr', '_blank')}>
-                        VISIT OUR SITE
-                    </button>
-                </>
-            ) : (
-                <>
-                    <p>Oops!</p>
-                    <p>❌ No compatible applications found.</p>
-                    <p>Your combination doesn't match any standard robot applications</p>
-                    <button className="button outline" onClick={handlePlayAgain}>TRY AGAIN</button>
-                    <button className="button outline" onClick={generateHint}>GET A HINT</button>
-                </>
-            )}
-            <button className="button" onClick={() => setScreen('leaderboard')}>VIEW RECORD</button>
-            <button className="button outline" onClick={() => setScreen('home')}>🏠 BACK TO HOME</button>
+const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePlayAgain, setScreen }) => {
+    const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
+    const totalTime = gameSession.endTime
+        ? Math.floor((gameSession.endTime.getTime() - gameSession.startTime.getTime()) / 1000)
+        : 0;
 
-            {showHintModal && (
-                <div className="modal-overlay terms-modal-overlay" onClick={() => setShowHintModal(false)}>
-                    <div className="modal terms-modal" onClick={(e) => e.stopPropagation()}>
-                        <h3>Hint</h3>
-                        <motion.p className="info-box">💡 {hintMessage}</motion.p>
-                        <div className="modal-buttons">
-                            <button className="button" onClick={() => setShowHintModal(false)}>Close</button>
-                        </div>
-                    </div>
-                </div>
+    return (
+        <div className="result-container" style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+            <h1>Game Over!</h1>
+            <p>Your Score: {correctAnswers}/5 correct</p>
+            <p>Time Taken: {Math.floor(totalTime / 60)}:{(totalTime % 60).toString().padStart(2, '0')}</p>
+            {leaderboardEntry && (
+                <>
+                    <p>Your Rank: #{leaderboardEntry.rank}</p>
+                    <p>Final Score: {leaderboardEntry.finalScore} (Base: {leaderboardEntry.score * 100}, Bonus: {leaderboardEntry.timeBonus})</p>
+                </>
             )}
-        </>
+            <div style={{ marginTop: '20px' }}>
+                <button
+                    onClick={handlePlayAgain}
+                    style={{ padding: '10px 20px', marginRight: '10px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}
+                >
+                    🔄 PLAY AGAIN
+                </button>
+                <button
+                    onClick={() => setScreen('leaderboard')}
+                    style={{ padding: '10px 20px', marginRight: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}
+                >
+                    🏆 LEADERBOARD
+                </button>
+                <button
+                    onClick={() => setScreen('home')}
+                    style={{ padding: '10px 20px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
+                >
+                    🏠 HOME
+                </button>
+            </div>
+        </div>
     );
 };
 

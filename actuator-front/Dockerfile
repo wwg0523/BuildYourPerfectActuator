@@ -14,4 +14,4 @@ COPY .env .
 
 EXPOSE 5005
 
-CMD ["npx", "serve", "-s", "build", "-l", "5005"]
+CMD ["npm", "start"]

@@ -1,5 +1,5 @@
 import React from 'react';
-import TermsModal from './TermsModal';
+import TermsModal from '../components/TermsModal';
 import { UserInfo } from '../lib/utils';
 
 interface InfoProps {

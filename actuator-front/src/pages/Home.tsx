@@ -1,4 +1,5 @@
 import React from 'react';
+import { useParticipantCounter } from '../context/ParticipantCounterContext';
 import { motion, Variants } from 'framer-motion';
 import myPngImage from '../components/le-bot-logo-light.png';
 
@@ -20,6 +21,20 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ onStartGame }) => {
+    const participantCounter = useParticipantCounter();
+
+    const handleStartGameClick = async () => {
+        try {
+            await participantCounter.incrementParticipant();
+            const newCount = await participantCounter.getTotalParticipants();
+            console.log('Participant count incremented:', newCount);
+            onStartGame();
+        } catch (error) {
+            console.error('Failed to increment participant count:', error);
+            alert('Failed to update participant count.');
+            onStartGame();
+        }
+    };
     return (
         <>
             <motion.h1
@@ -52,7 +67,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
 
             <motion.button
                 className="button"
-                onClick={onStartGame}
+                onClick={handleStartGameClick}
                 whileHover={{
                     scale: 1.05,
                     transition: { type: 'spring', stiffness: 400, damping: 12, delay: 0 }
