@@ -1,0 +1,37 @@
+/* Page-specific styles for Info.tsx (terms and inputs) */
+.page-info {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-info h2 {
+  margin-bottom: 1rem;
+}
+
+.page-info input[type="text"],
+.page-info input[type="email"],
+.page-info input[type="tel"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.page-info .terms-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+.page-info .modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}

@@ -1,7 +1,8 @@
 import React from 'react';
-import { useParticipantCounter } from '../context/ParticipantCounterContext';
+import { useParticipantCounter } from '../../context/ParticipantCounterContext';
 import { motion, Variants } from 'framer-motion';
-import myPngImage from '../components/le-bot-logo-light.png';
+import myPngImage from '../../components/le-bot-logo-light.png';
+import './Home.scss';
 
 const textVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
@@ -36,22 +37,22 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
         }
     };
     return (
-        <>
+        <div className="page-home">
             <motion.h1
+                className="home-title"
                 custom={0}
                 initial="hidden"
                 animate="visible"
                 variants={textVariants}
-                style={{ margin: '20px', fontSize: '2.5rem', fontWeight: 'bold' }}
             >
                 Welcome!
             </motion.h1>
 
-            <div style={{ margin: '1rem 0', fontSize: '1.25rem', color: '#4b5563', display: 'flex', justifyContent: 'center' }}>
+            <div className="home-subtitle">
                 {"Build Your Perfect Actuator".split('').map((char, i) => (
                     <motion.span
                         key={`${char}-${i}`}
-                        style={{ display: 'inline-block', whiteSpace: 'pre' }}
+                        className="char"
                         animate={{ y: [0, -8, 0] }}
                         transition={{
                             duration: 1.1,
@@ -81,27 +82,20 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
             </motion.button>
 
             <motion.p
+                className="home-powered"
                 custom={0}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 variants={textVariants}
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    fontSize: '0.875rem',
-                    color: '#6b7280',
-                    margin: 0
-                }}
             >
                 Powered by
                 <img 
                     src={myPngImage} 
                     alt="lebot-logo" 
-                    style={{ width: '100px', height: 'auto', marginLeft: '10px' }}
+                    className="home-logo"
                 />
             </motion.p>
-        </>
+        </div>
     );
 };
 

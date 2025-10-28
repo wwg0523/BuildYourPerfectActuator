@@ -14,11 +14,6 @@ router.post('/start', async (req, res) => {
     const id = uuidv4();
 
     try {
-        await pool.query(
-            `INSERT INTO game_users (id, name, company, email, phone)
-             VALUES ($1, $2, $3, $4, $5)`,
-            [id, name, company, email, phone]
-        );
         res.status(201).json({ id });
     } catch (err) {
         console.error(err);
@@ -47,6 +42,25 @@ router.post('/submit', async (req, res) => {
     // UUID 생성
     const id = uuidv4();
 
+    // 파생 필드 계산 (백엔드에서 기본값으로 계산)
+    // completionTime이 초 단위로 들어올 수 있으므로 ms 단위로 정규화
+    let completionMs = Number(completionTime ?? 0);
+    if (isNaN(completionMs)) completionMs = 0;
+    if (completionMs > 0 && completionMs < 1000) {
+        // 초 단위로 보내진 경우
+        completionMs = completionMs * 1000;
+    }
+
+    const totalQuestions = Number(req.body.totalQuestions ?? 5);
+    const score = Number(req.body.score ?? Math.round(Number(successRate) * totalQuestions));
+
+    // 시간 보너스 계산 (프론트의 LeaderboardManager 방식과 유사하게 ms 기반 계산)
+    const averageTimePerQuestion = totalQuestions > 0 ? completionMs / totalQuestions : 0;
+    const bonusPerQuestion = Math.max(0, (60000 - averageTimePerQuestion) / 6000);
+    const timeBonus = Number(req.body.timeBonus ?? Math.round(bonusPerQuestion * score));
+
+    const finalScore = Number(req.body.finalScore ?? Math.round(score * 100 + timeBonus));
+
     try {
         // user_id가 game_users에 존재하는지 확인
         const userCheck = await pool.query('SELECT id FROM game_users WHERE id = $1', [userId]);
@@ -55,9 +69,21 @@ router.post('/submit', async (req, res) => {
         }
 
         await pool.query(
-            `INSERT INTO game_results (id, user_id, selected_components, compatible_applications, success_rate, completion_time)
-            VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6)`,
-            [id, userId, selectedComponentsJson, compatibleApplicationsJson, successRate, completionTime]
+            `INSERT INTO game_results (
+                id, user_id, selected_components, compatible_applications, success_rate, completion_time,
+                score, time_bonus, final_score
+            ) VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8, $9)`,
+            [
+                id,
+                userId,
+                selectedComponentsJson,
+                compatibleApplicationsJson,
+                successRate,
+                completionMs,
+                score,
+                timeBonus,
+                finalScore,
+            ]
         );
         res.status(201).json({ message: 'Game result saved successfully', id });
     } catch (err: any) {
@@ -96,16 +122,64 @@ router.get('/submit', async (req, res) => {
 // GET /api/game/leaderboard: 상위 10명 리더보드 조회
 router.get('/leaderboard', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM daily_leaderboard LIMIT 10');
-        const parsedRows = result.rows.map(row => ({
-            ...row,
-            avg_success_rate: Number(row.avg_success_rate),
+        // daily_leaderboard 뷰에서 오늘(서버 시간 기준) 집계된 결과를 가져옵니다.
+        const query = `
+            SELECT user_id, player_name, company, avg_success_rate, attempts, last_played, total_final_score
+            FROM daily_leaderboard
+            ORDER BY avg_success_rate DESC NULLS LAST, attempts DESC NULLS LAST
+            LIMIT 10
+        `;
+        const result = await pool.query(query);
+
+        const parsed = result.rows.map((row, idx) => ({
+            rank: idx + 1,
+            playerName: row.player_name ?? row.playerName,
+            company: row.company,
+            // daily_leaderboard는 평균 성공률/집계 뷰이므로 frontend의 LeaderboardEntry와 일부 필드명이 다릅니다.
+            // 프론트에서 기대하는 필드로 정규화합니다.
+            score: Number(row.avg_success_rate ?? 0),
+            completionTime: 0,
+            timeBonus: 0,
+            finalScore: Number(row.total_final_score ?? 0),
+            playedAt: row.last_played ? new Date(row.last_played) : null,
         }));
-        res.status(200).json(parsedRows);
+        res.status(200).json(parsed);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Database error' });
     }
 });
+
+// // POST /api/game/leaderboard: 프론트엔드에서 계산한 leaderboard 항목을 수신하여 저장
+// router.post('/leaderboard', async (req, res) => {
+//     const { userId, playerName, company, score, completionTime, timeBonus, finalScore, playedAt } = req.body;
+
+//     if (!playerName || score == null || completionTime == null || finalScore == null) {
+//         return res.status(400).json({ error: 'Missing required leaderboard fields' });
+//     }
+
+//     const id = uuidv4();
+//     try {
+//         await pool.query(
+//             `INSERT INTO leaderboard_entries (id, user_id, player_name, company, score, completion_time, time_bonus, final_score, played_at)
+//              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+//             [
+//                 id,
+//                 userId || null,
+//                 playerName,
+//                 company || null,
+//                 Number(score),
+//                 Number(completionTime),
+//                 Number(timeBonus || 0),
+//                 Number(finalScore),
+//                 playedAt ? new Date(playedAt) : new Date(),
+//             ]
+//         );
+//         res.status(201).json({ message: 'Leaderboard entry saved', id });
+//     } catch (err) {
+//         console.error('Error saving leaderboard entry:', err);
+//         res.status(500).json({ error: 'Database error' });
+//     }
+// });
 
 export default router;

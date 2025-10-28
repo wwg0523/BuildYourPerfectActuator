@@ -1,0 +1,40 @@
+/* Page-specific styles for Home.tsx */
+.page-home {
+  text-align: center;
+}
+
+.page-home .home-title {
+  margin: 20px;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.page-home .home-subtitle {
+  margin: 1rem 0;
+  font-size: 1.25rem;
+  color: #4b5563;
+  display: flex;
+  justify-content: center;
+}
+
+.page-home .char {
+  display: inline-block;
+  white-space: pre;
+}
+
+.page-home .home-powered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.page-home .home-logo {
+  width: 100px;
+  height: auto;
+  margin-left: 10px;
+}
+
+/* reuse .button class from global styles for the start button */

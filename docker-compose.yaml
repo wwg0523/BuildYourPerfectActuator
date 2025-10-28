@@ -24,6 +24,7 @@ services:
     container_name: actuator-db
     ports:
       - "5433:5433"
+    command: ["postgres", "-c", "port=5433"]
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1209

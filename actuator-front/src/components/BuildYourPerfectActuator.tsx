@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
-import Home from '../pages/Home';
-import Info from '../pages/Info';
-import Game from '../pages/Game';
-import Result from '../pages/Result';
-import Leaderboard from '../pages/Leaderboard';
+import Home from '../pages/Home/Home';
+import Info from '../pages/Info/Info';
+import Game from '../pages/Game/Game';
+import Result from '../pages/Result/Result';
+import Leaderboard from '../pages/Leaderboard/Leaderboard';
 import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager } from '../lib/utils';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
@@ -22,6 +22,7 @@ export default function BuildYourPerfectActuator() {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [gameSession, setGameSession] = useState<GameSession | null>(null);
     const [leaderboardEntry, setLeaderboardEntry] = useState<LeaderboardEntry | null>(null);
+    const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [agreeTerms, setAgreeTerms] = useState(false);
@@ -254,7 +255,20 @@ export default function BuildYourPerfectActuator() {
             const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch leaderboard data');
             const data = await response.json();
-            setLeaderboardEntry(data);
+
+            // backend may return rows with different field names; normalize to frontend LeaderboardEntry
+            const normalized: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => ({
+                rank: row.rank ?? idx + 1,
+                playerName: row.player_name ?? row.playerName ?? row.name ?? 'Anonymous',
+                company: row.company ?? 'Unknown',
+                score: typeof row.score === 'number' ? row.score : Number(row.avg_success_rate ?? row.score ?? 0),
+                completionTime: Number(row.completion_time ?? row.completionTime ?? 0),
+                timeBonus: Number(row.time_bonus ?? row.timeBonus ?? 0),
+                finalScore: Number(row.final_score ?? row.finalScore ?? 0),
+                playedAt: row.played_at ? new Date(row.played_at) : new Date(),
+            }));
+
+            setLeaderboardData(normalized);
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
             alert('Failed to load leaderboard. Please try again.');
@@ -474,7 +488,7 @@ export default function BuildYourPerfectActuator() {
                 {screen === 'result' && gameSession && (
                     <Result
                         gameSession={gameSession}
-                        leaderboardEntry={leaderboardEntry}
+                        leaderboardEntry={leaderboardEntry ?? undefined}
                         handlePlayAgain={handlePlayAgain}
                         setScreen={setScreen}
                     />
