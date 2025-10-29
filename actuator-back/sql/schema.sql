@@ -55,3 +55,29 @@ CREATE TABLE IF NOT EXISTS leaderboard_entries (
 );
 
 CREATE INDEX IF NOT EXISTS idx_leaderboard_entries_played_at ON leaderboard_entries(played_at DESC);
+
+-- 이메일 발송 로그
+CREATE TABLE IF NOT EXISTS email_logs (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES game_users(id) ON DELETE CASCADE,
+  email_type VARCHAR(50) NOT NULL,
+  recipient_email TEXT NOT NULL,
+  sent_at TIMESTAMPTZ DEFAULT NOW(),
+  success BOOLEAN NOT NULL,
+  error_message TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_logs_user_id ON email_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_email_logs_sent_at ON email_logs(sent_at DESC);
+
+-- 외부 API 카운터 연동 로그
+CREATE TABLE IF NOT EXISTS api_counter_logs (
+  id UUID PRIMARY KEY,
+  api_endpoint VARCHAR(255),
+  action VARCHAR(50),
+  success BOOLEAN,
+  response_data JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_api_counter_logs_created_at ON api_counter_logs(created_at DESC);

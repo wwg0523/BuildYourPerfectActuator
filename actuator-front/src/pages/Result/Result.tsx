@@ -15,19 +15,81 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     const totalTime = gameSession.endTime
         ? Math.floor((gameSession.endTime.getTime() - gameSession.startTime.getTime()) / 1000)
         : 0;
+    const minutes = Math.floor(totalTime / 60);
+    const seconds = totalTime % 60;
+
+    const getRankEmoji = (rank?: number) => {
+        if (!rank) return '🎮';
+        if (rank === 1) return '🥇';
+        if (rank === 2) return '🥈';
+        if (rank === 3) return '🥉';
+        if (rank <= 10) return '🏅';
+        return '🎯';
+    };
 
     return (
         <div className="page-result">
             <div className="result-container">
-                <h1>Game Over!</h1>
-                <p>Your Score: {correctAnswers}/5 correct</p>
-                <p>Time Taken: {Math.floor(totalTime / 60)}:{(totalTime % 60).toString().padStart(2, '0')}</p>
+                <div className="result-header">
+                    <h1>🎮 Game Complete!</h1>
+                </div>
+
+                <div className="score-display-large">
+                    <div className="score-main">
+                        {correctAnswers}
+                        <span className="score-total">/5</span>
+                    </div>
+                    <p className="score-label">Correct Answers</p>
+                </div>
+
+                <div className="result-stats">
+                    <div className="stat-card">
+                        <div className="stat-icon">⏱️</div>
+                        <div className="stat-content">
+                            <div className="stat-value">{minutes}:{seconds.toString().padStart(2, '0')}</div>
+                            <div className="stat-name">Completion Time</div>
+                        </div>
+                    </div>
+
+                    {leaderboardEntry && (
+                        <>
+                            <div className="stat-card">
+                                <div className="stat-icon">🎯</div>
+                                <div className="stat-content">
+                                    <div className="stat-value">{leaderboardEntry.finalScore}</div>
+                                    <div className="stat-name">Final Score</div>
+                                </div>
+                            </div>
+
+                            <div className="stat-card">
+                                <div className="stat-icon">⏅</div>
+                                <div className="stat-content">
+                                    <div className="stat-value">{leaderboardEntry.timeBonus}</div>
+                                    <div className="stat-name">Time Bonus</div>
+                                </div>
+                            </div>
+
+                            <div className="stat-card rank-highlight">
+                                <div className="stat-icon">{getRankEmoji(leaderboardEntry.rank)}</div>
+                                <div className="stat-content">
+                                    <div className="stat-value">#{leaderboardEntry.rank}</div>
+                                    <div className="stat-name">Your Rank Today</div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+
                 {leaderboardEntry && (
-                    <>
-                        <p>Your Rank: #{leaderboardEntry.rank}</p>
-                        <p>Final Score: {leaderboardEntry.finalScore} (Base: {leaderboardEntry.score * 100}, Bonus: {leaderboardEntry.timeBonus})</p>
-                    </>
+                    <div className="rank-badge-large">
+                        <div className="badge-emoji">{getRankEmoji(leaderboardEntry.rank)}</div>
+                        <div className="badge-text">
+                            Rank #{leaderboardEntry.rank} Today<br/>
+                            <span className="badge-subtext">{correctAnswers}/5 • {minutes}:{seconds.toString().padStart(2, '0')}</span>
+                        </div>
+                    </div>
                 )}
+
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
                     <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>

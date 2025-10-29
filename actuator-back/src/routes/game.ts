@@ -4,23 +4,6 @@ import { pool } from '../db.js';
 
 const router = Router();
 
-router.post('/start', async (req, res) => {
-    const { name, company, email, phone } = req.body;
-
-    if (!name || !company || !email || !phone) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
-
-    const id = uuidv4();
-
-    try {
-        res.status(201).json({ id });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
 // POST /api/game/submit: 게임 결과 저장
 router.post('/submit', async (req, res) => {
     const { userId, selectedComponents, compatibleApplications, successRate, completionTime } = req.body;
@@ -119,29 +102,36 @@ router.get('/submit', async (req, res) => {
 });
 
 
-// GET /api/game/leaderboard: 상위 10명 리더보드 조회
+// GET /api/game/leaderboard: 상위 10명 리더보드 조회 (정답수 → 완료시간 → 먼저플레이 순)
 router.get('/leaderboard', async (req, res) => {
     try {
-        // daily_leaderboard 뷰에서 오늘(서버 시간 기준) 집계된 결과를 가져옵니다.
         const query = `
-            SELECT user_id, player_name, company, avg_success_rate, attempts, last_played, total_final_score
-            FROM daily_leaderboard
-            ORDER BY avg_success_rate DESC NULLS LAST, attempts DESC NULLS LAST
+            SELECT 
+                id,
+                user_id,
+                player_name,
+                company,
+                score,
+                completion_time,
+                time_bonus,
+                final_score,
+                played_at,
+                ROW_NUMBER() OVER (ORDER BY score DESC, completion_time ASC, played_at ASC) as rank
+            FROM leaderboard_entries
+            ORDER BY score DESC, completion_time ASC, played_at ASC
             LIMIT 10
         `;
         const result = await pool.query(query);
 
-        const parsed = result.rows.map((row, idx) => ({
-            rank: idx + 1,
-            playerName: row.player_name ?? row.playerName,
+        const parsed = result.rows.map((row) => ({
+            rank: row.rank,
+            playerName: row.player_name,
             company: row.company,
-            // daily_leaderboard는 평균 성공률/집계 뷰이므로 frontend의 LeaderboardEntry와 일부 필드명이 다릅니다.
-            // 프론트에서 기대하는 필드로 정규화합니다.
-            score: Number(row.avg_success_rate ?? 0),
-            completionTime: 0,
-            timeBonus: 0,
-            finalScore: Number(row.total_final_score ?? 0),
-            playedAt: row.last_played ? new Date(row.last_played) : null,
+            score: Number(row.score ?? 0),
+            completionTime: Number(row.completion_time ?? 0),
+            timeBonus: Number(row.time_bonus ?? 0),
+            finalScore: Number(row.final_score ?? 0),
+            playedAt: row.played_at ? new Date(row.played_at) : new Date(),
         }));
         res.status(200).json(parsed);
     } catch (err) {
@@ -150,36 +140,36 @@ router.get('/leaderboard', async (req, res) => {
     }
 });
 
-// // POST /api/game/leaderboard: 프론트엔드에서 계산한 leaderboard 항목을 수신하여 저장
-// router.post('/leaderboard', async (req, res) => {
-//     const { userId, playerName, company, score, completionTime, timeBonus, finalScore, playedAt } = req.body;
+// POST /api/game/leaderboard: 프론트엔드에서 계산한 leaderboard 항목을 수신하여 저장
+router.post('/leaderboard', async (req, res) => {
+    const { userId, playerName, company, score, completionTime, timeBonus, finalScore, playedAt } = req.body;
 
-//     if (!playerName || score == null || completionTime == null || finalScore == null) {
-//         return res.status(400).json({ error: 'Missing required leaderboard fields' });
-//     }
+    if (!playerName || score == null || completionTime == null || finalScore == null) {
+        return res.status(400).json({ error: 'Missing required leaderboard fields' });
+    }
 
-//     const id = uuidv4();
-//     try {
-//         await pool.query(
-//             `INSERT INTO leaderboard_entries (id, user_id, player_name, company, score, completion_time, time_bonus, final_score, played_at)
-//              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-//             [
-//                 id,
-//                 userId || null,
-//                 playerName,
-//                 company || null,
-//                 Number(score),
-//                 Number(completionTime),
-//                 Number(timeBonus || 0),
-//                 Number(finalScore),
-//                 playedAt ? new Date(playedAt) : new Date(),
-//             ]
-//         );
-//         res.status(201).json({ message: 'Leaderboard entry saved', id });
-//     } catch (err) {
-//         console.error('Error saving leaderboard entry:', err);
-//         res.status(500).json({ error: 'Database error' });
-//     }
-// });
+    const id = uuidv4();
+    try {
+        await pool.query(
+            `INSERT INTO leaderboard_entries (id, user_id, player_name, company, score, completion_time, time_bonus, final_score, played_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            [
+                id,
+                userId || null,
+                playerName,
+                company || null,
+                Number(score),
+                Number(completionTime),
+                Number(timeBonus || 0),
+                Number(finalScore),
+                playedAt ? new Date(playedAt) : new Date(),
+            ]
+        );
+        res.status(201).json({ message: 'Leaderboard entry saved', id });
+    } catch (err) {
+        console.error('Error saving leaderboard entry:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
 
 export default router;

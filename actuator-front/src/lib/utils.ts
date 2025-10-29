@@ -219,27 +219,46 @@ export class LeaderboardManager {
         const baseScore = this.calculateScore(gameSession);
         const timeBonus = this.calculateTimeBonus(gameSession);
         const finalScore = baseScore * 100 + timeBonus;
+        const completionTime = gameSession.endTime
+            ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
+            : 0;
+
         const entry: LeaderboardEntry = {
             rank: 0,
             playerName: this.maskPlayerName(userInfo.name),
             company: userInfo.company,
             score: baseScore,
-            completionTime: gameSession.endTime
-                ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
-                : 0,
+            completionTime: completionTime,
             timeBonus,
             finalScore,
             playedAt: new Date(),
         };
 
         try {
-            const response = await fetch(`${this.backendUrl}/api/game/leaderboard`, {
+            // 1. 리더보드에 점수 저장
+            const leaderboardResponse = await fetch(`${this.backendUrl}/api/game/leaderboard`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...entry, userId: userInfo.id }),
+                body: JSON.stringify({
+                    userId: userInfo.id,
+                    playerName: entry.playerName,
+                    company: entry.company,
+                    score: entry.score,
+                    completionTime: entry.completionTime,
+                    timeBonus: entry.timeBonus,
+                    finalScore: entry.finalScore,
+                    playedAt: entry.playedAt,
+                }),
             });
-            if (!response.ok) throw new Error('Failed to save leaderboard entry');
+            if (!leaderboardResponse.ok) throw new Error('Failed to save leaderboard entry');
+
+            // 2. 사용자의 순위 계산
             entry.rank = await this.calculateRank(entry);
+
+            // 3. 이메일 발송 (비동기, 실패해도 게임 결과 화면으로 진행)
+            this.sendResultEmail(userInfo, gameSession, entry).catch(err => {
+                console.warn('Email sending failed (non-critical):', err);
+            });
         } catch (error) {
             console.error('Error submitting leaderboard entry:', error);
         }
@@ -269,18 +288,168 @@ export class LeaderboardManager {
             });
             if (!response.ok) throw new Error('Failed to fetch leaderboard');
             const leaderboard: LeaderboardEntry[] = await response.json();
-            const sorted = leaderboard
-                .concat(entry)
-                .sort((a, b) => {
-                    if (a.score !== b.score) return b.score - a.score;
-                    if (a.completionTime !== b.completionTime) return a.completionTime - b.completionTime;
-                    return a.playedAt.getTime() - b.playedAt.getTime();
-                });
-            return sorted.findIndex(e => e.finalScore === entry.finalScore && e.playedAt === entry.playedAt) + 1;
+            
+            // 리더보드에서 현재 점수보다 높은 점수의 개수 + 1 = 순위
+            const higherScores = leaderboard.filter(e => 
+                e.score > entry.score || 
+                (e.score === entry.score && e.completionTime < entry.completionTime)
+            ).length;
+            
+            return higherScores + 1;
         } catch (error) {
             console.error('Error calculating rank:', error);
             return 0;
         }
+    }
+
+    private async sendResultEmail(userInfo: UserInfo, gameSession: GameSession, leaderboardEntry: LeaderboardEntry): Promise<void> {
+        try {
+            const emailTemplate = this.generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
+            
+            const response = await fetch(`${this.backendUrl}/api/send-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: userInfo.id,
+                    recipientEmail: userInfo.email,
+                    subject: emailTemplate.subject,
+                    htmlContent: emailTemplate.htmlContent,
+                    textContent: emailTemplate.textContent,
+                }),
+            });
+
+            if (!response.ok) {
+                console.warn('Failed to send email:', response.statusText);
+            } else {
+                console.log('Email sent successfully');
+            }
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+    }
+
+    private generateResultEmailTemplate(userInfo: UserInfo, gameSession: GameSession, leaderboardEntry: LeaderboardEntry) {
+        const completionSeconds = Math.round(leaderboardEntry.completionTime / 1000);
+        const minutes = Math.floor(completionSeconds / 60);
+        const seconds = completionSeconds % 60;
+        const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.score}/5`;
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                 color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .header h1 { margin: 0; font-size: 2em; }
+        .content { background: #f9f9f9; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+        .result-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px;
+                      box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .score-display { font-size: 2.5em; font-weight: bold; color: #4CAF50; text-align: center; margin: 20px 0; }
+        .rank-badge { background: #FFD700; color: #333; padding: 8px 16px; border-radius: 20px;
+                     font-weight: bold; display: inline-block; margin: 10px 0; }
+        .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .stats-label { font-weight: bold; color: #666; }
+        .stats-value { color: #333; }
+        .product-section { background: #e3f2fd; padding: 20px; margin: 20px 0; border-left: 4px solid #2196F3; }
+        .footer { background: #333; color: white; padding: 20px; text-align: center;
+                 border-radius: 0 0 10px 10px; font-size: 0.9em; }
+        .btn { background: #007bff; color: white; padding: 12px 24px; text-decoration: none;
+              border-radius: 5px; display: inline-block; margin: 10px 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Actuator Challenge Results</h1>
+            <p>Thank you for participating in our interactive game!</p>
+        </div>
+        <div class="content">
+            <div class="result-card">
+                <h2>Hello ${userInfo.name},</h2>
+                <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
+                <div class="score-display">${leaderboardEntry.score}/5</div>
+                <p style="text-align: center; color: #666;">Correct Answers</p>
+                <div style="text-align: center;">
+                    <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
+                </div>
+                
+                <h3>📊 Performance Summary</h3>
+                <div class="stats-row">
+                    <span class="stats-label">Total Score:</span>
+                    <span class="stats-value">${leaderboardEntry.finalScore} points</span>
+                </div>
+                <div class="stats-row">
+                    <span class="stats-label">Completion Time:</span>
+                    <span class="stats-value">${timeStr}</span>
+                </div>
+                <div class="stats-row">
+                    <span class="stats-label">Time Bonus:</span>
+                    <span class="stats-value">${leaderboardEntry.timeBonus} points</span>
+                </div>
+                <div class="stats-row">
+                    <span class="stats-label">Daily Rank:</span>
+                    <span class="stats-value">#${leaderboardEntry.rank}</span>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3>📚 Learn More About Actuator Technology</h3>
+                <p>Want to deepen your knowledge? Check out these resources:</p>
+                <ul>
+                    <li><a href="https://www.example.com/actuator-basics" style="color: #007bff;">Actuator Fundamentals Guide</a></li>
+                    <li><a href="https://www.example.com/webinars" style="color: #007bff;">Upcoming Technical Webinars</a></li>
+                    <li><a href="https://www.example.com/case-studies" style="color: #007bff;">Real-World Application Case Studies</a></li>
+                </ul>
+            </div>
+
+            <div class="result-card">
+                <h3>🤝 Connect With Our Experts</h3>
+                <p>Have specific questions about actuator selection for your application?</p>
+                <p>Our technical team is ready to help:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li>📧 <strong>Email:</strong> <a href="mailto:technical@example.com" style="color: #007bff;">technical@example.com</a></li>
+                    <li>📱 <strong>Phone:</strong> +1-800-ACTUATOR</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer">
+            <p><strong>Actuator Challenge - Precision Motion Solutions</strong></p>
+            <p style="font-size: 12px; margin-top: 20px;">
+                You received this email because you participated in our interactive game.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+        `;
+
+        const textContent = `
+Actuator Challenge Results
+
+Hello ${userInfo.name},
+
+Thank you for participating in our interactive game!
+
+YOUR RESULTS:
+- Score: ${leaderboardEntry.score}/5 correct answers
+- Daily Rank: #${leaderboardEntry.rank}
+- Completion Time: ${timeStr}
+- Final Score: ${leaderboardEntry.finalScore} points
+- Time Bonus: ${leaderboardEntry.timeBonus} points
+
+Learn more at https://www.example.com
+
+Best regards,
+Actuator Challenge Team
+        `;
+
+        return { subject, htmlContent, textContent };
     }
 }
 

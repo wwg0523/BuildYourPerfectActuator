@@ -27,8 +27,8 @@ export default function BuildYourPerfectActuator() {
     const [showModal, setShowModal] = useState(false);
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [agreeMarketing, setAgreeMarketing] = useState(false);
-    const [userId] = useState(CryptoJS.lib.WordArray.random(16).toString());
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [userId, setUserId] = useState<string>('');
 
     const [idleDetector, setIdleDetector] = useState<IdleDetector>({
         timeoutDuration: 15000,
@@ -122,29 +122,6 @@ export default function BuildYourPerfectActuator() {
             const encryptedEmail = CryptoJS.AES.encrypt(userInfo.email, ENCRYPTION_KEY).toString();
             const encryptedPhone = CryptoJS.AES.encrypt(userInfo.phone, ENCRYPTION_KEY).toString();
 
-            const userToSave = {
-                name: encryptedName,
-                company: encryptedCompany,
-                email: encryptedEmail,
-                phone: encryptedPhone,
-                timestamp: new Date(),
-            };
-
-            const userResponse = await fetch(`${backendUrl}/api/game/start`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userToSave),
-            });
-            if (!userResponse.ok) throw new Error(`Failed to save user info: ${userResponse.statusText}`);
-
-            const savedUser = await userResponse.json();
-            if (!savedUser.id) throw new Error('Server did not return a valid user ID');
-
-            setUserInfo(prev => ({
-                ...prev,
-                id: savedUser.id,
-            }));
-
             localStorage.setItem(
                 'encryptedUserInfo',
                 JSON.stringify({
@@ -152,7 +129,6 @@ export default function BuildYourPerfectActuator() {
                     company: encryptedCompany,
                     email: encryptedEmail,
                     phone: encryptedPhone,
-                    id: savedUser.id,
                 })
             );
 
@@ -172,6 +148,7 @@ export default function BuildYourPerfectActuator() {
         setTermsAccepted(false);
         setAgreeTerms(false);
         setAgreeMarketing(false);
+        setUserId('');
         localStorage.removeItem('encryptedUserInfo');
         setGameSession(null);
         setLeaderboardEntry(null);
@@ -181,9 +158,24 @@ export default function BuildYourPerfectActuator() {
     const handleSubmit = async () => {
         if (!gameSession) return;
         try {
+            // localStorage에서 암호화된 정보 가져오기
+            const encryptedUserInfo = localStorage.getItem('encryptedUserInfo');
+            if (!encryptedUserInfo) {
+                throw new Error('User information not found');
+            }
+
+            const parsedData = JSON.parse(encryptedUserInfo);
+
+            // UUID 생성 (아직 생성되지 않았으면)
+            let currentUserId = userId;
+            if (!currentUserId) {
+                currentUserId = CryptoJS.lib.WordArray.random(16).toString();
+                setUserId(currentUserId);
+            }
+
             // useState의 복호화된 데이터 사용
             const userForLeaderboard: UserInfo = {
-                id: userInfo.id,
+                id: currentUserId,
                 name: userInfo.name,
                 company: userInfo.company,
                 email: userInfo.email,

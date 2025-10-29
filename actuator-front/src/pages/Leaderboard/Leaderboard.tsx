@@ -14,28 +14,58 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         fetchLeaderboard();
     }, [fetchLeaderboard]);
 
+    const formatTime = (ms: number): string => {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const getRankBadge = (rank: number): string => {
+        if (rank === 1) return '🥇';
+        if (rank === 2) return '🥈';
+        if (rank === 3) return '🥉';
+        return `#${rank}`;
+    };
+
     return (
         <div className="page-leaderboard">
             <div className="leaderboard-container">
-                <h1>🏆 Today's Rankings</h1>
+                <div className="leaderboard-header">
+                    <h1>🏆 Today's Rankings</h1>
+                    <p className="subtitle">Ranked by Correct Answers → Completion Time → Play Order</p>
+                </div>
+
                 {leaderboardData.length === 0 ? (
-                    <p>Loading...</p>
+                    <div className="empty-state">
+                        <p>No participants yet. Be the first to play!</p>
+                    </div>
                 ) : (
-                    <ul>
-                        {leaderboardData.map((entry, index) => (
-                            <li key={index} className="leaderboard-item">
-                                <span>
-                                    {index === 0 && '🥇'}
-                                    {index === 1 && '🥈'}
-                                    {index === 2 && '🥉'} {entry.rank}. {entry.playerName} ({entry.company})
-                                </span>
-                                <span>
-                                    ⭐ {entry.score}/5 correct • ⏱️ {Math.floor(entry.completionTime / 1000 / 60)}:
-                                    {((entry.completionTime / 1000) % 60).toString().padStart(2, '0')}
-                                </span>
-                            </li>
+                    <div className="leaderboard-list">
+                        {leaderboardData.map((entry) => (
+                            <div key={entry.playedAt.toString()} className="leaderboard-item">
+                                <div className="rank-badge">{getRankBadge(entry.rank)}</div>
+                                <div className="player-info">
+                                    <div className="player-name">{entry.playerName}</div>
+                                    <div className="player-company">{entry.company}</div>
+                                </div>
+                                <div className="player-stats">
+                                    <div className="stat">
+                                        <span className="stat-label">⭐ Score</span>
+                                        <span className="stat-value">{entry.score}/5</span>
+                                    </div>
+                                    <div className="stat">
+                                        <span className="stat-label">⏱️ Time</span>
+                                        <span className="stat-value">{formatTime(entry.completionTime)}</span>
+                                    </div>
+                                    <div className="stat">
+                                        <span className="stat-label">🎯 Final</span>
+                                        <span className="stat-value">{entry.finalScore}pts</span>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
                 <div className="actions">
                     <button onClick={() => setScreen('game')} className="btn play">🔄 PLAY AGAIN</button>
