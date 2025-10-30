@@ -173,8 +173,8 @@ export default function BuildYourPerfectActuator() {
                 setUserId(currentUserId);
             }
 
-            // useState의 복호화된 데이터 사용
-            const userForLeaderboard: UserInfo = {
+            // 사용자 정보
+            const userForGame: UserInfo = {
                 id: currentUserId,
                 name: userInfo.name,
                 company: userInfo.company,
@@ -182,7 +182,53 @@ export default function BuildYourPerfectActuator() {
                 phone: userInfo.phone,
             };
 
-            const entry = await leaderboardManager.submitScore(gameSession, userForLeaderboard);
+            // 1. 먼저 게임 결과를 game_results 테이블에 저장
+            // 이를 통해 daily_leaderboard VIEW의 데이터가 업데이트됨
+            const completionTime = gameSession.endTime
+                ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
+                : 0;
+            
+            const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
+            
+            // game_users 테이블에 사용자 저장 (먼저 user_id로 등록되어 있는지 확인)
+            try {
+                // 사용자 생성 또는 확인
+                await fetch(`${backendUrl}/api/user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: currentUserId,
+                        name: userForGame.name,
+                        company: userForGame.company,
+                        email: userForGame.email,
+                        phone: userForGame.phone,
+                    }),
+                });
+            } catch (err) {
+                console.warn('User save warning:', err);
+            }
+
+            // 2. 게임 결과 저장 (game_results 테이블)
+            const submitResponse = await fetch(`${backendUrl}/api/game/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: currentUserId,
+                    selectedComponents: gameSession.questions.length > 0 ? gameSession.questions[0].availableComponents : [],
+                    compatibleApplications: gameSession.questions.length > 0 ? gameSession.questions[0].robotPart.correctComponents : [],
+                    successRate: correctAnswers / gameSession.questions.length,
+                    completionTime: completionTime,
+                    score: correctAnswers,
+                    totalQuestions: gameSession.questions.length,
+                }),
+            });
+
+            if (!submitResponse.ok) {
+                console.warn('Game result save warning:', submitResponse.statusText);
+            }
+
+            // 3. 순위 조회 및 이메일 발송
+            const entry = await leaderboardManager.submitScore(gameSession, userForGame);
             setLeaderboardEntry(entry);
             setScreen('result');
         } catch (error) {
@@ -190,50 +236,6 @@ export default function BuildYourPerfectActuator() {
             alert('Failed to save game result. Please try again.');
             setScreen('result');
         }
-
-            // if (apps.length > 0) {
-            //     let emailForSending = '';
-            //     try {
-            //         const fetchEmail = await fetch(`${backendUrl}/api/user/${savedUser.id}`);
-            //         if (!fetchEmail.ok) throw new Error('Failed to fetch email');
-            //         const { email } = await fetchEmail.json();
-            //         emailForSending = email;
-            //     } catch (error) {
-            //         console.warn('Failed to fetch email from server, using decrypted email:', error);
-            //         emailForSending = decryptedData.email!;
-            //     }
-
-            //     const appsHtml = apps.map((app) => `<p>🏆 ${app}</p>`).join('');
-            //     const emailHtml = `
-            //         <div style="text-align: center; font-family: Arial, sans-serif;">
-            //             <h2>Result</h2>
-            //             <br>
-            //             <p>Compatible Applications:</p>
-            //             <br>
-            //             ${appsHtml}
-            //             <br>
-            //             <p style="font-size:0.8em; color:#888;">© LeBot</p>
-            //         </div>
-            //     `;
-
-            //     const emailResponse = await fetch(`${backendUrl}/api/send-email`, {
-            //         method: 'POST',
-            //         headers: { 'Content-Type': 'application/json' },
-            //         body: JSON.stringify({
-            //             to: emailForSending,
-            //             subject: 'Your Actuator Game Result',
-            //             body: emailHtml,
-            //         }),
-            //     });
-            //     if (!emailResponse.ok) {
-            //         console.warn('Email sending failed, but proceeding to result screen');
-            //     } else {
-            //         console.log('Email sent successfully to:', emailForSending);
-            //         localStorage.removeItem('encryptedUserInfo');
-            //     }
-            // } else {
-            //     console.log('No compatible apps found, skipping email sending.');
-            // }
     };
 
     const handlePlayAgain = () => {

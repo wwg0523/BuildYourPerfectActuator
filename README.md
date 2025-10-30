@@ -70,23 +70,54 @@ npm install
 
 ### 3. 환경변수 설정
 
-#### 서버 환경변수
-```bash
-cd actuator-back
-cp .env.example .env
+이 프로젝트는 **로컬 개발**과 **NAS 배포** 두 가지 환경을 지원합니다.
+
+#### 환경 전환 스크립트
+
+**Windows (PowerShell):**
+```powershell
+# 로컬 환경으로 전환
+powershell -ExecutionPolicy Bypass -File ".\switch-env.ps1" -Environment local
+
+# NAS 환경으로 전환
+powershell -ExecutionPolicy Bypass -File ".\switch-env.ps1" -Environment nas
 ```
 
-`.env` 파일을 편집하여 다음 값들을 설정하세요:
-```env
-DB_USER=postgres
-DB_HOST=actuator-db
-DB_NAME=actuator_game
-DB_PASS=super-secret-key
-DB_PORT=5433
-PORT=4004
+**Linux/Mac (Bash):**
+```bash
+# 로컬 환경으로 전환
+./switch-env.sh local
 
-APP_EMAIL=your-email-here
-APP_PASS=your-app-password-here
+# NAS 환경으로 전환 (기본값: local)
+./switch-env.sh nas
+```
+
+#### 환경 구성
+
+**로컬 개발 환경 (.env.local)**
+```env
+# Frontend
+REACT_APP_BACKEND_URL=http://localhost:4004
+
+# Backend
+DB_HOST=actuator-db
+DB_PORT=5433
+DB_NAME=actuator_game
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5005
+```
+
+**NAS 배포 환경 (.env.nas)**
+```env
+# Frontend
+REACT_APP_BACKEND_URL=http://pillar01.synology.me:4004
+
+# Backend
+DB_HOST=sacrp-postgres-local
+DB_PORT=5432
+DB_NAME=sacrp_production
+NODE_ENV=production
+FRONTEND_URL=https://pillar01.synology.me:5005
 ```
 
 ### 4. 데이터베이스 설정

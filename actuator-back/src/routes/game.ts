@@ -102,7 +102,7 @@ router.get('/submit', async (req, res) => {
 });
 
 
-// GET /api/game/leaderboard: 상위 10명 리더보드 조회 (정답수 → 완료시간 → 먼저플레이 순)
+// GET /api/game/leaderboard: daily_leaderboard VIEW를 기반으로 리더보드 조회 (오늘의 순위)
 router.get('/leaderboard', async (req, res) => {
     try {
         const query = `
@@ -116,15 +116,14 @@ router.get('/leaderboard', async (req, res) => {
                 time_bonus,
                 final_score,
                 played_at,
-                ROW_NUMBER() OVER (ORDER BY score DESC, completion_time ASC, played_at ASC) as rank
-            FROM leaderboard_entries
-            ORDER BY score DESC, completion_time ASC, played_at ASC
+                rank
+            FROM daily_leaderboard
             LIMIT 10
         `;
         const result = await pool.query(query);
 
         const parsed = result.rows.map((row) => ({
-            rank: row.rank,
+            rank: Number(row.rank),
             playerName: row.player_name,
             company: row.company,
             score: Number(row.score ?? 0),
@@ -136,38 +135,6 @@ router.get('/leaderboard', async (req, res) => {
         res.status(200).json(parsed);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// POST /api/game/leaderboard: 프론트엔드에서 계산한 leaderboard 항목을 수신하여 저장
-router.post('/leaderboard', async (req, res) => {
-    const { userId, playerName, company, score, completionTime, timeBonus, finalScore, playedAt } = req.body;
-
-    if (!playerName || score == null || completionTime == null || finalScore == null) {
-        return res.status(400).json({ error: 'Missing required leaderboard fields' });
-    }
-
-    const id = uuidv4();
-    try {
-        await pool.query(
-            `INSERT INTO leaderboard_entries (id, user_id, player_name, company, score, completion_time, time_bonus, final_score, played_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-            [
-                id,
-                userId || null,
-                playerName,
-                company || null,
-                Number(score),
-                Number(completionTime),
-                Number(timeBonus || 0),
-                Number(finalScore),
-                playedAt ? new Date(playedAt) : new Date(),
-            ]
-        );
-        res.status(201).json({ message: 'Leaderboard entry saved', id });
-    } catch (err) {
-        console.error('Error saving leaderboard entry:', err);
         res.status(500).json({ error: 'Database error' });
     }
 });

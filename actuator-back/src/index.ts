@@ -7,6 +7,7 @@ import userRouter from './routes/user.js';
 import deleteUserDataRoutes from './routes/delete-user-data.js';
 import analyticsRouter from './routes/analytics.js';
 import emailRouter from './routes/email.js';
+import counterRouter from './routes/counter.js';
 
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
@@ -47,6 +48,7 @@ app.use('/api/game', gameRouter);
 app.use('/api/user', userRouter);
 app.use('/api/delete-user-data', deleteUserDataRoutes);
 app.use('/api/analytics', analyticsRouter);
+app.use('/api/counter', counterRouter);
 app.use('/api', emailRouter);
 
 const transporter = nodemailer.createTransport({

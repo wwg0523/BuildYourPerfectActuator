@@ -235,32 +235,15 @@ export class LeaderboardManager {
         };
 
         try {
-            // 1. 리더보드에 점수 저장
-            const leaderboardResponse = await fetch(`${this.backendUrl}/api/game/leaderboard`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: userInfo.id,
-                    playerName: entry.playerName,
-                    company: entry.company,
-                    score: entry.score,
-                    completionTime: entry.completionTime,
-                    timeBonus: entry.timeBonus,
-                    finalScore: entry.finalScore,
-                    playedAt: entry.playedAt,
-                }),
-            });
-            if (!leaderboardResponse.ok) throw new Error('Failed to save leaderboard entry');
-
-            // 2. 사용자의 순위 계산
+            // 1. 사용자의 순위 계산 (daily_leaderboard VIEW 기반)
             entry.rank = await this.calculateRank(entry);
 
-            // 3. 이메일 발송 (비동기, 실패해도 게임 결과 화면으로 진행)
+            // 2. 이메일 발송 (비동기, 실패해도 게임 결과 화면으로 진행)
             this.sendResultEmail(userInfo, gameSession, entry).catch(err => {
                 console.warn('Email sending failed (non-critical):', err);
             });
         } catch (error) {
-            console.error('Error submitting leaderboard entry:', error);
+            console.error('Error submitting score:', error);
         }
         return entry;
     }
@@ -289,13 +272,14 @@ export class LeaderboardManager {
             if (!response.ok) throw new Error('Failed to fetch leaderboard');
             const leaderboard: LeaderboardEntry[] = await response.json();
             
-            // 리더보드에서 현재 점수보다 높은 점수의 개수 + 1 = 순위
-            const higherScores = leaderboard.filter(e => 
-                e.score > entry.score || 
-                (e.score === entry.score && e.completionTime < entry.completionTime)
+            // daily_leaderboard VIEW는 이미 rank를 계산하고 있으므로,
+            // 현재 점수보다 높은 순위의 엔트리를 찾아서 순위 계산
+            const higherRanks = leaderboard.filter(e => 
+                e.finalScore > entry.finalScore || 
+                (e.finalScore === entry.finalScore && e.completionTime < entry.completionTime)
             ).length;
             
-            return higherScores + 1;
+            return higherRanks + 1;
         } catch (error) {
             console.error('Error calculating rank:', error);
             return 0;
@@ -454,35 +438,23 @@ Actuator Challenge Team
 }
 
 export class ParticipantCounter {
-    private apiConfig: ParticipantCountAPI;
+    private backendUrl: string = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
     private updateInterval: number = 5000;
     private intervalId: NodeJS.Timeout | null = null;
-    private eventId: string = 'game2025';
-
-    constructor() {
-        this.apiConfig = {
-            endpoint: 'https://api.api-ninjas.com/v1/counter',
-            method: 'GET',
-            headers: {
-                'X-Api-Key': process.env.REACT_APP_API_NINJAS_KEY || '',
-            },
-        };
-    }
 
     async getTotalParticipants(): Promise<number> {
         try {
-            const url = `${this.apiConfig.endpoint}?id=${this.eventId}`;
-            console.log('Fetching URL:', url);
+            const url = `${this.backendUrl}/api/counter`;
+            console.log('Fetching participant count from:', url);
             const response = await fetch(url, {
-                method: this.apiConfig.method,
-                headers: this.apiConfig.headers,
+                method: 'GET',
             });
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`API response error: ${response.status}, ${errorText}`);
             }
             const data = await response.json();
-            console.log('API Response:', data);
+            console.log('Participant count response:', data);
             return data.value || 0;
         } catch (error) {
             console.error('Failed to fetch participant count:', error);
@@ -492,18 +464,17 @@ export class ParticipantCounter {
 
     async incrementParticipant(): Promise<void> {
         try {
-            const url = `${this.apiConfig.endpoint}?id=${this.eventId}&hit=true`;
-            console.log('Incrementing URL:', url);
+            const url = `${this.backendUrl}/api/counter/increment`;
+            console.log('Incrementing participant count at:', url);
             const response = await fetch(url, {
-                method: 'GET',
-                headers: this.apiConfig.headers,
+                method: 'POST',
             });
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Increment failed: ${response.status}, ${errorText}`);
             }
             const data = await response.json();
-            console.log('Increment Response:', data);
+            console.log('Increment response:', data);
         } catch (error) {
             console.error('Failed to increment participant count:', error);
         }
@@ -527,10 +498,4 @@ export class ParticipantCounter {
             this.intervalId = null;
         }
     }
-}
-
-export interface ParticipantCountAPI {
-    endpoint: string;
-    method: 'GET' | 'POST';
-    headers: Record<string, string>;
 }
