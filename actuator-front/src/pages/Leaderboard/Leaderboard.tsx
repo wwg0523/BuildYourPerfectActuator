@@ -6,10 +6,11 @@ import './Leaderboard.scss';
 interface LeaderboardProps {
     leaderboardData: LeaderboardEntry[];
     fetchLeaderboard: () => Promise<void>;
+    handlePlayAgain: () => void;
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderboard, setScreen }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderboard, handlePlayAgain, setScreen }) => {
     useEffect(() => {
         fetchLeaderboard();
     }, [fetchLeaderboard]);
@@ -43,7 +44,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                 ) : (
                     <div className="leaderboard-list">
                         {leaderboardData.map((entry) => (
-                            <div key={entry.playedAt.toString()} className="leaderboard-item">
+                            <div key={`${entry.rank}-${entry.playedAt.getTime()}`} className="leaderboard-item">
                                 <div className="rank-badge">{getRankBadge(entry.rank)}</div>
                                 <div className="player-info">
                                     <div className="player-name">{entry.playerName}</div>
@@ -68,7 +69,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                     </div>
                 )}
                 <div className="actions">
-                    <button onClick={() => setScreen('game')} className="btn play">🔄 PLAY AGAIN</button>
+                    <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
                     <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
                 </div>
             </div>

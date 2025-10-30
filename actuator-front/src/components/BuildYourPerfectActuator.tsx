@@ -532,6 +532,7 @@ export default function BuildYourPerfectActuator() {
                     <Leaderboard
                         leaderboardData={leaderboardData}
                         fetchLeaderboard={fetchLeaderboard}
+                        handlePlayAgain={handlePlayAgain}
                         setScreen={setScreen}
                     />
                 )}

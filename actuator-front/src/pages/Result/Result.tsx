@@ -44,13 +44,6 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
 
     return (
         <div className="page-result">
-            {/* Top right: Leaderboard button */}
-            <div className="result-top-right">
-                <button onClick={() => setScreen('leaderboard')} className="btn-corner leaderboard">
-                    🏆 LEADERBOARD
-                </button>
-            </div>
-
             <div className="result-container">
                 <div className="result-header">
                     <h1>🎮 Game Complete!</h1>
@@ -114,14 +107,9 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
 
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
+                    <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>
                     <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
-                </div>
-
-                {/* Bottom right: Delete Data button */}
-                <div className="result-bottom-right">
-                    <button onClick={handleDeleteUserData} className="btn-corner delete">
-                        🗑️ DELETE DATA
-                    </button>
+                    <button onClick={handleDeleteUserData} className="btn delete">🗑️ DELETE DATA</button>
                 </div>
             </div>
         </div>

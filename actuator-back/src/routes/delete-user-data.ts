@@ -20,9 +20,6 @@ router.delete('/', async (req: Request, res: Response) => {
         // game_users에서 userId에 해당하는 데이터 삭제
         await pool.query('DELETE FROM game_users WHERE id = $1', [userId]);
 
-        // game_analytics 뷰 갱신
-        await pool.query('SELECT refresh_game_analytics()');
-
         // 트랜잭션 커밋
         await pool.query('COMMIT');
 
