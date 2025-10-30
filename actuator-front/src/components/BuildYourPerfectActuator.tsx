@@ -132,7 +132,14 @@ export default function BuildYourPerfectActuator() {
                 })
             );
 
-            setGameSession(gameEngine.generateGameSession());
+            // Generate userId first
+            let currentUserId = userId;
+            if (!currentUserId) {
+                currentUserId = CryptoJS.lib.WordArray.random(16).toString();
+                setUserId(currentUserId);
+            }
+
+            setGameSession(gameEngine.generateGameSession(currentUserId));
             setScreen('game');
         } catch (error) {
             console.error('Error in continue:', error);
@@ -157,6 +164,11 @@ export default function BuildYourPerfectActuator() {
 
     const handleSubmit = async () => {
         if (!gameSession) return;
+
+        let userForGame: UserInfo | null = null;
+        let correctAnswers = 0;
+        let completionTime = 0;
+
         try {
             // localStorage에서 암호화된 정보 가져오기
             const encryptedUserInfo = localStorage.getItem('encryptedUserInfo');
@@ -174,7 +186,7 @@ export default function BuildYourPerfectActuator() {
             }
 
             // 사용자 정보
-            const userForGame: UserInfo = {
+            userForGame = {
                 id: currentUserId,
                 name: userInfo.name,
                 company: userInfo.company,
@@ -182,17 +194,15 @@ export default function BuildYourPerfectActuator() {
                 phone: userInfo.phone,
             };
 
-            // 1. 먼저 게임 결과를 game_results 테이블에 저장
-            // 이를 통해 daily_leaderboard VIEW의 데이터가 업데이트됨
-            const completionTime = gameSession.endTime
+            // 게임 완료 시간 및 점수 계산
+            completionTime = gameSession.endTime
                 ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
                 : 0;
             
-            const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
+            correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
             
-            // game_users 테이블에 사용자 저장 (먼저 user_id로 등록되어 있는지 확인)
+            // game_users 테이블에 사용자 저장
             try {
-                // 사용자 생성 또는 확인
                 await fetch(`${backendUrl}/api/user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -205,41 +215,71 @@ export default function BuildYourPerfectActuator() {
                     }),
                 });
             } catch (err) {
-                console.warn('User save warning:', err);
+                console.warn('User save warning (non-critical):', err);
             }
 
-            // 2. 게임 결과 저장 (game_results 테이블)
-            const submitResponse = await fetch(`${backendUrl}/api/game/submit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: currentUserId,
-                    selectedComponents: gameSession.questions.length > 0 ? gameSession.questions[0].availableComponents : [],
-                    compatibleApplications: gameSession.questions.length > 0 ? gameSession.questions[0].robotPart.correctComponents : [],
-                    successRate: correctAnswers / gameSession.questions.length,
-                    completionTime: completionTime,
-                    score: correctAnswers,
-                    totalQuestions: gameSession.questions.length,
-                }),
-            });
-
-            if (!submitResponse.ok) {
-                console.warn('Game result save warning:', submitResponse.statusText);
+            // 게임 결과 저장
+            try {
+                await fetch(`${backendUrl}/api/game/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        selectedComponents: gameSession.questions.length > 0 ? gameSession.questions[0].options : [],
+                        compatibleApplications: gameSession.questions.length > 0 ? gameSession.questions[0].requiredComponents : [],
+                        successRate: correctAnswers / gameSession.questions.length,
+                        completionTime: completionTime,
+                        score: correctAnswers,
+                        totalQuestions: gameSession.questions.length,
+                    }),
+                });
+            } catch (err) {
+                console.warn('Game result save warning (non-critical):', err);
             }
 
-            // 3. 순위 조회 및 이메일 발송
-            const entry = await leaderboardManager.submitScore(gameSession, userForGame);
-            setLeaderboardEntry(entry);
+            // 순위 조회 및 이메일 발송
+            try {
+                const entry = await leaderboardManager.submitScore(gameSession, userForGame);
+                setLeaderboardEntry(entry);
+            } catch (err) {
+                console.warn('Leaderboard submission warning (non-critical):', err);
+                // 기본값으로 설정하고 진행
+                if (userForGame) {
+                    setLeaderboardEntry({
+                        rank: 0,
+                        playerName: userForGame.name,
+                        company: userForGame.company,
+                        score: correctAnswers,
+                        completionTime: completionTime,
+                        timeBonus: 0,
+                        finalScore: correctAnswers * 100,
+                        playedAt: new Date(),
+                    });
+                }
+            }
+            
             setScreen('result');
         } catch (error) {
-            console.error('Error submitting game result:', error);
-            alert('Failed to save game result. Please try again.');
+            console.error('Error in game completion:', error);
+            // 게임 결과 화면으로 이동 (데이터 저장 실패해도 결과 표시)
+            if (userForGame) {
+                setLeaderboardEntry({
+                    rank: 0,
+                    playerName: userForGame.name,
+                    company: userForGame.company,
+                    score: correctAnswers,
+                    completionTime: completionTime,
+                    timeBonus: 0,
+                    finalScore: correctAnswers * 100,
+                    playedAt: new Date(),
+                });
+            }
             setScreen('result');
         }
     };
 
     const handlePlayAgain = () => {
-        setGameSession(gameEngine.generateGameSession());
+        setGameSession(gameEngine.generateGameSession(userId));
         setLeaderboardEntry(null);
         setScreen('game');
     };
@@ -477,6 +517,7 @@ export default function BuildYourPerfectActuator() {
                         gameSession={gameSession}
                         setGameSession={setGameSession}
                         handleSubmit={handleSubmit}
+                        setScreen={setScreen}
                     />
                 )}
                 {screen === 'result' && gameSession && (

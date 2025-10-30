@@ -4,6 +4,37 @@ $primary-color: #4f46e5;
 $error-color: #dc2626;
 $hover-color: #2563eb;
 
+// 1024px 기준 반응형 믹스인
+@mixin mobile {
+    @media (max-width: 640px) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: 641px) and (max-width: 1023px) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: 1024px) {
+        @content;
+    }
+}
+
+@mixin small-screen {
+    @media (max-width: 1023px) {
+        @content;
+    }
+}
+
+@mixin large-screen {
+    @media (min-width: 1024px) {
+        @content;
+    }
+}
+
 // 전체 화면 배경
 body {
     margin: 0;

@@ -5,25 +5,40 @@ import './Game.scss';
 
 interface GameProps {
     gameSession: GameSession;
-    // Accept nullable session setter from parent
     setGameSession: React.Dispatch<React.SetStateAction<GameSession | null>>;
     handleSubmit: () => void;
+    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
-const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit }) => {
-    const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
-    const [timeLeft, setTimeLeft] = useState<number>(60); // 기본값 60초
+interface FeedbackModal {
+    isOpen: boolean;
+    isCorrect: boolean;
+    selectedAnswer: string;
+    correctAnswer: string;
+}
+
+const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, setScreen }) => {
+    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+    const [timeLeft, setTimeLeft] = useState<number>(60);
+    const [feedbackModal, setFeedbackModal] = useState<FeedbackModal>({
+        isOpen: false,
+        isCorrect: false,
+        selectedAnswer: '',
+        correctAnswer: '',
+    });
+
     const currentQuestion = gameSession.questions[gameSession.currentQuestionIndex];
     const gameEngine = new GameEngine();
 
     useEffect(() => {
-        if (!currentQuestion) return; // currentQuestion이 없으면 타이머 설정 안 함
+        if (!currentQuestion) return;
 
         setTimeLeft(currentQuestion.timeLimit);
         const timer = setInterval(() => {
             setTimeLeft(prev => {
-                if (prev <= 0) {
-                    handleAnswerSubmit();
+                if (prev <= 1) {
+                    // 타이머가 0이 되면 홈으로 돌아가기
+                    setScreen('home');
                     return 0;
                 }
                 return prev - 1;
@@ -31,23 +46,30 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit }
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [gameSession.currentQuestionIndex, currentQuestion]);
-
-    const handleComponentToggle = (componentId: string) => {
-        setSelectedComponents(prev =>
-            prev.includes(componentId)
-                ? prev.filter(id => id !== componentId)
-                : [...prev, componentId]
-        );
-    };
+    }, [gameSession.currentQuestionIndex, currentQuestion, setScreen]);
 
     const handleAnswerSubmit = () => {
-        if (!currentQuestion) return; // 안전하게 currentQuestion 확인
+        if (!currentQuestion || selectedAnswer === null) return;
 
-        const isCorrect = gameEngine.checkAnswer(currentQuestion.id, selectedComponents);
+        const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+        const correctAnswer = currentQuestion.correctAnswer;
+
+        // 피드백 모달 표시
+        setFeedbackModal({
+            isOpen: true,
+            isCorrect,
+            selectedAnswer,
+            correctAnswer,
+        });
+    };
+
+    const handleModalClose = () => {
+        if (!currentQuestion) return;
+
+        const isCorrect = feedbackModal.isCorrect;
         const answer: UserAnswer = {
             questionId: currentQuestion.id,
-            selectedComponents,
+            selectedComponents: [feedbackModal.selectedAnswer],
             isCorrect,
             answerTime: (currentQuestion.timeLimit - timeLeft) * 1000,
             timestamp: new Date(),
@@ -62,7 +84,9 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit }
             };
         });
 
-        setSelectedComponents([]);
+        setSelectedAnswer(null);
+        setFeedbackModal({ isOpen: false, isCorrect: false, selectedAnswer: '', correctAnswer: '' });
+
         if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
             setGameSession(prev => {
                 if (!prev) return prev;
@@ -82,40 +106,63 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit }
 
     return (
         <div className="page-game">
+            <div className="timer-fixed">
+                <span>⏱️ {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+            </div>
             <div className="game-container">
                 <div className="question-header">
                     <h2>Question {gameSession.currentQuestionIndex + 1}/5</h2>
-                    <span>⏱️ {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                 </div>
                 <div className="question-content">
-                    <h3>🤖 {currentQuestion.robotPart.description}</h3>
-                    <img
-                        src={currentQuestion.robotPart.image}
-                        alt={currentQuestion.robotPart.name}
-                        className="question-image"
-                    />
-                    <p>Select the correct components:</p>
-                    <div className="components-grid">
-                        {currentQuestion.availableComponents.map(component => (
-                            <label key={component.id} className="component-label">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedComponents.includes(component.id)}
-                                    onChange={() => handleComponentToggle(component.id)}
-                                />
-                                <span style={{ marginLeft: '8px' }}>{component.name}</span>
-                            </label>
+                    <h3>❓ {currentQuestion.question}</h3>
+                    <p className="required-components">
+                        Required components: Select the ONE that is NOT needed
+                    </p>
+                    <div className="options-grid">
+                        {currentQuestion.options.map((option, index) => (
+                            <button
+                                key={index}
+                                className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
+                                onClick={() => setSelectedAnswer(option)}
+                            >
+                                {option}
+                            </button>
                         ))}
                     </div>
                 </div>
                 <button
                     onClick={handleAnswerSubmit}
-                    disabled={selectedComponents.length === 0}
-                    className={"submit-button " + (selectedComponents.length === 0 ? '' : 'enabled')}
+                    disabled={selectedAnswer === null}
+                    className={"submit-button " + (selectedAnswer !== null ? 'enabled' : '')}
                 >
                     SUBMIT ANSWER
                 </button>
             </div>
+
+            {/* 피드백 모달 */}
+            {feedbackModal.isOpen && (
+                <div className="modal-overlay">
+                    <div className={`feedback-modal ${feedbackModal.isCorrect ? 'correct' : 'incorrect'}`}>
+                        <div className="modal-icon">
+                            {feedbackModal.isCorrect ? '✅' : '❌'}
+                        </div>
+                        <h2>{feedbackModal.isCorrect ? 'Correct!' : 'Incorrect!'}</h2>
+                        <p className="modal-selected">
+                            Your answer: <strong>{feedbackModal.selectedAnswer}</strong>
+                        </p>
+                        {!feedbackModal.isCorrect && (
+                            <p className="modal-correct">
+                                Correct answer: <strong>{feedbackModal.correctAnswer}</strong>
+                            </p>
+                        )}
+                        <button onClick={handleModalClose} className="modal-button">
+                            {gameSession.currentQuestionIndex + 1 >= gameSession.questions.length
+                                ? 'View Results'
+                                : 'Next Question'}
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,8 +1,109 @@
 /* Page-specific styles for Result.tsx */
 .page-result {
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  position: relative;
+  
+  @media (min-width: 1024px) {
+    padding: 30px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 24px;
+    max-width: 650px;
+    margin: 0 auto;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 16px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* Top right: Leaderboard button */
+.result-top-right {
+  position: fixed;
+  z-index: 100;
+  
+  @media (min-width: 1024px) {
+    top: 30px;
+    right: 30px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    top: 24px;
+    right: 24px;
+  }
+  
+  @media (max-width: 640px) {
+    top: 16px;
+    right: 16px;
+  }
+}
+
+/* Bottom right: Delete Data button */
+.result-bottom-right {
+  position: fixed;
+  z-index: 100;
+  
+  @media (min-width: 1024px) {
+    bottom: 30px;
+    right: 30px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    bottom: 24px;
+    right: 24px;
+  }
+  
+  @media (max-width: 640px) {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+/* Corner buttons styling */
+.btn-corner {
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: white;
+  
+  @media (min-width: 1024px) {
+    padding: 14px 24px;
+    font-size: 1em;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 12px 20px;
+    font-size: 0.95em;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 10px 16px;
+    font-size: 0.9em;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.leaderboard {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  }
+
+  &.delete {
+    background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+  }
 }
 
 .result-container {
@@ -15,23 +116,55 @@
 .result-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 30px 20px;
   text-align: center;
+  
+  @media (min-width: 1024px) {
+    padding: 35px 25px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 30px 20px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 24px 16px;
+  }
 
   h1 {
     margin: 0;
-    font-size: 2em;
+    
+    @media (min-width: 1024px) {
+      font-size: 2.2em;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 2em;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 1.7em;
+    }
   }
 }
 
 .score-display-large {
-  padding: 40px 20px;
   text-align: center;
   background: #f9f9f9;
   border-bottom: 2px solid #eee;
+  
+  @media (min-width: 1024px) {
+    padding: 45px 25px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 40px 20px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 32px 16px;
+  }
 
   .score-main {
-    font-size: 4em;
     font-weight: bold;
     color: #4CAF50;
     margin: 0;
@@ -39,37 +172,97 @@
     justify-content: center;
     align-items: flex-start;
     gap: 5px;
+    
+    @media (min-width: 1024px) {
+      font-size: 4.5em;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 4em;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 3.2em;
+    }
 
     .score-total {
-      font-size: 0.6em;
       color: #999;
       margin-top: 10px;
+      
+      @media (min-width: 1024px) {
+        font-size: 0.6em;
+      }
+      
+      @media (min-width: 641px) and (max-width: 1023px) {
+        font-size: 0.6em;
+      }
+      
+      @media (max-width: 640px) {
+        font-size: 0.55em;
+      }
     }
   }
 
   .score-label {
-    margin: 10px 0 0 0;
     color: #666;
-    font-size: 0.95em;
+    margin: 10px 0 0 0;
+    
+    @media (min-width: 1024px) {
+      font-size: 1em;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 0.95em;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 0.9em;
+    }
   }
 }
 
 .result-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  padding: 20px;
   background: white;
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    padding: 25px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 20px;
+  }
+  
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    padding: 16px;
+  }
 
   .stat-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 15px;
     background: #f9f9f9;
     border-radius: 8px;
     border: 1px solid #eee;
     transition: all 0.2s;
+    
+    @media (min-width: 1024px) {
+      padding: 18px;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      padding: 15px;
+    }
+    
+    @media (max-width: 640px) {
+      padding: 12px;
+    }
 
     &:hover {
       border-color: #ddd;
@@ -140,7 +333,7 @@
 
 .actions {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 20px;
   background: #f9f9f9;
@@ -166,11 +359,6 @@
 
     &.play {
       background: #007bff;
-      color: white;
-    }
-
-    &.leaderboard {
-      background: #28a745;
       color: white;
     }
 

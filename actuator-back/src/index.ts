@@ -11,7 +11,10 @@ import counterRouter from './routes/counter.js';
 
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+
+// .env 파일 로드 (Container Manager에서 생성된 .env 사용)
 dotenv.config();
+console.log(`✅ Environment loaded: NODE_ENV=${process.env.NODE_ENV}, DB_HOST=${process.env.DB_HOST}`);
 
 const app = express();
 

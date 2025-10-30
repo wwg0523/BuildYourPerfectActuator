@@ -67,9 +67,11 @@ export interface RobotPart {
 
 export interface GameQuestion {
     id: string;
-    robotPart: RobotPart;
-    availableComponents: GameComponent[];
-    correctAnswers: string[];
+    question: string; // "다음 중 [application name]에 필요 없는 컴포넌트는?"
+    applicationName: string; // 예: "Medical Scanner Rotation"
+    requiredComponents: string[]; // 실제로 필요한 컴포넌트들
+    options: string[]; // 4개 선택지 (필요한 3개 + 필요 없는 1개)
+    correctAnswer: string; // 필요 없는 컴포넌트 (정답)
     timeLimit: number;
 }
 
@@ -83,6 +85,7 @@ export interface UserAnswer {
 
 export interface GameSession {
     sessionId: string;
+    userId?: string;
     questions: GameQuestion[];
     currentQuestionIndex: number;
     answers: UserAnswer[];
@@ -111,48 +114,44 @@ function generateUUID(): string {
 }
 
 export class GameEngine {
-    private robotParts: RobotPart[] = [
-        {
-            id: 'robot_arm_joint',
-            name: 'Robot Arm Joint',
-            description: 'Select components needed for a precise robot arm joint',
-            image: '/images/robot-arm-joint.png',
-            correctComponents: ['servo_motor', 'harmonic_gearbox', 'absolute_encoder'],
-            category: 'joint',
-        },
-        {
-            id: 'gripper_mechanism',
-            name: 'Gripper Mechanism',
-            description: 'Choose components for a high-precision gripper',
-            image: '/images/gripper.png',
-            correctComponents: ['linear_actuator', 'force_sensor', 'precision_bearing'],
-            category: 'gripper',
-        },
-        {
-            id: 'mobile_base',
-            name: 'Mobile Robot Base',
-            description: 'Select drive components for autonomous navigation',
-            image: '/images/mobile-base.png',
-            correctComponents: ['wheel_motor', 'wheel_encoder', 'differential_drive'],
-            category: 'base',
-        },
-        {
-            id: 'vision_system',
-            name: 'Vision System Mount',
-            description: 'Components for camera positioning system',
-            image: '/images/vision-mount.png',
-            correctComponents: ['pan_tilt_motor', 'optical_encoder', 'slip_ring'],
-            category: 'sensor',
-        },
-        {
-            id: 'conveyor_system',
-            name: 'Conveyor Belt Drive',
-            description: 'Industrial conveyor belt actuator system',
-            image: '/images/conveyor.png',
-            correctComponents: ['ac_motor', 'speed_reducer', 'belt_drive'],
-            category: 'actuator',
-        },
-    ];
+    // 모든 컴포넌트 맵 (id -> 이름)
+    private allComponentsMap: Record<string, { name: string; image: string }> = {
+        servo_motor: { name: 'Servo Motor', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Servo_Motor.jpg/320px-Servo_Motor.jpg' },
+        ac_motor: { name: 'AC Motor', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/3_phase_AC_motor_02.jpg/320px-3_phase_AC_motor_02.jpg' },
+        stepper_motor: { name: 'Stepper Motor', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Motor_icon.svg/320px-Motor_icon.svg.png' },
+        harmonic_gearbox: { name: 'Harmonic Gearbox', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Gearbox.jpg/320px-Gearbox.jpg' },
+        planetary_gearbox: { name: 'Planetary Gearbox', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Gearbox.jpg/320px-Gearbox.jpg' },
+        spur_gearbox: { name: 'Spur Gearbox', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Gearbox.jpg/320px-Gearbox.jpg' },
+        absolute_encoder: { name: 'Absolute Encoder', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/RotaryEncoder.jpg/320px-RotaryEncoder.jpg' },
+        optical_encoder: { name: 'Optical Encoder', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/RotaryEncoder.jpg/320px-RotaryEncoder.jpg' },
+        incremental_encoder: { name: 'Incremental Encoder', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/RotaryEncoder.jpg/320px-RotaryEncoder.jpg' },
+        servo_drive: { name: 'Servo Drive', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/V-Belt_and_sheave.jpg/320px-V-Belt_and_sheave.jpg' },
+        stepper_drive: { name: 'Stepper Drive', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Gearbox.jpg/320px-Gearbox.jpg' },
+        ac_drive: { name: 'AC Drive', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Gearbox.jpg/320px-Gearbox.jpg' },
+        ball_bearing: { name: 'Ball Bearing', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Rollenlager.jpg/320px-Rollenlager.jpg' },
+        roller_bearing: { name: 'Roller Bearing', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Rollenlager.jpg/320px-Rollenlager.jpg' },
+        thrust_bearing: { name: 'Thrust Bearing', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Rollenlager.jpg/320px-Rollenlager.jpg' },
+    };
+
+    // 애플리케이션 이름 매핑 (영어)
+    private applicationNames: Record<string, string> = {
+        robot_arm_joint: 'Robot Arm Joint',
+        automotive_steering: 'Automotive Steering',
+        industrial_automation: 'Industrial Automation',
+        precision_robotics: 'Precision Robotics',
+        automated_conveyor: 'Automated Conveyor',
+        medical_robot_arm: 'Medical Robot Arm',
+        cnc_machine: 'CNC Machine',
+        drone_actuator: 'Drone Actuator',
+        precision_manipulator: 'Precision Manipulator',
+        autonomous_vehicle_suspension: 'Autonomous Vehicle Suspension',
+        factory_conveyor_system: 'Factory Conveyor System',
+        medical_scanner_rotation: 'Medical Scanner Rotation',
+        drone_camera_gimbal: 'Drone Camera Gimbal',
+        wind_turbine_blade_adjuster: 'Wind Turbine Blade Adjuster',
+        cnc_milling_spindle: 'CNC Milling Spindle',
+        robotic_vacuum_mobility: 'Robotic Vacuum Mobility',
+    };
 
     private shuffleArray<T>(array: T[]): T[] {
         const shuffled = [...array];
@@ -163,28 +162,43 @@ export class GameEngine {
         return shuffled;
     }
 
-    private getComponentsByIds(ids: string[]): GameComponent[] {
-        return COMPONENTS.filter(c => ids.includes(c.id));
+    private getRandomWrongComponent(requiredComponentIds: string[]): string {
+        // 필요한 컴포넌트 목록에 없는 랜덤 컴포넌트 반환
+        const allComponentIds = Object.keys(this.allComponentsMap);
+        const wrongComponents = allComponentIds.filter(id => !requiredComponentIds.includes(id));
+        return wrongComponents[Math.floor(Math.random() * wrongComponents.length)];
     }
 
-    private getRandomWrongComponents(category: string, count: number): GameComponent[] {
-        const wrongComponents = COMPONENTS.filter(
-            c => !this.robotParts.find(p => p.category === category)?.correctComponents.includes(c.id)
-        );
-        return this.shuffleArray(wrongComponents).slice(0, count);
-    }
+    generateGameSession(userId?: string): GameSession {
+        const applications = Object.keys(compatibilityMatrix);
+        const shuffledApps = this.shuffleArray(applications).slice(0, 5);
+        const questions: GameQuestion[] = [];
 
-    generateGameSession(): GameSession {
-        const selectedParts = this.shuffleArray(this.robotParts).slice(0, 5);
-        const questions: GameQuestion[] = selectedParts.map((part, index) => ({
-            id: `q_${index + 1}_${part.id}`,
-            robotPart: part,
-            availableComponents: this.generateComponentOptions(part),
-            correctAnswers: part.correctComponents,
-            timeLimit: 60,
-        }));
+        for (let i = 0; i < shuffledApps.length; i++) {
+            const appId = shuffledApps[i];
+            const requiredComponentIds = compatibilityMatrix[appId];
+            
+            // 필요 없는 컴포넌트 1개 선택
+            const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+            
+            // 필요한 3개 + 필요 없는 1개 = 4개 선택지
+            const allOptions = [...requiredComponentIds.slice(0, 3), wrongComponent];
+            const shuffledOptions = this.shuffleArray(allOptions);
+
+            questions.push({
+                id: `q_${i + 1}`,
+                question: `Which of the following is NOT required for the "${this.applicationNames[appId]}"?`,
+                applicationName: this.applicationNames[appId],
+                requiredComponents: requiredComponentIds,
+                options: shuffledOptions.map(id => this.allComponentsMap[id].name),
+                correctAnswer: this.allComponentsMap[wrongComponent].name,
+                timeLimit: 60,
+            });
+        }
+
         return {
             sessionId: generateUUID(),
+            userId,
             questions,
             currentQuestionIndex: 0,
             answers: [],
@@ -193,22 +207,8 @@ export class GameEngine {
         };
     }
 
-    private generateComponentOptions(robotPart: RobotPart): GameComponent[] {
-        const correctComponents = this.getComponentsByIds(robotPart.correctComponents);
-        const wrongComponents = this.getRandomWrongComponents(robotPart.category, 5);
-        return this.shuffleArray([...correctComponents, ...wrongComponents]).slice(0, 8);
-    }
-
-    checkAnswer(questionId: string, selectedComponents: string[]): boolean {
-        const question = this.robotParts
-            .flatMap(p => this.generateGameSession().questions)
-            .find(q => q.id === questionId);
-        if (!question) return false;
-        const correctSet = new Set(question.correctAnswers);
-        const selectedSet = new Set(selectedComponents);
-        return (
-            correctSet.size === selectedSet.size && [...correctSet].every(comp => selectedSet.has(comp))
-        );
+    checkMultipleChoiceAnswer(questionId: string, selectedAnswer: string): boolean {
+        return true;
     }
 }
 
@@ -497,5 +497,29 @@ export class ParticipantCounter {
             clearInterval(this.intervalId);
             this.intervalId = null;
         }
+    }
+}
+
+// Delete User Data Function
+export async function deleteUserData(userId: string): Promise<boolean> {
+    try {
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4004';
+        const response = await fetch(`${backendUrl}/api/delete-user-data`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete user data: ${response.status}`);
+        }
+
+        console.log('User data deleted successfully');
+        return true;
+    } catch (error) {
+        console.error('Error deleting user data:', error);
+        return false;
     }
 }

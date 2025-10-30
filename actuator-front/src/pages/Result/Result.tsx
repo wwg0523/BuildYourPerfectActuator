@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameSession, LeaderboardEntry } from '../../lib/utils';
+import { GameSession, LeaderboardEntry, deleteUserData } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Result.scss';
 
@@ -18,6 +18,21 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     const minutes = Math.floor(totalTime / 60);
     const seconds = totalTime % 60;
 
+    const handleDeleteUserData = async () => {
+        if (window.confirm('Are you sure you want to delete your user data? This cannot be undone.')) {
+            const userId = gameSession.userId;
+            if (userId) {
+                const success = await deleteUserData(userId);
+                if (success) {
+                    alert('Your data has been deleted successfully');
+                    setScreen('home');
+                } else {
+                    alert('Failed to delete your data');
+                }
+            }
+        }
+    };
+
     const getRankEmoji = (rank?: number) => {
         if (!rank) return '🎮';
         if (rank === 1) return '🥇';
@@ -29,6 +44,13 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
 
     return (
         <div className="page-result">
+            {/* Top right: Leaderboard button */}
+            <div className="result-top-right">
+                <button onClick={() => setScreen('leaderboard')} className="btn-corner leaderboard">
+                    🏆 LEADERBOARD
+                </button>
+            </div>
+
             <div className="result-container">
                 <div className="result-header">
                     <h1>🎮 Game Complete!</h1>
@@ -92,8 +114,14 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
 
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
-                    <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>
                     <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
+                </div>
+
+                {/* Bottom right: Delete Data button */}
+                <div className="result-bottom-right">
+                    <button onClick={handleDeleteUserData} className="btn-corner delete">
+                        🗑️ DELETE DATA
+                    </button>
                 </div>
             </div>
         </div>
