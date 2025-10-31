@@ -82,4 +82,180 @@
   }
 }
 
+/* 🏆 Prize Section Styles */
+.prizes-container {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  
+  @media (min-width: 1024px) {
+    padding: 1.5rem;
+    margin: 2rem 0;
+  }
+}
+
+.prizes-title {
+  color: #667eea;
+  font-weight: bold;
+  margin: 0 0 0.8rem 0;
+  
+  @media (min-width: 1024px) {
+    font-size: 1.5rem;
+    margin: 0 0 1.5rem 0;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    font-size: 1.2rem;
+    margin: 0 0 1rem 0;
+  }
+  
+  @media (max-width: 640px) {
+    font-size: 1rem;
+  }
+}
+
+.prizes-grid {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+}
+
+.prize-card {
+  background: white;
+  border-radius: 8px;
+  padding: 0.8rem 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .medal {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+    line-height: 1;
+    
+    @media (min-width: 1024px) {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 2.2rem;
+      margin-bottom: 0.4rem;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 1.8rem;
+    }
+  }
+
+  .rank {
+    color: #667eea;
+    font-weight: bold;
+    margin: 0.2rem 0;
+    line-height: 1.2;
+    
+    @media (min-width: 1024px) {
+      font-size: 1.1rem;
+      margin: 0.5rem 0;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 0.95rem;
+      margin: 0.3rem 0;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 0.75rem;
+    }
+  }
+
+  .prize-name {
+    color: #333;
+    font-weight: 600;
+    margin: 0.2rem 0 0 0;
+    line-height: 1.1;
+    
+    @media (min-width: 1024px) {
+      font-size: 1.05rem;
+      margin: 0.5rem 0;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 0.9rem;
+      margin: 0.3rem 0;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 0.7rem;
+    }
+  }
+
+  .prize-description {
+    color: #999;
+    font-size: 0.6rem;
+    margin: 0;
+    display: none;
+    
+    @media (min-width: 1024px) {
+      font-size: 0.85rem;
+      margin: 0.5rem 0 0 0;
+      display: block;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 0.75rem;
+      margin: 0.2rem 0 0 0;
+      display: block;
+    }
+  }
+}
+
+.prize-card.prize-1st {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+  
+  @media (min-width: 1024px) {
+    grid-column: 2;
+    transform: scale(1.05);
+  }
+}
+
+.prize-card.prize-2nd {
+  border-color: #c0c0c0;
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.1) 0%, rgba(192, 192, 192, 0.05) 100%);
+}
+
+.prize-card.prize-3rd {
+  border-color: #cd7f32;
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.1) 0%, rgba(205, 127, 50, 0.05) 100%);
+}
+
 /* reuse .button class from global styles for the start button */
+

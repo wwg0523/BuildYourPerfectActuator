@@ -37,12 +37,7 @@ router.post('/submit', async (req, res) => {
     const totalQuestions = Number(req.body.totalQuestions ?? 5);
     const score = Number(req.body.score ?? Math.round(Number(successRate) * totalQuestions));
 
-    // 시간 보너스 계산 (프론트의 LeaderboardManager 방식과 유사하게 ms 기반 계산)
-    const averageTimePerQuestion = totalQuestions > 0 ? completionMs / totalQuestions : 0;
-    const bonusPerQuestion = Math.max(0, (60000 - averageTimePerQuestion) / 6000);
-    const timeBonus = Number(req.body.timeBonus ?? Math.round(bonusPerQuestion * score));
-
-    const finalScore = Number(req.body.finalScore ?? Math.round(score * 100 + timeBonus));
+    const finalScore = Number(req.body.finalScore ?? Math.round(score * 100));
 
     try {
         // user_id가 game_users에 존재하는지 확인
@@ -54,8 +49,8 @@ router.post('/submit', async (req, res) => {
         await pool.query(
             `INSERT INTO game_results (
                 id, user_id, selected_components, compatible_applications, success_rate, completion_time,
-                score, time_bonus, final_score
-            ) VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8, $9)`,
+                score, final_score
+            ) VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8)`,
             [
                 id,
                 userId,
@@ -64,7 +59,6 @@ router.post('/submit', async (req, res) => {
                 successRate,
                 completionMs,
                 score,
-                timeBonus,
                 finalScore,
             ]
         );
@@ -113,7 +107,6 @@ router.get('/leaderboard', async (req, res) => {
                 company,
                 score,
                 completion_time,
-                time_bonus,
                 final_score,
                 played_at,
                 rank
@@ -128,7 +121,6 @@ router.get('/leaderboard', async (req, res) => {
             company: row.company,
             score: Number(row.score ?? 0),
             completionTime: Number(row.completion_time ?? 0),
-            timeBonus: Number(row.time_bonus ?? 0),
             finalScore: Number(row.final_score ?? 0),
             playedAt: row.played_at ? new Date(row.played_at) : new Date(),
         }));

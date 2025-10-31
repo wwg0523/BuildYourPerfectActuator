@@ -1,33 +1,179 @@
 /* Page-specific styles for Game.tsx */
 .page-game {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   
-  // 1024px 이상: 큰 화면
   @media (min-width: 1024px) {
-    padding: 30px;
-    max-width: 900px;
-    margin: 0 auto;
+    padding: 30px 30px 30px 30px;
   }
   
-  // 641px ~ 1023px: 태블릿
   @media (min-width: 641px) and (max-width: 1023px) {
-    padding: 24px;
-    max-width: 800px;
-    margin: 0 auto;
+    padding: 24px 24px 24px 24px;
   }
   
-  // 640px 이하: 모바일
   @media (max-width: 640px) {
-    padding: 16px;
-    max-width: 100%;
-    margin: 0 auto;
+    padding: 16px 16px 16px 16px;
   }
 }
 
-.game-container {
+/* Game Card Container */
+.game-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 0;
+  height: auto;
+  max-height: calc(100vh - 60px);
+  min-height: 600px;
+  overflow: hidden;
+  
+  @media (min-width: 1024px) {
+    width: 100%;
+    max-width: 900px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    width: 100%;
+    max-width: 800px;
+    min-height: 550px;
+  }
+  
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 100%;
+    min-height: 500px;
+  }
+}
+
+/* Game Header - TOP */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: relative;
+  gap: 10px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  
+  @media (min-width: 1024px) {
+    padding: 20px 20px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 16px 16px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 14px 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.header-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.home-button {
+  @media (max-width: 640px) {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+.question-header-inline {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+  
+  h2 {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(12px, 3vw, 20px);
+    line-height: 1.2;
+    color: #FFD700;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    
+    @media (min-width: 1024px) {
+      font-size: clamp(14px, 2.5vw, 20px);
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: clamp(13px, 2.8vw, 18px);
+    }
+    
+    @media (max-width: 640px) {
+      font-size: clamp(11px, 3.5vw, 16px);
+    }
+  }
+}
+
+.timer-inline {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFB347;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    
+    @media (min-width: 1024px) {
+      font-size: 16px;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 14px;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 13px;
+    }
+  }
 }
 
 /* Fixed timer at top right */
@@ -39,32 +185,69 @@
   font-weight: bold;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   z-index: 100;
+  top: 15px;
+  right: 20px;
   
   @media (min-width: 1024px) {
-    top: 30px;
-    right: 30px;
-    padding: 18px 30px;
-    font-size: 22px;
+    padding: 12px 20px;
+    font-size: 18px;
   }
   
   @media (min-width: 641px) and (max-width: 1023px) {
-    top: 24px;
-    right: 24px;
-    padding: 15px 25px;
-    font-size: 20px;
+    padding: 10px 16px;
+    font-size: 16px;
   }
   
   @media (max-width: 640px) {
-    top: 16px;
-    right: 16px;
-    padding: 12px 18px;
-    font-size: 16px;
+    padding: 8px 12px;
+    font-size: 14px;
   }
   
   span {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+  }
+}
+
+/* Fixed question header at top */
+.question-header-fixed {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  @media (min-width: 1024px) {
+    padding: 12px 30px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 10px 24px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 8px 16px;
+  }
+  
+  h2 {
+    margin: 0;
+    
+    @media (min-width: 1024px) {
+      font-size: 20px;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 18px;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 16px;
+    }
   }
 }
 
@@ -109,43 +292,67 @@
   }
 }
 
+/* Game Content - MIDDLE (scrollable) */
+.game-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #764ba2;
+    }
+  }
+}
+
 .page-game .question-content {
   background: white;
-  border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 0;
   
   @media (min-width: 1024px) {
-    padding: 35px;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
     padding: 28px;
   }
   
-  @media (max-width: 640px) {
-    padding: 20px;
-  }
-}
-
-.page-game .question-content h3 {
-  margin: 0 0 20px 0;
-  color: #333;
-  
-  @media (min-width: 1024px) {
-    font-size: 24px;
-  }
-  
   @media (min-width: 641px) and (max-width: 1023px) {
-    font-size: 20px;
+    padding: 22px;
   }
   
   @media (max-width: 640px) {
-    font-size: 18px;
+    padding: 16px;
+  }
+
+  h3 {
+    margin: 0 0 16px 0;
+    color: #333;
+    
+    @media (min-width: 1024px) {
+      font-size: 22px;
+    }
+    
+    @media (min-width: 641px) and (max-width: 1023px) {
+      font-size: 18px;
+    }
+    
+    @media (max-width: 640px) {
+      font-size: 16px;
+    }
   }
 }
 
-.page-game .required-components {
+.required-components {
   background: #e3f2fd;
   border-left: 4px solid #2196f3;
   border-radius: 4px;
@@ -153,41 +360,62 @@
   font-weight: 500;
   
   @media (min-width: 1024px) {
-    margin: 18px 0 30px 0;
-    padding: 18px;
-    font-size: 15px;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    margin: 15px 0 25px 0;
-    padding: 15px;
+    margin: 14px 0 24px 0;
+    padding: 14px;
     font-size: 14px;
   }
   
-  @media (max-width: 640px) {
+  @media (min-width: 641px) and (max-width: 1023px) {
     margin: 12px 0 20px 0;
     padding: 12px;
     font-size: 13px;
+  }
+  
+  @media (max-width: 640px) {
+    margin: 10px 0 16px 0;
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+
+.page-game .question-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px auto;
+  display: block;
+
+  @media (min-width: 1024px) {
+    max-width: 350px;
+  }
+
+  @media (min-width: 641px) and (max-width: 1023px) {
+    max-width: 250px;
+  }
+
+  @media (max-width: 640px) {
+    max-width: 180px;
   }
 }
 
 .page-game .options-grid {
   display: grid;
-  margin-top: 20px;
+  margin-top: 12px;
   
   @media (min-width: 1024px) {
     grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    gap: 12px;
   }
   
   @media (min-width: 641px) and (max-width: 1023px) {
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 10px;
   }
   
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 8px;
   }
 }
 
@@ -199,20 +427,28 @@
   transition: all 0.3s ease;
   color: #333;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
   
   @media (min-width: 1024px) {
-    padding: 22px;
-    font-size: 16px;
+    padding: 14px 10px;
+    font-size: 14px;
+    min-height: 80px;
   }
   
   @media (min-width: 641px) and (max-width: 1023px) {
-    padding: 18px;
-    font-size: 15px;
+    padding: 12px 8px;
+    font-size: 13px;
+    min-height: 70px;
   }
   
   @media (max-width: 640px) {
-    padding: 15px;
-    font-size: 14px;
+    padding: 10px 6px;
+    font-size: 12px;
+    min-height: 60px;
   }
   
   &:hover {
@@ -226,6 +462,23 @@
     border-color: #667eea;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
+}
+
+.option-image {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: contain;
+  flex-shrink: 0;
+  
+  @media (max-width: 640px) {
+    max-width: 50px;
+    max-height: 50px;
+  }
+}
+
+.option-name {
+  text-align: center;
+  word-break: break-word;
 }
 
 .page-game .submit-button {
@@ -264,10 +517,121 @@
   &.enabled {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     cursor: pointer;
+  }
+}
+
+/* Fixed submit button at bottom */
+.submit-button-fixed {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 98;
+  border: none;
+  border-radius: 8px;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+  background: #ccc;
+  color: white;
+  font-weight: bold;
+  
+  @media (min-width: 1024px) {
+    padding: 16px 50px;
+    font-size: 16px;
+    width: auto;
+    max-width: 300px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 14px 40px;
+    font-size: 15px;
+    width: auto;
+    max-width: 280px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 12px 30px;
+    font-size: 14px;
+    width: auto;
+    max-width: 250px;
+  }
+  
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  &.enabled {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    
+    &:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    }
+  }
+}
+
+/* Game Footer - BOTTOM */
+.game-footer {
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  
+  @media (min-width: 1024px) {
+    padding: 20px 30px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 16px 24px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 14px 16px;
+  }
+}
+
+.submit-button-inline {
+  border: none;
+  border-radius: 8px;
+  cursor: not-allowed;
+  transition: all 0.3s ease;
+  background: #ccc;
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+  
+  @media (min-width: 1024px) {
+    padding: 14px 50px;
+    font-size: 16px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 12px 40px;
+    font-size: 15px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+  
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  &.enabled {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
     }
   }
 }

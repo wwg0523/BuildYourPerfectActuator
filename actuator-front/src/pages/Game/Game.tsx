@@ -19,7 +19,7 @@ interface FeedbackModal {
 
 const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, setScreen }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-    const [timeLeft, setTimeLeft] = useState<number>(60);
+    const [elapsedTime, setElapsedTime] = useState<number>(0);
     const [feedbackModal, setFeedbackModal] = useState<FeedbackModal>({
         isOpen: false,
         isCorrect: false,
@@ -31,22 +31,15 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
     const gameEngine = new GameEngine();
 
     useEffect(() => {
-        if (!currentQuestion) return;
-
-        setTimeLeft(currentQuestion.timeLimit);
+        // 게임 시작 시간부터 경과 시간 계산
         const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev <= 1) {
-                    // 타이머가 0이 되면 홈으로 돌아가기
-                    setScreen('home');
-                    return 0;
-                }
-                return prev - 1;
-            });
+            const now = new Date();
+            const elapsed = Math.floor((now.getTime() - gameSession.startTime.getTime()) / 1000);
+            setElapsedTime(elapsed);
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [gameSession.currentQuestionIndex, currentQuestion, setScreen]);
+    }, [gameSession.startTime]);
 
     const handleAnswerSubmit = () => {
         if (!currentQuestion || selectedAnswer === null) return;
@@ -71,7 +64,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
             questionId: currentQuestion.id,
             selectedComponents: [feedbackModal.selectedAnswer],
             isCorrect,
-            answerTime: (currentQuestion.timeLimit - timeLeft) * 1000,
+            answerTime: elapsedTime * 1000,
             timestamp: new Date(),
         };
 
@@ -94,6 +87,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                     ...prev,
                     endTime: new Date(),
                     totalScore: prev.answers.filter(a => a.isCorrect).length,
+                    completionTime: elapsedTime * 1000, // 타이머 값을 ms로 저장
                 };
             });
             handleSubmit();
@@ -106,37 +100,65 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
 
     return (
         <div className="page-game">
-            <div className="timer-fixed">
-                <span>⏱️ {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
-            </div>
-            <div className="game-container">
-                <div className="question-header">
-                    <h2>Question {gameSession.currentQuestionIndex + 1}/5</h2>
-                </div>
-                <div className="question-content">
-                    <h3>❓ {currentQuestion.question}</h3>
-                    <p className="required-components">
-                        Required components: Select the ONE that is NOT needed
-                    </p>
-                    <div className="options-grid">
-                        {currentQuestion.options.map((option, index) => (
-                            <button
-                                key={index}
-                                className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
-                                onClick={() => setSelectedAnswer(option)}
-                            >
-                                {option}
-                            </button>
-                        ))}
+            <div className="game-card">
+                {/* Header Section with HOME, Question, Timer */}
+                <div className="game-header">
+                    <div className="header-left">
+                        <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                            🏠 HOME
+                        </button>
+                    </div>
+                    <div className="question-header-inline">
+                        <h2>Question {gameSession.currentQuestionIndex + 1}/5</h2>
+                    </div>
+                    <div className="header-right">
+                        <div className="timer-inline">
+                            <span>⏱️ {Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}</span>
+                        </div>
                     </div>
                 </div>
-                <button
-                    onClick={handleAnswerSubmit}
-                    disabled={selectedAnswer === null}
-                    className={"submit-button " + (selectedAnswer !== null ? 'enabled' : '')}
-                >
-                    SUBMIT ANSWER
-                </button>
+
+                {/* Content Section */}
+                <div className="game-content">
+                    <div className="question-content">
+                        <h3>{currentQuestion.question}</h3>
+                        {currentQuestion.questionImage && (
+                            <img 
+                                src={currentQuestion.questionImage}
+                                alt={currentQuestion.applicationName}
+                                className="question-image"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            />
+                        )}
+                        <p className="required-components">
+                            {currentQuestion.questionType === 'find_required'
+                                ? 'Select the ONE that IS needed for this application'
+                                : <>Select the ONE that is <span style={{ color: '#dc3545', fontWeight: 'bold' }}>NOT</span> needed for this application</>}
+                        </p>
+                        <div className="options-grid">
+                            {currentQuestion.options.map((option, index) => (
+                                <button
+                                    key={index}
+                                    className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
+                                    onClick={() => setSelectedAnswer(option)}
+                                >
+                                    <span className="option-name">{option}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer Section with Submit Button */}
+                <div className="game-footer">
+                    <button
+                        onClick={handleAnswerSubmit}
+                        disabled={selectedAnswer === null}
+                        className={"submit-button-inline " + (selectedAnswer !== null ? 'enabled' : '')}
+                    >
+                        SUBMIT ANSWER
+                    </button>
+                </div>
             </div>
 
             {/* 피드백 모달 */}

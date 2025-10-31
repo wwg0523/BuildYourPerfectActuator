@@ -2,11 +2,11 @@
 
 CREATE TABLE IF NOT EXISTS game_users (
   id UUID PRIMARY KEY,
-  name TEXT NOT NULL,
-  company TEXT,
-  email TEXT,
-  phone TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  name VARCHAR(100) NOT NULL,
+  company VARCHAR(200),
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50),
+  created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS game_results (
@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS game_results (
   success_rate NUMERIC(3,2) NOT NULL,
   completion_time BIGINT NOT NULL,
   score INT,
-  time_bonus INT,
   final_score INT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -26,8 +25,8 @@ CREATE TABLE IF NOT EXISTS game_results (
 CREATE INDEX IF NOT EXISTS idx_game_results_created_at ON game_results(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_game_results_final_score ON game_results(final_score DESC);
 
--- daily_leaderboard: 게임 결과 기반 리더보드 VIEW
--- 각 게임 결과별로 마스크된 사용자명, 회사명, 점수, 완료시간, 시간 보너스, 최종점수, 플레이 시간, 순위를 반환
+-- daily_leaderboard: 게임 결과 기반 리더보드 VIEW (오늘 날짜 기준, UTC 자정 기준)
+-- 각 게임 결과별로 마스크된 사용자명, 회사명, 점수, 완료시간, 최종점수, 플레이 시간, 순위를 반환
 CREATE OR REPLACE VIEW daily_leaderboard AS
 SELECT
   gr.id,
@@ -39,12 +38,12 @@ SELECT
   gu.company,
   gr.score,
   gr.completion_time,
-  gr.time_bonus,
   gr.final_score,
   gr.created_at AS played_at,
   ROW_NUMBER() OVER (ORDER BY gr.final_score DESC, gr.completion_time ASC, gr.created_at ASC) AS rank
 FROM game_results gr
 JOIN game_users gu ON gr.user_id = gu.id
+WHERE DATE(gr.created_at AT TIME ZONE 'UTC') = CURRENT_DATE AT TIME ZONE 'UTC'
 ORDER BY gr.final_score DESC, gr.completion_time ASC, gr.created_at ASC;
 
 -- 이메일 발송 로그

@@ -86,15 +86,9 @@ const Info: React.FC<InfoProps> = ({
                 isOpen={showModal}
                 onClose={() => setShowModal(false)}
                 onAccept={() => {
-                    setAgreeTerms(true);
-                    setAgreeMarketing(true);
                     setTermsAccepted(true);
                     setShowModal(false);
                 }}
-                agreeTerms={agreeTerms}
-                setAgreeTerms={setAgreeTerms}
-                agreeMarketing={agreeMarketing}
-                setAgreeMarketing={setAgreeMarketing}
             />
 
             <div>

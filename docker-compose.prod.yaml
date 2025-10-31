@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  actuator-db:
+    image: postgres:16.10
+    container_name: actuator-db
+    restart: always
+    ports:
+      - "5433:5433"
+    command: ["postgres", "-c", "port=5433"]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1209
+      POSTGRES_DB: actuator_game
+      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./actuator-back/sql/CREATE_TABLES.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - actuator-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5433"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node.js Backend API Server
+  backend:
+    build:
+      context: ./actuator-back
+      dockerfile: Dockerfile
+    container_name: actuator-back
+    restart: always
+    ports:
+      - "4004:4004"
+    environment:
+      NODE_ENV: production
+      DB_HOST: actuator-db
+      DB_PORT: 5433
+      DB_USER: postgres
+      DB_PASSWORD: 1209
+      DB_NAME: actuator_game
+      API_PORT: 4004
+      APP_EMAIL: ${APP_EMAIL:-whwlsgh0523@gmail.com}
+      APP_PASS: ${APP_PASS:-invb xoqc sqtx qeyw}
+    depends_on:
+      actuator-db:
+        condition: service_healthy
+    networks:
+      - actuator-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./actuator-front
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: http://actuator-back:4004
+    container_name: actuator-front
+    restart: always
+    ports:
+      - "5005:5005"
+    environment:
+      REACT_APP_BACKEND_URL: http://actuator-back:4004
+      PORT: 5005
+    depends_on:
+      - backend
+    networks:
+      - actuator-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5005"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  actuator-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local

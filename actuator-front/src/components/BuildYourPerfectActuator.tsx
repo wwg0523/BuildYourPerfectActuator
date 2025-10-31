@@ -6,7 +6,7 @@ import Info from '../pages/Info/Info';
 import Game from '../pages/Game/Game';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
-import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager } from '../lib/utils';
+import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData } from '../lib/utils';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
@@ -25,14 +25,15 @@ export default function BuildYourPerfectActuator() {
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [agreeMarketing, setAgreeMarketing] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [userId, setUserId] = useState<string>('');
 
     const [idleDetector, setIdleDetector] = useState<IdleDetector>({
-        timeoutDuration: 15000,
-        warningDuration: 10000, // 테스트용 10초
+        timeoutDuration: 30000,
+        warningDuration: 25000, // 25초 후 경고 메시지 표시
         currentTimeout: null,
         warningTimeout: null,
     });
@@ -41,6 +42,7 @@ export default function BuildYourPerfectActuator() {
     const currentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const warningTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const finalTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isMobileRef = useRef<boolean>(false);
 
     const gameEngine = new GameEngine();
     const leaderboardManager = new LeaderboardManager();
@@ -195,9 +197,18 @@ export default function BuildYourPerfectActuator() {
             };
 
             // 게임 완료 시간 및 점수 계산
-            completionTime = gameSession.endTime
-                ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
-                : 0;
+            // gameSession의 completionTime을 사용 (타이머에서 계산된 정확한 값)
+            completionTime = gameSession.completionTime || 0;
+            
+            // completionTime이 0이면 startTime과 endTime으로 계산
+            if (completionTime === 0 && gameSession.endTime) {
+                completionTime = gameSession.endTime.getTime() - gameSession.startTime.getTime();
+            }
+            
+            // 최종 검증: completionTime이 여전히 0이면 최소 1초 설정
+            if (completionTime <= 0) {
+                completionTime = 1000; // 최소 1초
+            }
             
             correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
             
@@ -251,7 +262,6 @@ export default function BuildYourPerfectActuator() {
                         company: userForGame.company,
                         score: correctAnswers,
                         completionTime: completionTime,
-                        timeBonus: 0,
                         finalScore: correctAnswers * 100,
                         playedAt: new Date(),
                     });
@@ -269,7 +279,6 @@ export default function BuildYourPerfectActuator() {
                     company: userForGame.company,
                     score: correctAnswers,
                     completionTime: completionTime,
-                    timeBonus: 0,
                     finalScore: correctAnswers * 100,
                     playedAt: new Date(),
                 });
@@ -284,23 +293,42 @@ export default function BuildYourPerfectActuator() {
         setScreen('game');
     };
 
+    const handleDeleteUserData = async () => {
+        const userIdToDelete = userId || gameSession?.userId;
+        if (userIdToDelete) {
+            const success = await deleteUserData(userIdToDelete);
+            if (success) {
+                alert('Your data has been deleted successfully');
+                setShowDeleteConfirmModal(false);
+                handleBack();
+            } else {
+                alert('Failed to delete your data');
+                setShowDeleteConfirmModal(false);
+            }
+        }
+    };
+
     const fetchLeaderboard = async () => {
         try {
             const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch leaderboard data');
             const data = await response.json();
 
-            // backend may return rows with different field names; normalize to frontend LeaderboardEntry
-            const normalized: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => ({
-                rank: row.rank ?? idx + 1,
-                playerName: row.player_name ?? row.playerName ?? row.name ?? 'Anonymous',
-                company: row.company ?? 'Unknown',
-                score: typeof row.score === 'number' ? row.score : Number(row.avg_success_rate ?? row.score ?? 0),
-                completionTime: Number(row.completion_time ?? row.completionTime ?? 0),
-                timeBonus: Number(row.time_bonus ?? row.timeBonus ?? 0),
-                finalScore: Number(row.final_score ?? row.finalScore ?? 0),
-                playedAt: row.played_at ? new Date(row.played_at) : new Date(),
-            }));
+            // backend already returns normalized data, just map it to LeaderboardEntry
+            const normalized: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => {
+                // completionTime은 이미 백엔드에서 ms 단위로 반환됨
+                let completionTimeMs = Number(row.completionTime ?? 0);
+                
+                return {
+                    rank: row.rank ?? idx + 1,
+                    playerName: row.playerName ?? 'Anonymous',
+                    company: row.company ?? 'Unknown',
+                    score: Number(row.score ?? 0),
+                    completionTime: completionTimeMs,
+                    finalScore: Number(row.finalScore ?? 0),
+                    playedAt: row.playedAt ? new Date(row.playedAt) : new Date(),
+                };
+            });
 
             setLeaderboardData(normalized);
         } catch (error) {
@@ -430,17 +458,37 @@ export default function BuildYourPerfectActuator() {
         startCountdown(5);
     };
 
+    useEffect(() => {
+        // 모바일 기기 감지
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        isMobileRef.current = isMobile;
+
+        // 모바일은 더 긴 시간 제공 (45초), 데스크톱은 30초
+        const baseTimeoutDuration = isMobile ? 45000 : 30000;
+        const baseWarningDuration = isMobile ? 40000 : 25000; // 경고는 5초 전
+
+        setIdleDetector(prev => ({
+            ...prev,
+            timeoutDuration: baseTimeoutDuration,
+            warningDuration: baseWarningDuration,
+        }));
+    }, []);
+
     const resetIdleTimer = () => {
         clearAllTimers();
         hideWarningMessage();
 
+        const isMobile = isMobileRef.current;
+        const timeoutDuration = isMobile ? 45000 : 30000;
+        const warningDuration = isMobile ? 40000 : 25000;
+
         warningTimeoutRef.current = setTimeout(() => {
             createWarningMessage('Returning to home screen in 5 seconds...');
-        }, idleDetector.warningDuration);
+        }, warningDuration);
 
         currentTimeoutRef.current = setTimeout(() => {
             handleBack();
-        }, idleDetector.timeoutDuration);
+        }, timeoutDuration);
 
         setIdleDetector(prev => ({ ...prev, warningTimeout: warningTimeoutRef.current, currentTimeout: currentTimeoutRef.current }));
     };
@@ -456,7 +504,7 @@ export default function BuildYourPerfectActuator() {
     };
 
     useEffect(() => {
-        const events = ['touchstart', 'click', 'keypress'] as const;
+        const events = ['touchstart', 'click', 'keypress', 'mousemove'] as const;
         if (screen === 'home' || screen === 'game' || screen === 'leaderboard') {
             clearAllTimers();
             hideWarningMessage();
@@ -478,13 +526,21 @@ export default function BuildYourPerfectActuator() {
         };
     }, [screen]);
 
-    const renderHeader = () => {
-        if (screen === 'home') return null;
+    // Delete confirmation modal (used by Result and Leaderboard components)
+    const renderDeleteConfirmModal = () => {
+        if (screen !== 'result' && screen !== 'leaderboard') return null;
+        if (!showDeleteConfirmModal) return null;
+        
         return (
-            <div className="home-header">
-                <button className="home-header-button" onClick={handleBack}>
-                    🏠 HOME
-                </button>
+            <div className="delete-confirm-modal-overlay" onClick={() => setShowDeleteConfirmModal(false)}>
+                <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+                    <h2>Confirm Delete</h2>
+                    <p>Are you sure you want to delete your user data? This cannot be undone.</p>
+                    <div className="modal-buttons">
+                        <button onClick={() => setShowDeleteConfirmModal(false)} className="button outline">CANCEL</button>
+                        <button onClick={handleDeleteUserData} className="button delete">DELETE</button>
+                    </div>
+                </div>
             </div>
         );
     };
@@ -492,7 +548,6 @@ export default function BuildYourPerfectActuator() {
     return (
         <div className="app-container">
             <div className="card">
-                {renderHeader()}
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'info' && (
                     <Info
@@ -526,6 +581,7 @@ export default function BuildYourPerfectActuator() {
                         leaderboardEntry={leaderboardEntry ?? undefined}
                         handlePlayAgain={handlePlayAgain}
                         setScreen={setScreen}
+                        handleDeleteUserData={handleDeleteUserData}
                     />
                 )}
                 {screen === 'leaderboard' && (
@@ -534,8 +590,10 @@ export default function BuildYourPerfectActuator() {
                         fetchLeaderboard={fetchLeaderboard}
                         handlePlayAgain={handlePlayAgain}
                         setScreen={setScreen}
+                        handleDeleteUserData={handleDeleteUserData}
                     />
                 )}
+                {renderDeleteConfirmModal()}
             </div>
         </div>
     );

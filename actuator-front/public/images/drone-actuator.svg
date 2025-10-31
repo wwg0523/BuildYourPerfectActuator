@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background -->
+  <rect width="300" height="300" fill="#f0f0f0" rx="10"/>
+  
+  <!-- Drone body -->
+  <rect x="110" y="100" width="80" height="60" fill="#06B6D4" rx="8" stroke="#333" stroke-width="2"/>
+  
+  <!-- Camera -->
+  <circle cx="150" cy="165" r="12" fill="#333"/>
+  <circle cx="150" cy="165" r="8" fill="#87CEEB"/>
+  
+  <!-- Arms extending outward -->
+  <g stroke="#333" stroke-width="3" fill="none">
+    <line x1="110" y1="110" x2="60" y2="80"/>
+    <line x1="190" y1="110" x2="240" y2="80"/>
+    <line x1="110" y1="150" x2="60" y2="180"/>
+    <line x1="190" y1="150" x2="240" y2="180"/>
+  </g>
+  
+  <!-- Propellers -->
+  <g fill="none" stroke="#06B6D4" stroke-width="6" stroke-linecap="round">
+    <!-- Top left -->
+    <line x1="55" y1="75" x2="65" y2="75"/>
+    <!-- Top right -->
+    <line x1="245" y1="75" x2="235" y2="75"/>
+    <!-- Bottom left -->
+    <line x1="55" y1="185" x2="65" y2="185"/>
+    <!-- Bottom right -->
+    <line x1="245" y1="185" x2="235" y2="185"/>
+  </g>
+  
+  <!-- Status lights -->
+  <circle cx="120" cy="115" r="4" fill="#FF6B6B"/>
+  <circle cx="180" cy="115" r="4" fill="#4ECDC4"/>
+  
+  <!-- Label -->
+  <text x="150" y="280" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">Drone</text>
+</svg>

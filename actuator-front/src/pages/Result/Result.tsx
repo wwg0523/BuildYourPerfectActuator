@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameSession, LeaderboardEntry, deleteUserData } from '../../lib/utils';
+import { GameSession, LeaderboardEntry } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Result.scss';
 
@@ -8,30 +8,16 @@ interface ResultProps {
     leaderboardEntry?: LeaderboardEntry;
     handlePlayAgain: () => void;
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    handleDeleteUserData?: () => Promise<void>;
 }
 
-const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePlayAgain, setScreen }) => {
+const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePlayAgain, setScreen, handleDeleteUserData }) => {
     const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
     const totalTime = gameSession.endTime
         ? Math.floor((gameSession.endTime.getTime() - gameSession.startTime.getTime()) / 1000)
         : 0;
     const minutes = Math.floor(totalTime / 60);
     const seconds = totalTime % 60;
-
-    const handleDeleteUserData = async () => {
-        if (window.confirm('Are you sure you want to delete your user data? This cannot be undone.')) {
-            const userId = gameSession.userId;
-            if (userId) {
-                const success = await deleteUserData(userId);
-                if (success) {
-                    alert('Your data has been deleted successfully');
-                    setScreen('home');
-                } else {
-                    alert('Failed to delete your data');
-                }
-            }
-        }
-    };
 
     const getRankEmoji = (rank?: number) => {
         if (!rank) return '🎮';
@@ -44,9 +30,22 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
 
     return (
         <div className="page-result">
+            {/* Header with HOME, Title, and STATS */}
+            <div className="result-header-top">
+                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                    🏠 HOME
+                </button>
+                <div className="header-title">
+                    <h2>Game Complete</h2>
+                </div>
+                <button className="header-button stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
+                    📊 STATS
+                </button>
+            </div>
+
             <div className="result-container">
                 <div className="result-header">
-                    <h1>🎮 Game Complete!</h1>
+                    {/* Title moved to header-top, so this is now empty or can be removed */}
                 </div>
 
                 <div className="score-display-large">
@@ -75,22 +74,6 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                                     <div className="stat-name">Final Score</div>
                                 </div>
                             </div>
-
-                            <div className="stat-card">
-                                <div className="stat-icon">⏅</div>
-                                <div className="stat-content">
-                                    <div className="stat-value">{leaderboardEntry.timeBonus}</div>
-                                    <div className="stat-name">Time Bonus</div>
-                                </div>
-                            </div>
-
-                            <div className="stat-card rank-highlight">
-                                <div className="stat-icon">{getRankEmoji(leaderboardEntry.rank)}</div>
-                                <div className="stat-content">
-                                    <div className="stat-value">#{leaderboardEntry.rank}</div>
-                                    <div className="stat-name">Your Rank Today</div>
-                                </div>
-                            </div>
                         </>
                     )}
                 </div>
@@ -109,7 +92,6 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
                     <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>
                     <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
-                    <button onClick={handleDeleteUserData} className="btn delete">🗑️ DELETE DATA</button>
                 </div>
             </div>
         </div>

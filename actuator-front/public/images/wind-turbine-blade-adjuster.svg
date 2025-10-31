@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background -->
+  <rect width="300" height="300" fill="#f0f0f0" rx="10"/>
+  
+  <!-- Wind turbine tower -->
+  <polygon points="140,250 150,50 160,250" fill="#999" stroke="#333" stroke-width="2"/>
+  
+  <!-- Turbine nacelle (housing) -->
+  <ellipse cx="150" cy="55" rx="30" ry="18" fill="#666" stroke="#333" stroke-width="2"/>
+  
+  <!-- Blade adjuster mechanism -->
+  <g fill="none" stroke="#10B981" stroke-width="3">
+    <!-- Center hub -->
+    <circle cx="150" cy="55" r="8" fill="#10B981"/>
+    <!-- Blades at angles -->
+    <line x1="150" y1="55" x2="180" y2="30"/>
+    <line x1="150" y1="55" x2="130" y2="15"/>
+    <line x1="150" y1="55" x2="120" y2="50"/>
+  </g>
+  
+  <!-- Blades -->
+  <g fill="#10B981" opacity="0.7" stroke="#333" stroke-width="1">
+    <polygon points="150,55 185,20 175,15"/>
+    <polygon points="150,55 125,5 130,15"/>
+    <polygon points="150,55 115,50 125,45"/>
+  </g>
+  
+  <!-- Blade pitch actuator visualization -->
+  <g fill="none" stroke="#FFB627" stroke-width="2" stroke-dasharray="4,4">
+    <arc cx="150" cy="55" rx="15" ry="15" x-axis-rotation="0" large-arc-flag="0" sweep-flag="1" x="165" y="70" />
+  </g>
+  
+  <!-- Control box at base -->
+  <g fill="#555" stroke="#333" stroke-width="2">
+    <rect x="120" y="240" width="60" height="30" rx="3"/>
+    <circle cx="130" cy="255" r="3" fill="#FF6B6B"/>
+    <circle cx="145" cy="255" r="3" fill="#FFD700"/>
+    <circle cx="160" cy="255" r="3" fill="#4ECDC4"/>
+  </g>
+  
+  <!-- Label -->
+  <text x="150" y="290" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Turbine</text>
+</svg>

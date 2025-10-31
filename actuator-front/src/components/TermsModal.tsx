@@ -4,26 +4,16 @@ interface TermsModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAccept: () => void;
-    agreeTerms: boolean;
-    setAgreeTerms: (v: boolean) => void;
-    agreeMarketing: boolean;
-    setAgreeMarketing: (v: boolean) => void;
 }
 
 const TermsModal: React.FC<TermsModalProps> = ({
     isOpen,
     onClose,
     onAccept,
-    agreeTerms,
-    setAgreeTerms,
-    agreeMarketing,
-    setAgreeMarketing,
 }) => {
     if (!isOpen) return null;
 
     const handleAccept = () => {
-        setAgreeTerms(true);
-        setAgreeMarketing(true);
         onAccept();
     };
 
@@ -70,15 +60,9 @@ const TermsModal: React.FC<TermsModalProps> = ({
                     </p>
                 </div>
 
-                <div className="consent-section">
-                    <label className="checkbox-item">
-                        <input type="checkbox" checked={agreeTerms} onChange={(e) => setAgreeTerms(e.target.checked)} />
-                        <span>I have read and agree to the Terms and Conditions</span>
-                    </label>
-                    <label className="checkbox-item">
-                        <input type="checkbox" checked={agreeMarketing} onChange={(e) => setAgreeMarketing(e.target.checked)} />
-                        <span>I consent to receive marketing communications</span>
-                    </label>
+                <div className="consent-section-center">
+                    <p>I have read and agree to the Terms and Conditions</p>
+                    <p>I consent to receive marketing communications</p>
                 </div>
 
                 <div className="modal-actions">

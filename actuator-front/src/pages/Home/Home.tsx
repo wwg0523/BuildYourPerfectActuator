@@ -66,6 +66,50 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
                 ))}
             </div>
 
+            {/* 🏆 Prize Section */}
+            <motion.div
+                className="prizes-container"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+            >
+                <h2 className="prizes-title">🏆 Challenge Prizes</h2>
+                <div className="prizes-grid">
+                    <motion.div
+                        className="prize-card prize-1st"
+                        whileHover={{ scale: 1.05, y: -5 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                    >
+                        <div className="medal">🥇</div>
+                        <h3 className="rank">1st Place</h3>
+                        <p className="prize-name">Premium Actuator Kit</p>
+                        <p className="prize-description">Advanced components & accessories</p>
+                    </motion.div>
+
+                    <motion.div
+                        className="prize-card prize-2nd"
+                        whileHover={{ scale: 1.05, y: -5 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                    >
+                        <div className="medal">🥈</div>
+                        <h3 className="rank">2nd Place</h3>
+                        <p className="prize-name">Professional Kit</p>
+                        <p className="prize-description">Standard components & tools</p>
+                    </motion.div>
+
+                    <motion.div
+                        className="prize-card prize-3rd"
+                        whileHover={{ scale: 1.05, y: -5 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
+                    >
+                        <div className="medal">🥉</div>
+                        <h3 className="rank">3rd Place</h3>
+                        <p className="prize-name">Starter Pack</p>
+                        <p className="prize-description">Essential components & guide</p>
+                    </motion.div>
+                </div>
+            </motion.div>
+
             <motion.button
                 className="button"
                 onClick={handleStartGameClick}

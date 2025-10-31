@@ -8,9 +8,10 @@ interface LeaderboardProps {
     fetchLeaderboard: () => Promise<void>;
     handlePlayAgain: () => void;
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    handleDeleteUserData?: () => Promise<void>;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderboard, handlePlayAgain, setScreen }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderboard, handlePlayAgain, setScreen, handleDeleteUserData }) => {
     useEffect(() => {
         fetchLeaderboard();
     }, [fetchLeaderboard]);
@@ -31,9 +32,22 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
 
     return (
         <div className="page-leaderboard">
+            {/* Header with HOME, Title, and STATS */}
+            <div className="leaderboard-header-top">
+                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                    🏠 HOME
+                </button>
+                <div className="header-title">
+                    <h2>Today's Rankings</h2>
+                </div>
+                <button className="header-button stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
+                    📊 STATS
+                </button>
+            </div>
+
             <div className="leaderboard-container">
                 <div className="leaderboard-header">
-                    <h1>🏆 Today's Rankings</h1>
+                    {/* Title moved to header-top */}
                     <p className="subtitle">Ranked by Correct Answers → Completion Time → Play Order</p>
                 </div>
 

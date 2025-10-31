@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background -->
+  <rect width="300" height="300" fill="#f0f0f0" rx="10"/>
+  
+  <!-- Factory building -->
+  <rect x="80" y="120" width="140" height="120" fill="#50C878" stroke="#333" stroke-width="2"/>
+  
+  <!-- Roof -->
+  <polygon points="80,120 150,60 220,120" fill="#2a7a4e" stroke="#333" stroke-width="2"/>
+  
+  <!-- Smokestacks -->
+  <g fill="#666">
+    <rect x="110" y="40" width="15" height="40" rx="7"/>
+    <rect x="175" y="40" width="15" height="40" rx="7"/>
+  </g>
+  
+  <!-- Windows -->
+  <g fill="#87CEEB" stroke="#333" stroke-width="1">
+    <rect x="95" y="140" width="20" height="20"/>
+    <rect x="130" y="140" width="20" height="20"/>
+    <rect x="165" y="140" width="20" height="20"/>
+    <rect x="95" y="180" width="20" height="20"/>
+    <rect x="130" y="180" width="20" height="20"/>
+    <rect x="165" y="180" width="20" height="20"/>
+  </g>
+  
+  <!-- Door -->
+  <rect x="140" y="220" width="20" height="30" fill="#8B4513" stroke="#333" stroke-width="1"/>
+  <circle cx="158" cy="235" r="2" fill="#FFD700"/>
+  
+  <!-- Label -->
+  <text x="150" y="280" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">Automation</text>
+</svg>

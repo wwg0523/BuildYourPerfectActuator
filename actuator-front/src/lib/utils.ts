@@ -67,11 +67,14 @@ export interface RobotPart {
 
 export interface GameQuestion {
     id: string;
-    question: string; // "다음 중 [application name]에 필요 없는 컴포넌트는?"
-    applicationName: string; // 예: "Medical Scanner Rotation"
-    requiredComponents: string[]; // 실제로 필요한 컴포넌트들
-    options: string[]; // 4개 선택지 (필요한 3개 + 필요 없는 1개)
-    correctAnswer: string; // 필요 없는 컴포넌트 (정답)
+    questionType: 'find_required' | 'find_not_required'; // 문제 유형
+    question: string;
+    applicationName: string;
+    requiredComponents: string[];
+    options: string[];
+    optionImages: Record<string, string>; // 각 선택지의 이미지 매핑
+    questionImage?: string; // 문제 이미지
+    correctAnswer: string;
     timeLimit: number;
 }
 
@@ -92,6 +95,7 @@ export interface GameSession {
     startTime: Date;
     endTime?: Date;
     totalScore: number;
+    completionTime?: number; // 게임 완료 시간 (ms)
 }
 
 export interface LeaderboardEntry {
@@ -100,7 +104,6 @@ export interface LeaderboardEntry {
     company: string;
     score: number;
     completionTime: number;
-    timeBonus: number;
     finalScore: number;
     playedAt: Date;
 }
@@ -153,6 +156,26 @@ export class GameEngine {
         robotic_vacuum_mobility: 'Robotic Vacuum Mobility',
     };
 
+    // 애플리케이션 이미지 매핑 (SVG 기반)
+    private applicationImages: Record<string, string> = {
+        robot_arm_joint: '/images/robot-arm.svg',
+        automotive_steering: '/images/automotive-steering.svg',
+        industrial_automation: '/images/industrial-automation.svg',
+        precision_robotics: '/images/precision-robotics.svg',
+        automated_conveyor: '/images/automated-conveyor.svg',
+        medical_robot_arm: '/images/medical-robot-arm.svg',
+        cnc_machine: '/images/cnc-machine.svg',
+        drone_actuator: '/images/drone-actuator.svg',
+        precision_manipulator: '/images/precision-manipulator.svg',
+        autonomous_vehicle_suspension: '/images/autonomous-vehicle-suspension.svg',
+        factory_conveyor_system: '/images/factory-conveyor-system.svg',
+        medical_scanner_rotation: '/images/medical-scanner-rotation.svg',
+        drone_camera_gimbal: '/images/drone-camera-gimbal.svg',
+        wind_turbine_blade_adjuster: '/images/wind-turbine-blade-adjuster.svg',
+        cnc_milling_spindle: '/images/cnc-milling-spindle.svg',
+        robotic_vacuum_mobility: '/images/robotic-vacuum-mobility.svg',
+    };
+
     private shuffleArray<T>(array: T[]): T[] {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -178,22 +201,74 @@ export class GameEngine {
             const appId = shuffledApps[i];
             const requiredComponentIds = compatibilityMatrix[appId];
             
-            // 필요 없는 컴포넌트 1개 선택
-            const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+            // 홀수(i=0,2,4)는 "필요없는 컴포넌트 찾기", 짝수(i=1,3)는 "필요한 컴포넌트 찾기"
+            const isFindRequired = i % 2 === 1;
             
-            // 필요한 3개 + 필요 없는 1개 = 4개 선택지
-            const allOptions = [...requiredComponentIds.slice(0, 3), wrongComponent];
-            const shuffledOptions = this.shuffleArray(allOptions);
+            if (isFindRequired) {
+                // Type 1: "다음 중 필요한 컴포넌트는?"
+                // 필요한 컴포넌트 중 1개를 정답으로 선택
+                const correctRequired = requiredComponentIds[Math.floor(Math.random() * requiredComponentIds.length)];
+                
+                // 필요한 컴포넌트 중 2개 추가 선택 (정답 제외)
+                const otherRequired = requiredComponentIds.filter(id => id !== correctRequired);
+                const selectedOtherRequired = this.shuffleArray(otherRequired).slice(0, 2);
+                
+                // 필요 없는 컴포넌트 1개 선택
+                const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+                
+                // 필요한 1개 + 다른 필요한 2개 + 필요 없는 1개 = 4개 선택지
+                const allOptions = [correctRequired, ...selectedOtherRequired, wrongComponent];
+                const shuffledOptions = this.shuffleArray(allOptions);
+                
+                // 옵션 이름과 이미지 매핑
+                const optionImages: Record<string, string> = {};
+                shuffledOptions.forEach(id => {
+                    optionImages[this.allComponentsMap[id].name] = this.allComponentsMap[id].image;
+                });
 
-            questions.push({
-                id: `q_${i + 1}`,
-                question: `Which of the following is NOT required for the "${this.applicationNames[appId]}"?`,
-                applicationName: this.applicationNames[appId],
-                requiredComponents: requiredComponentIds,
-                options: shuffledOptions.map(id => this.allComponentsMap[id].name),
-                correctAnswer: this.allComponentsMap[wrongComponent].name,
-                timeLimit: 60,
-            });
+                questions.push({
+                    id: `q_${i + 1}`,
+                    questionType: 'find_required',
+                    question: `Which of the following is REQUIRED for the "${this.applicationNames[appId]}"?`,
+                    applicationName: this.applicationNames[appId],
+                    requiredComponents: requiredComponentIds,
+                    options: shuffledOptions.map(id => this.allComponentsMap[id].name),
+                    optionImages,
+                    questionImage: this.applicationImages[appId],
+                    correctAnswer: this.allComponentsMap[correctRequired].name,
+                    timeLimit: 60,
+                });
+            } else {
+                // Type 2: "다음 중 필요 없는 컴포넌트는?"
+                // 필요한 컴포넌트 중 3개를 랜덤으로 선택
+                const selectedRequired = this.shuffleArray(requiredComponentIds).slice(0, 3);
+                
+                // 필요 없는 컴포넌트 1개 선택 (정답)
+                const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+                
+                // 필요한 3개 + 필요 없는 1개 = 4개 선택지
+                const allOptions = [...selectedRequired, wrongComponent];
+                const shuffledOptions = this.shuffleArray(allOptions);
+                
+                // 옵션 이름과 이미지 매핑
+                const optionImages: Record<string, string> = {};
+                shuffledOptions.forEach(id => {
+                    optionImages[this.allComponentsMap[id].name] = this.allComponentsMap[id].image;
+                });
+
+                questions.push({
+                    id: `q_${i + 1}`,
+                    questionType: 'find_not_required',
+                    question: `Which of the following is NOT required for the "${this.applicationNames[appId]}"?`,
+                    applicationName: this.applicationNames[appId],
+                    requiredComponents: requiredComponentIds,
+                    options: shuffledOptions.map(id => this.allComponentsMap[id].name),
+                    optionImages,
+                    questionImage: this.applicationImages[appId],
+                    correctAnswer: this.allComponentsMap[wrongComponent].name,
+                    timeLimit: 60,
+                });
+            }
         }
 
         return {
@@ -217,8 +292,7 @@ export class LeaderboardManager {
 
     async submitScore(gameSession: GameSession, userInfo: UserInfo): Promise<LeaderboardEntry> {
         const baseScore = this.calculateScore(gameSession);
-        const timeBonus = this.calculateTimeBonus(gameSession);
-        const finalScore = baseScore * 100 + timeBonus;
+        const finalScore = baseScore * 100;
         const completionTime = gameSession.endTime
             ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
             : 0;
@@ -229,7 +303,6 @@ export class LeaderboardManager {
             company: userInfo.company,
             score: baseScore,
             completionTime: completionTime,
-            timeBonus,
             finalScore,
             playedAt: new Date(),
         };
@@ -250,14 +323,6 @@ export class LeaderboardManager {
 
     calculateScore(gameSession: GameSession): number {
         return gameSession.answers.filter(answer => answer.isCorrect).length;
-    }
-
-    calculateTimeBonus(gameSession: GameSession): number {
-        if (!gameSession.endTime) return 0;
-        const totalTime = gameSession.endTime.getTime() - gameSession.startTime.getTime();
-        const averageTimePerQuestion = totalTime / gameSession.questions.length;
-        const bonusPerQuestion = Math.max(0, (60000 - averageTimePerQuestion) / 6000);
-        return Math.round(bonusPerQuestion * gameSession.answers.filter(a => a.isCorrect).length);
     }
 
     private maskPlayerName(name: string): string {
@@ -373,10 +438,6 @@ export class LeaderboardManager {
                     <span class="stats-value">${timeStr}</span>
                 </div>
                 <div class="stats-row">
-                    <span class="stats-label">Time Bonus:</span>
-                    <span class="stats-value">${leaderboardEntry.timeBonus} points</span>
-                </div>
-                <div class="stats-row">
                     <span class="stats-label">Daily Rank:</span>
                     <span class="stats-value">#${leaderboardEntry.rank}</span>
                 </div>
@@ -425,7 +486,6 @@ YOUR RESULTS:
 - Daily Rank: #${leaderboardEntry.rank}
 - Completion Time: ${timeStr}
 - Final Score: ${leaderboardEntry.finalScore} points
-- Time Bonus: ${leaderboardEntry.timeBonus} points
 
 Learn more at https://www.example.com
 

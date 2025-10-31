@@ -1,5 +1,37 @@
 -- ⚡ Synology NAS PostgreSQL (sacrp_production) 에 실행할 최종 SQL
--- daily_leaderboard VIEW는 game_results 테이블을 기반으로 자동 생성됨
+
+-- 0️⃣ VIEW 생성 (daily_leaderboard, game_analytics)
+
+-- daily_leaderboard VIEW: 오늘 플레이한 게임 결과 순위
+DROP VIEW IF EXISTS daily_leaderboard CASCADE;
+CREATE VIEW daily_leaderboard AS
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY gr.success_rate DESC, gr.completion_time ASC) as rank,
+    gr.id,
+    gr.user_id,
+    gu.name as player_name,
+    gu.company,
+    COALESCE(gr.score, 0) as score,
+    gr.completion_time,
+    COALESCE(gr.final_score, 0) as final_score,
+    gr.created_at as played_at
+FROM game_results gr
+JOIN game_users gu ON gr.user_id = gu.id
+WHERE DATE(gr.created_at) = CURRENT_DATE
+ORDER BY gr.success_rate DESC, gr.completion_time ASC;
+
+-- game_analytics VIEW: 게임 분석 데이터
+DROP VIEW IF EXISTS game_analytics CASCADE;
+CREATE VIEW game_analytics AS
+SELECT 
+    COUNT(DISTINCT gr.user_id) as total_participants,
+    ROUND(COUNT(CASE WHEN gr.success_rate > 0.75 THEN 1 END)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as completion_rate,
+    ROUND(AVG(gr.completion_time)::numeric / 1000, 2) as average_completion_time,
+    array_agg(DISTINCT gu.company) as top_company_participants,
+    array_agg(DISTINCT gr.compatible_applications) as popular_component_combinations,
+    jsonb_object_agg('total', COUNT(*)::text) as success_rate_by_experience
+FROM game_results gr
+JOIN game_users gu ON gr.user_id = gu.id;
 
 -- 1️⃣ email_logs 테이블 생성
 CREATE TABLE IF NOT EXISTS email_logs (
