@@ -1,0 +1,27 @@
+# 📁 Documentation and Scripts Folder
+# 문서, 스크립트, SQL 파일은 로컬에서만 사용
+docs/
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database data
+actuator-db-data/

@@ -311,10 +311,8 @@ export class LeaderboardManager {
             // 1. 사용자의 순위 계산 (daily_leaderboard VIEW 기반)
             entry.rank = await this.calculateRank(entry);
 
-            // 2. 이메일 발송 (비동기, 실패해도 게임 결과 화면으로 진행)
-            this.sendResultEmail(userInfo, gameSession, entry).catch(err => {
-                console.warn('Email sending failed (non-critical):', err);
-            });
+            // 2. 이메일 발송은 Result 화면에서 처리 (useEffect)
+            // (더 이상 여기서 비동기로 발송하지 않음)
         } catch (error) {
             console.error('Error submitting score:', error);
         }

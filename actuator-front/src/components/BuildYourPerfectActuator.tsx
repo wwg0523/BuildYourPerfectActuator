@@ -582,6 +582,13 @@ export default function BuildYourPerfectActuator() {
                         handlePlayAgain={handlePlayAgain}
                         setScreen={setScreen}
                         handleDeleteUserData={handleDeleteUserData}
+                        userInfo={{
+                            id: userId,
+                            name: userInfo.name,
+                            company: userInfo.company,
+                            email: userInfo.email,
+                            phone: userInfo.phone,
+                        }}
                     />
                 )}
                 {screen === 'leaderboard' && (

@@ -71,3 +71,16 @@ CREATE TABLE IF NOT EXISTS api_counter_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_api_counter_logs_created_at ON api_counter_logs(created_at DESC);
+
+-- game_analytics: Analytics 대시보드용 VIEW
+-- 총 참여자, 완료율, 평균 완료시간, 상위 회사, 인기 조합, 경험별 성공률 조회
+CREATE OR REPLACE VIEW game_analytics AS
+SELECT 
+    COUNT(DISTINCT gr.user_id) as total_participants,
+    ROUND(COUNT(CASE WHEN gr.success_rate > 0.75 THEN 1 END)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as completion_rate,
+    ROUND(AVG(gr.completion_time)::numeric / 1000, 2) as average_completion_time,
+    array_agg(DISTINCT gu.company) as top_company_participants,
+    array_agg(DISTINCT gr.compatible_applications) as popular_component_combinations,
+    jsonb_build_object('total', COUNT(*)::text) as success_rate_by_experience
+FROM game_results gr
+JOIN game_users gu ON gr.user_id = gu.id;

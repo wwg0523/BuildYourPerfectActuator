@@ -31,6 +31,7 @@ const Analytics: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [activeTab, setActiveTab] = useState<'chart' | 'table'>('chart');
 
     const fetchAnalytics = useCallback(async () => {
         try {
@@ -125,54 +126,164 @@ const Analytics: React.FC = () => {
                         <h2>Data Analytics Dashboard</h2>
                         {analyticsData ? (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-                                <p>Total Participants: {analyticsData.totalParticipants}</p>
-                                <p>Completion Rate: {analyticsData.completionRate}%</p>
-                                <p>Average Completion Time: {analyticsData.averageCompletionTime} seconds</p>
-                                <p>Top Companies: {analyticsData.topCompanyParticipants?.join(', ') || 'None'}</p>
-                                <p>Popular Combinations (component frequency):</p>
-                                <div style={{ width: '100%', height: 280 }}>
-                                    {componentFrequency.length > 0 ? (
-                                        <ResponsiveContainer>
-                                            <BarChart data={componentFrequency.slice(0, 20)} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-                                                <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Legend />
-                                                <Bar dataKey="value" fill="#8884d8" />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    ) : (
-                                        <p>No combinations available</p>
-                                    )}
+                                {/* Tab Navigation */}
+                                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #eee' }}>
+                                    <button
+                                        onClick={() => setActiveTab('chart')}
+                                        style={{
+                                            padding: '10px 20px',
+                                            border: 'none',
+                                            background: activeTab === 'chart' ? '#007bff' : '#f0f0f0',
+                                            color: activeTab === 'chart' ? '#fff' : '#333',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            borderRadius: '4px 4px 0 0',
+                                        }}
+                                    >
+                                        📊 Charts
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('table')}
+                                        style={{
+                                            padding: '10px 20px',
+                                            border: 'none',
+                                            background: activeTab === 'table' ? '#007bff' : '#f0f0f0',
+                                            color: activeTab === 'table' ? '#fff' : '#333',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            borderRadius: '4px 4px 0 0',
+                                        }}
+                                    >
+                                        📋 Raw Data
+                                    </button>
                                 </div>
 
-                                <p style={{ marginTop: 18 }}>Success Rate by Attempt Count:</p>
-                                <div style={{ width: '100%', height: 240 }}>
-                                    {successRateData.length > 0 ? (
-                                        <ResponsiveContainer>
-                                            <PieChart>
-                                                <Pie data={successRateData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                                                    {successRateData.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]} />
-                                                    ))}
-                                                </Pie>
-                                                <Tooltip />
-                                                <Legend />
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                    ) : (
-                                        <p>No success rate data available</p>
-                                    )}
-                                </div>
-                                <p>Success Rate by Attempt Count:</p>
-                                <ul>
-                                    {analyticsData.successRateByExperience
-                                        ? Object.entries(analyticsData.successRateByExperience).map(([exp, rate]) => (
-                                              <li key={exp}>{exp}: {rate}%</li>
-                                          ))
-                                        : <li>No data available</li>}
-                                </ul>
+                                {/* Chart Tab */}
+                                {activeTab === 'chart' && (
+                                    <>
+                                        <p>Total Participants: {analyticsData.totalParticipants}</p>
+                                        <p>Completion Rate: {analyticsData.completionRate}%</p>
+                                        <p>Average Completion Time: {analyticsData.averageCompletionTime} seconds</p>
+                                        <p>Top Companies: {analyticsData.topCompanyParticipants?.join(', ') || 'None'}</p>
+                                        <p>Popular Combinations (component frequency):</p>
+                                        <div style={{ width: '100%', height: 280 }}>
+                                            {componentFrequency.length > 0 ? (
+                                                <ResponsiveContainer>
+                                                    <BarChart data={componentFrequency.slice(0, 20)} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                                                        <CartesianGrid strokeDasharray="3 3" />
+                                                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                                        <YAxis />
+                                                        <Tooltip />
+                                                        <Legend />
+                                                        <Bar dataKey="value" fill="#8884d8" />
+                                                    </BarChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <p>No combinations available</p>
+                                            )}
+                                        </div>
+
+                                        <p style={{ marginTop: 18 }}>Success Rate by Attempt Count:</p>
+                                        <div style={{ width: '100%', height: 240 }}>
+                                            {successRateData.length > 0 ? (
+                                                <ResponsiveContainer>
+                                                    <PieChart>
+                                                        <Pie data={successRateData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                                                            {successRateData.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]} />
+                                                            ))}
+                                                        </Pie>
+                                                        <Tooltip />
+                                                        <Legend />
+                                                    </PieChart>
+                                                </ResponsiveContainer>
+                                            ) : (
+                                                <p>No success rate data available</p>
+                                            )}
+                                        </div>
+                                        <p>Success Rate by Attempt Count:</p>
+                                        <ul>
+                                            {analyticsData.successRateByExperience
+                                                ? Object.entries(analyticsData.successRateByExperience).map(([exp, rate]) => (
+                                                      <li key={exp}>{exp}: {rate}%</li>
+                                                  ))
+                                                : <li>No data available</li>}
+                                        </ul>
+                                    </>
+                                )}
+
+                                {/* Table Tab */}
+                                {activeTab === 'table' && (
+                                    <div style={{ overflowX: 'auto' }}>
+                                        <table style={{
+                                            width: '100%',
+                                            borderCollapse: 'collapse',
+                                            marginBottom: '20px',
+                                        }}>
+                                            <thead>
+                                                <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
+                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Column Name</th>
+                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>totalParticipants</td>
+                                                    <td style={{ padding: '12px' }}>{analyticsData.totalParticipants}</td>
+                                                </tr>
+                                                <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>completionRate</td>
+                                                    <td style={{ padding: '12px' }}>{analyticsData.completionRate}%</td>
+                                                </tr>
+                                                <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>averageCompletionTime</td>
+                                                    <td style={{ padding: '12px' }}>{analyticsData.averageCompletionTime} seconds</td>
+                                                </tr>
+                                                <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>topCompanyParticipants</td>
+                                                    <td style={{ padding: '12px' }}>
+                                                        {Array.isArray(analyticsData.topCompanyParticipants)
+                                                            ? analyticsData.topCompanyParticipants.filter(c => c).join(', ')
+                                                            : 'None'}
+                                                    </td>
+                                                </tr>
+                                                <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500', verticalAlign: 'top' }}>popularComponentCombinations</td>
+                                                    <td style={{ padding: '12px' }}>
+                                                        {Array.isArray(analyticsData.popularComponentCombinations) && analyticsData.popularComponentCombinations.length > 0 ? (
+                                                            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                                                                {analyticsData.popularComponentCombinations.map((combo, idx) => (
+                                                                    <li key={idx}>
+                                                                        {Array.isArray(combo)
+                                                                            ? `[${combo.join(', ')}]`
+                                                                            : JSON.stringify(combo)}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        ) : (
+                                                            'None'
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500', verticalAlign: 'top' }}>successRateByExperience</td>
+                                                    <td style={{ padding: '12px' }}>
+                                                        {analyticsData.successRateByExperience ? (
+                                                            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                                                                {Object.entries(analyticsData.successRateByExperience).map(([key, value]) => (
+                                                                    <li key={key}>{key}: {value}%</li>
+                                                                ))}
+                                                            </ul>
+                                                        ) : (
+                                                            'None'
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+
                                 <button className="button outline" onClick={fetchAnalytics}>
                                     REFRESH
                                 </button>
