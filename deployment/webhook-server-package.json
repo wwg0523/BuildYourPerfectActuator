@@ -1,0 +1,19 @@
+{
+  "name": "webhook-server",
+  "version": "1.0.0",
+  "description": "GitHub Webhook 자동 배포 서버",
+  "main": "webhook-server.js",
+  "scripts": {
+    "start": "node webhook-server.js",
+    "dev": "nodemon webhook-server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

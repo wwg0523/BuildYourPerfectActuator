@@ -1,5 +1,5 @@
-# 📁 Documentation and Scripts Folder
-# 문서, 스크립트, SQL 파일은 로컬에서만 사용
+# 📁 Documentation Folder (로컬 가이드만)
+# 가이드 문서는 로컬에서만 사용
 docs/
 
 # Node modules

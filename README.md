@@ -217,9 +217,57 @@ Closes #123
 
 ### Docker 배포
 
-## 🔒 보안 고려사항
+#### Synology NAS 자동 배포
+
+GitHub에서 코드를 push하면 **자동으로** Synology NAS에 배포되도록 설정할 수 있습니다.
+
+**3가지 방법 지원:**
+1. **Webhook (즉시 배포)**: GitHub에 push → NAS가 즉시 배포
+2. **Cron (정기 배포)**: 설정된 시간에 자동 배포
+3. **혼합**: 둘 다 사용하여 push 후 즉시 배포 + 정기적 백업
+
+**자세한 가이드 (docs 폴더):**
+- ⭐ **[여기서 시작! (START-HERE.md)](./docs/START-HERE.md)** - 전체 개요
+- ⚡ **[빠른 시작 가이드](./docs/QUICK-START.md)** - 5분 안에 설정하기
+- 📚 **[상세 설정 가이드](./docs/AUTO-DEPLOY-GUIDE.md)** - 전체 설정 및 트러블슈팅
+- 📋 **[배포 구조 설명](./docs/DEPLOYMENT-SUMMARY.md)** - 시스템 구조 이해하기
+
+**NAS에서 배포 설정 (deployment 폴더):**
+```bash
+# GitHub에서 clone
+git clone https://github.com/wwg0523/BuildYourPerfectActuator.git
+cd build-your-perfect-actuator
+
+# deployment 폴더로 이동
+cd deployment
+
+# 스크립트 실행 권한 부여
+chmod +x *.sh
+
+# 환경 설정
+cp .env.example .env
+nano .env  # WEBHOOK_SECRET 수정 (Webhook 방식을 사용할 경우)
+
+# 배포 관리 도구 실행
+bash deploy-manager.sh
+```
+
+**또는 간단하게 (Cron 방식):**
+```bash
+cd /volume1/build-your-perfect-actuator
+
+# Crontab 설정
+crontab -e
+
+# 다음 추가 (매일 오전 2시):
+0 2 * * * /volume1/build-your-perfect-actuator/deployment/schedule-update.sh
+```
+
+## �🔒 보안 고려사항
 
 - 환경변수로 민감한 정보 관리
+- GitHub Webhook Secret으로 요청 검증
+- HTTPS를 통한 안전한 통신 권장
 
 ## 🐛 문제 해결
 
