@@ -1,2 +1,4 @@
 *.sh export-ignore
 deployment/*.sh export-ignore
+*.sh eol=lf
+*.sh diff=shell
