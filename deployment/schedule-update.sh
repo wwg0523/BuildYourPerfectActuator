@@ -95,7 +95,7 @@ log "Git 업데이트 완료"
 
 # Docker 컨테이너 정지
 log "Docker 컨테이너 정지 중..."
-docker-compose -f docker-compose.prod.yaml down
+/usr/local/bin/docker-compose -f docker-compose.prod.yaml down
 
 log "이미지 삭제 중..."
 docker rmi actuator-back:latest 2>/dev/null || true
@@ -103,17 +103,17 @@ docker rmi actuator-front:latest 2>/dev/null || true
 
 # Docker 재빌드 및 시작
 log "Docker 이미지 재빌드 및 실행 중..."
-docker-compose -f docker-compose.prod.yaml up -d
+/usr/local/bin/docker-compose -f docker-compose.prod.yaml up -d
 
 # 컨테이너 상태 확인
 log "컨테이너 상태 확인 중..."
 sleep 5
 
-if docker-compose -f docker-compose.prod.yaml ps | grep -q "Up"; then
+if /usr/local/bin/docker-compose -f docker-compose.prod.yaml ps | grep -q "Up"; then
     log "✓ 컨테이너가 정상적으로 실행 중입니다"
 else
     log "✗ 컨테이너 실행 중 문제가 발생했습니다"
-    docker-compose -f docker-compose.prod.yaml logs >> "${LOG_FILE}" 2>&1
+    /usr/local/bin/docker-compose -f docker-compose.prod.yaml logs >> "${LOG_FILE}" 2>&1
     exit 1
 fi
 
