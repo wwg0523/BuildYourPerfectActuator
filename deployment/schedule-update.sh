@@ -106,8 +106,12 @@ log "이미지 삭제 중..."
 docker rmi actuator-back:latest 2>/dev/null || true
 docker rmi actuator-front:latest 2>/dev/null || true
 
-# Docker 재빌드 및 시작
+# Docker 빌드 캐시 제거
+log "Docker 빌드 캐시 제거 중..."
+docker image prune -f 2>/dev/null || true
+
 log "Docker 이미지 재빌드 및 실행 중..."
+/usr/local/bin/docker-compose -f docker-compose.prod.yaml build --no-cache
 /usr/local/bin/docker-compose -f docker-compose.prod.yaml up -d
 
 # 컨테이너 상태 확인
