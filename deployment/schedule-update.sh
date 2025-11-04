@@ -93,6 +93,11 @@ log "Git 저장소 업데이트 중..."
 git reset --hard origin/main
 log "Git 업데이트 완료"
 
+# .sh 파일 권한 복구 (Cron 실행 시 권한 손실 방지)
+log "배포 스크립트 권한 복구 중..."
+chmod +x deployment/*.sh
+log ".sh 파일 권한 복구 완료"
+
 # Docker 컨테이너 정지
 log "Docker 컨테이너 정지 중..."
 /usr/local/bin/docker-compose -f docker-compose.prod.yaml down
