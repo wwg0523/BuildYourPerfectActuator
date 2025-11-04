@@ -1,0 +1,2 @@
+*.sh export-ignore
+deployment/*.sh export-ignore
