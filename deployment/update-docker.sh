@@ -46,12 +46,19 @@ log ".sh 파일 권한 복구 완료"
 log "Docker 컨테이너 정지 중..."
 docker-compose -f docker-compose.prod.yaml down
 
-log "이미지 삭제 중..."
+log "이미지 및 컨테이너 완전 정리 중..."
+# 이미지 강제 삭제
 docker rmi actuator-back:latest 2>/dev/null || true
 docker rmi actuator-front:latest 2>/dev/null || true
 
-# Docker 재빌드 및 시작
-log "Docker 이미지 재빌드 및 실행 중..."
+# 댕글링 이미지 제거
+docker image prune -f 2>/dev/null || true
+
+log "Docker 빌드 캐시 제거 중..."
+# 노드 모듈 캐시도 제거하기 위해 --no-cache 옵션 사용
+docker-compose -f docker-compose.prod.yaml build --no-cache
+
+log "Docker 이미지 재빌드 완료, 컨테이너 시작 중..."
 docker-compose -f docker-compose.prod.yaml up -d
 
 # 컨테이너 상태 확인
