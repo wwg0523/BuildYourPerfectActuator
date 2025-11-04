@@ -45,7 +45,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
                 animate="visible"
                 variants={textVariants}
             >
-                Welcome!!
+                Welcome!!!
             </motion.h1>
 
             <div className="home-subtitle">
