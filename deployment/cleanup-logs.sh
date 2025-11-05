@@ -3,19 +3,19 @@
 # 로그 정리 스크립트 (Cron 사용)
 #
 # 설치 방법:
-# 1. 이 스크립트를 /volume1/build-your-perfect-actuator/deployment/cleanup-logs.sh에 저장
-# 2. chmod +x /volume1/build-your-perfect-actuator/deployment/cleanup-logs.sh 실행
+# 1. 이 스크립트를 /volume1/actuator-minigame/deployment/cleanup-logs.sh에 저장
+# 2. chmod +x /volume1/actuator-minigame/deployment/cleanup-logs.sh 실행
 # 3. crontab -e 명령어로 크론탭 편집
 # 4. 다음을 크론탭에 추가:
 #    
 #    # 매주 일요일 오전 3시에 로그 정리 (UTC 기준)
-#    0 3 * * 0 /volume1/build-your-perfect-actuator/deployment/cleanup-logs.sh
+#    0 3 * * 0 /volume1/actuator-minigame/deployment/cleanup-logs.sh
 #
 
 set -e
 
 # 설정
-PROJECT_DIR="/volume1/build-your-perfect-actuator"
+PROJECT_DIR="/volume1/actuator-minigame"
 LOG_DIR="${PROJECT_DIR}/logs"
 MAX_SIZE_MB=5
 MAX_SIZE_BYTES=$((MAX_SIZE_MB * 1024 * 1024))

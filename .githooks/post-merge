@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Git Post-Merge Hook - 파일 권한 자동 복구
+# 
+# 이 훅은 git merge 또는 git pull 후 자동으로 실행되어 
+# 스크립트 파일의 실행 권한을 복구합니다.
+#
+# 설치 방법:
+# cp .githooks/post-merge .git/hooks/post-merge
+# chmod +x .git/hooks/post-merge
+
+PROJECT_DIR="$(git rev-parse --show-toplevel)"
+
+echo "[Git Hook] 파일 권한 복구 중..."
+
+# 모든 .sh 파일에 실행 권한 부여
+find "${PROJECT_DIR}" -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null
+
+# 특정 배포 스크립트 권한 설정
+chmod +x "${PROJECT_DIR}/deployment/schedule-update.sh" 2>/dev/null || true
+chmod +x "${PROJECT_DIR}/deployment/deploy-manager.sh" 2>/dev/null || true
+chmod +x "${PROJECT_DIR}/deployment/cleanup-logs.sh" 2>/dev/null || true
+chmod +x "${PROJECT_DIR}/deployment/update-docker.sh" 2>/dev/null || true
+chmod +x "${PROJECT_DIR}/deployment/validate-deployment.sh" 2>/dev/null || true
+
+echo "[Git Hook] 파일 권한 복구 완료"
+
+exit 0

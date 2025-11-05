@@ -49,7 +49,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
             </motion.h1>
 
             <div className="home-subtitle">
-                {"Build Your Perfect Actuator".split('').map((char, i) => (
+                {"Actuator that makes your Life good’s Better".split('').map((char, i) => (
                     <motion.span
                         key={`${char}-${i}`}
                         className="char"

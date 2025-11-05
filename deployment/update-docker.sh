@@ -6,8 +6,8 @@
 set -e
 
 # 설정
-PROJECT_DIR="/volume1/build-your-perfect-actuator"
-LOG_DIR="/volume1/build-your-perfect-actuator/logs"
+PROJECT_DIR="/volume1/actuator-minigame"
+LOG_DIR="/volume1/actuator-minigame/logs"
 LOG_FILE="${LOG_DIR}/update-$(date +%Y%m%d-%H%M%S).log"
 REPO_URL="https://github.com/wwg0523/BuildYourPerfectActuator.git"
 

@@ -3,24 +3,24 @@
 # 정기적 업데이트 스크립트 (Cron 사용)
 # 
 # 설치 방법:
-# 1. 이 스크립트를 /volume1/build-your-perfect-actuator/schedule-update.sh에 저장
-# 2. chmod +x /volume1/build-your-perfect-actuator/schedule-update.sh 실행
+# 1. 이 스크립트를 /volume1/actuator-minigame/schedule-update.sh에 저장
+# 2. chmod +x /volume1/actuator-minigame/schedule-update.sh 실행
 # 3. crontab -e 명령어로 크론탭 편집
 # 4. 다음 중 하나를 크론탭에 추가:
 #    
 #    # 매일 오전 2시에 업데이트 (UTC 기준)
-#    0 2 * * * /volume1/build-your-perfect-actuator/schedule-update.sh
+#    0 2 * * * /volume1/actuator-minigame/schedule-update.sh
 #    
 #    # 매일 오전 2시, 오후 2시에 업데이트
-#    0 2,14 * * * /volume1/build-your-perfect-actuator/schedule-update.sh
+#    0 2,14 * * * /volume1/actuator-minigame/schedule-update.sh
 #    
 #    # 모든 요일 오후 6시에 업데이트
-#    0 18 * * * /volume1/build-your-perfect-actuator/schedule-update.sh
+#    0 18 * * * /volume1/actuator-minigame/schedule-update.sh
 
 set -e
 
 # 설정
-PROJECT_DIR="/volume1/build-your-perfect-actuator"
+PROJECT_DIR="/volume1/actuator-minigame"
 LOG_DIR="${PROJECT_DIR}/logs"
 LOG_FILE="${LOG_DIR}/scheduled-update-$(date +%Y%m%d-%H%M%S).log"
 REPO_URL="https://github.com/wwg0523/BuildYourPerfectActuator.git"

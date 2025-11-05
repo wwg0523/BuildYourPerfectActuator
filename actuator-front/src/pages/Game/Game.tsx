@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GameSession, GameQuestion, UserAnswer, GameEngine } from '../../lib/utils';
+import { GameSession, UserAnswer } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Game.scss';
 
@@ -28,7 +28,6 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
     });
 
     const currentQuestion = gameSession.questions[gameSession.currentQuestionIndex];
-    const gameEngine = new GameEngine();
 
     useEffect(() => {
         // 게임 시작 시간부터 경과 시간 계산
@@ -130,22 +129,49 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
                             />
                         )}
-                        <p className="required-components">
-                            {currentQuestion.questionType === 'find_required'
-                                ? 'Select the ONE that IS needed for this application'
-                                : <>Select the ONE that is <span style={{ color: '#dc3545', fontWeight: 'bold' }}>NOT</span> needed for this application</>}
-                        </p>
-                        <div className="options-grid">
-                            {currentQuestion.options.map((option, index) => (
-                                <button
-                                    key={index}
-                                    className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
-                                    onClick={() => setSelectedAnswer(option)}
-                                >
-                                    <span className="option-name">{option}</span>
-                                </button>
-                            ))}
-                        </div>
+                        
+                        {currentQuestion.questionType === 'multiple_choice' ? (
+                            <>
+                                <p className="required-components">
+                                    {currentQuestion.question.includes('REQUIRED')
+                                        ? 'Select the ONE that IS needed for this application'
+                                        : <>Select the ONE that is <span style={{ color: '#dc3545', fontWeight: 'bold' }}>NOT</span> needed for this application</>}
+                                </p>
+                                <div className="options-grid">
+                                    {currentQuestion.options.map((option, index) => (
+                                        <button
+                                            key={index}
+                                            className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
+                                            onClick={() => setSelectedAnswer(option)}
+                                        >
+                                            <span className="option-name">{option}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <p className="required-components">
+                                    Select <span style={{ fontWeight: 'bold' }}>True (O) or False (X)</span>
+                                </p>
+                                <div className="ox-options">
+                                    <button
+                                        className={`ox-button ox-true ${selectedAnswer === 'O' ? 'selected' : ''}`}
+                                        onClick={() => setSelectedAnswer('O')}
+                                    >
+                                        <span className="ox-label">O</span>
+                                        <span className="ox-text">True</span>
+                                    </button>
+                                    <button
+                                        className={`ox-button ox-false ${selectedAnswer === 'X' ? 'selected' : ''}`}
+                                        onClick={() => setSelectedAnswer('X')}
+                                    >
+                                        <span className="ox-label">X</span>
+                                        <span className="ox-text">False</span>
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
 

@@ -5,7 +5,7 @@
 
 set -e
 
-PROJECT_DIR="/volume1/build-your-perfect-actuator"
+PROJECT_DIR="/volume1/actuator-minigame"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # 색상 정의

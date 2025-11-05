@@ -22,8 +22,8 @@ require('dotenv').config();
 
 const PORT = process.env.WEBHOOK_PORT || 3000;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'your-webhook-secret';
-const UPDATE_SCRIPT = process.env.UPDATE_SCRIPT || '/volume1/build-your-perfect-actuator/update-docker.sh';
-const LOG_DIR = '/volume1/build-your-perfect-actuator/logs';
+const UPDATE_SCRIPT = process.env.UPDATE_SCRIPT || '/volume1/actuator-minigame/update-docker.sh';
+const LOG_DIR = '/volume1/actuator-minigame/logs';
 
 // 로그 디렉토리 생성
 if (!fs.existsSync(LOG_DIR)) {
