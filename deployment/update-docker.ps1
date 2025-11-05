@@ -2,7 +2,7 @@
 # 이 스크립트는 GitHub에서 코드 변경이 있을 때 자동으로 실행됩니다
 
 param(
-    [string]$ProjectDir = "C:\build-your-perfect-actuator"
+    [string]$ProjectDir = "C:\actuator-minigame"
 )
 
 # 설정

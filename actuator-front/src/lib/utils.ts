@@ -67,14 +67,14 @@ export interface RobotPart {
 
 export interface GameQuestion {
     id: string;
-    questionType: 'find_required' | 'find_not_required'; // 문제 유형
+    questionType: 'multiple_choice' | 'ox_quiz'; // 문제 유형: 4지선다 또는 OX 퀴즈
     question: string;
     applicationName: string;
     requiredComponents: string[];
-    options: string[];
-    optionImages: Record<string, string>; // 각 선택지의 이미지 매핑
+    options: string[]; // multiple_choice: 4개, ox_quiz: ['O', 'X']
+    optionImages?: Record<string, string>; // multiple_choice에만 필요 (각 선택지의 이미지 매핑)
     questionImage?: string; // 문제 이미지
-    correctAnswer: string;
+    correctAnswer: string; // multiple_choice: 컴포넌트 이름, ox_quiz: 'O' 또는 'X'
     timeLimit: number;
 }
 
@@ -197,75 +197,100 @@ export class GameEngine {
         const shuffledApps = this.shuffleArray(applications).slice(0, 5);
         const questions: GameQuestion[] = [];
 
+        // 처음 3개는 multiple_choice, 마지막 2개는 ox_quiz
         for (let i = 0; i < shuffledApps.length; i++) {
             const appId = shuffledApps[i];
             const requiredComponentIds = compatibilityMatrix[appId];
             
-            // 홀수(i=0,2,4)는 "필요없는 컴포넌트 찾기", 짝수(i=1,3)는 "필요한 컴포넌트 찾기"
-            const isFindRequired = i % 2 === 1;
-            
-            if (isFindRequired) {
-                // Type 1: "다음 중 필요한 컴포넌트는?"
-                // 필요한 컴포넌트 중 1개를 정답으로 선택
-                const correctRequired = requiredComponentIds[Math.floor(Math.random() * requiredComponentIds.length)];
+            if (i < 3) {
+                // 처음 3개: multiple_choice (4지선다)
+                // 짝수(i=0,2)는 "필요한 컴포넌트 찾기", 홀수(i=1)는 "필요없는 컴포넌트 찾기"
+                const isFindRequired = i % 2 === 0;
                 
-                // 필요한 컴포넌트 중 2개 추가 선택 (정답 제외)
-                const otherRequired = requiredComponentIds.filter(id => id !== correctRequired);
-                const selectedOtherRequired = this.shuffleArray(otherRequired).slice(0, 2);
-                
-                // 필요 없는 컴포넌트 1개 선택
-                const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
-                
-                // 필요한 1개 + 다른 필요한 2개 + 필요 없는 1개 = 4개 선택지
-                const allOptions = [correctRequired, ...selectedOtherRequired, wrongComponent];
-                const shuffledOptions = this.shuffleArray(allOptions);
-                
-                // 옵션 이름과 이미지 매핑
-                const optionImages: Record<string, string> = {};
-                shuffledOptions.forEach(id => {
-                    optionImages[this.allComponentsMap[id].name] = this.allComponentsMap[id].image;
-                });
+                if (isFindRequired) {
+                    // Type 1: "다음 중 필요한 컴포넌트는?"
+                    // 필요한 컴포넌트 중 1개를 정답으로 선택
+                    const correctRequired = requiredComponentIds[Math.floor(Math.random() * requiredComponentIds.length)];
+                    
+                    // 필요한 컴포넌트 중 2개 추가 선택 (정답 제외)
+                    const otherRequired = requiredComponentIds.filter(id => id !== correctRequired);
+                    const selectedOtherRequired = this.shuffleArray(otherRequired).slice(0, 2);
+                    
+                    // 필요 없는 컴포넌트 1개 선택
+                    const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+                    
+                    // 필요한 1개 + 다른 필요한 2개 + 필요 없는 1개 = 4개 선택지
+                    const allOptions = [correctRequired, ...selectedOtherRequired, wrongComponent];
+                    const shuffledOptions = this.shuffleArray(allOptions);
+                    
+                    // 옵션 이름과 이미지 매핑
+                    const optionImages: Record<string, string> = {};
+                    shuffledOptions.forEach(id => {
+                        optionImages[this.allComponentsMap[id].name] = this.allComponentsMap[id].image;
+                    });
 
-                questions.push({
-                    id: `q_${i + 1}`,
-                    questionType: 'find_required',
-                    question: `Which of the following is REQUIRED for the "${this.applicationNames[appId]}"?`,
-                    applicationName: this.applicationNames[appId],
-                    requiredComponents: requiredComponentIds,
-                    options: shuffledOptions.map(id => this.allComponentsMap[id].name),
-                    optionImages,
-                    questionImage: this.applicationImages[appId],
-                    correctAnswer: this.allComponentsMap[correctRequired].name,
-                    timeLimit: 60,
-                });
+                    questions.push({
+                        id: `q_${i + 1}`,
+                        questionType: 'multiple_choice',
+                        question: `Which of the following is REQUIRED for the "${this.applicationNames[appId]}"?`,
+                        applicationName: this.applicationNames[appId],
+                        requiredComponents: requiredComponentIds,
+                        options: shuffledOptions.map(id => this.allComponentsMap[id].name),
+                        optionImages,
+                        questionImage: this.applicationImages[appId],
+                        correctAnswer: this.allComponentsMap[correctRequired].name,
+                        timeLimit: 60,
+                    });
+                } else {
+                    // Type 2: "다음 중 필요 없는 컴포넌트는?"
+                    // 필요한 컴포넌트 중 3개를 랜덤으로 선택
+                    const selectedRequired = this.shuffleArray(requiredComponentIds).slice(0, 3);
+                    
+                    // 필요 없는 컴포넌트 1개 선택 (정답)
+                    const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+                    
+                    // 필요한 3개 + 필요 없는 1개 = 4개 선택지
+                    const allOptions = [...selectedRequired, wrongComponent];
+                    const shuffledOptions = this.shuffleArray(allOptions);
+                    
+                    // 옵션 이름과 이미지 매핑
+                    const optionImages: Record<string, string> = {};
+                    shuffledOptions.forEach(id => {
+                        optionImages[this.allComponentsMap[id].name] = this.allComponentsMap[id].image;
+                    });
+
+                    questions.push({
+                        id: `q_${i + 1}`,
+                        questionType: 'multiple_choice',
+                        question: `Which of the following is NOT required for the "${this.applicationNames[appId]}"?`,
+                        applicationName: this.applicationNames[appId],
+                        requiredComponents: requiredComponentIds,
+                        options: shuffledOptions.map(id => this.allComponentsMap[id].name),
+                        optionImages,
+                        questionImage: this.applicationImages[appId],
+                        correctAnswer: this.allComponentsMap[wrongComponent].name,
+                        timeLimit: 60,
+                    });
+                }
             } else {
-                // Type 2: "다음 중 필요 없는 컴포넌트는?"
-                // 필요한 컴포넌트 중 3개를 랜덤으로 선택
-                const selectedRequired = this.shuffleArray(requiredComponentIds).slice(0, 3);
+                // 마지막 2개(4번, 5번): ox_quiz (OX 퀴즈)
+                // 필요한 컴포넌트 중 1개를 선택하여 "이 컴포넌트가 필요한가?"라는 문제 생성
+                const questionComponentId = requiredComponentIds[Math.floor(Math.random() * requiredComponentIds.length)];
+                const isCorrectTrue = Math.random() < 0.5;
                 
-                // 필요 없는 컴포넌트 1개 선택 (정답)
-                const wrongComponent = this.getRandomWrongComponent(requiredComponentIds);
+                const correctAnswer = isCorrectTrue ? 'O' : 'X';
                 
-                // 필요한 3개 + 필요 없는 1개 = 4개 선택지
-                const allOptions = [...selectedRequired, wrongComponent];
-                const shuffledOptions = this.shuffleArray(allOptions);
-                
-                // 옵션 이름과 이미지 매핑
-                const optionImages: Record<string, string> = {};
-                shuffledOptions.forEach(id => {
-                    optionImages[this.allComponentsMap[id].name] = this.allComponentsMap[id].image;
-                });
-
                 questions.push({
                     id: `q_${i + 1}`,
-                    questionType: 'find_not_required',
-                    question: `Which of the following is NOT required for the "${this.applicationNames[appId]}"?`,
+                    questionType: 'ox_quiz',
+                    question: isCorrectTrue 
+                        ? `Is "${this.allComponentsMap[questionComponentId].name}" required for the "${this.applicationNames[appId]}"?`
+                        : `Is "${this.allComponentsMap[this.getRandomWrongComponent(requiredComponentIds)].name}" required for the "${this.applicationNames[appId]}"?`,
                     applicationName: this.applicationNames[appId],
                     requiredComponents: requiredComponentIds,
-                    options: shuffledOptions.map(id => this.allComponentsMap[id].name),
-                    optionImages,
+                    options: ['O', 'X'],
                     questionImage: this.applicationImages[appId],
-                    correctAnswer: this.allComponentsMap[wrongComponent].name,
+                    correctAnswer,
                     timeLimit: 60,
                 });
             }

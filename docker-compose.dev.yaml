@@ -27,6 +27,7 @@ services:
     ports:
       - "4005:4005"
     environment:
+      PORT: 4005
       DB_HOST: actuator-db
       DB_PORT: 5434
       DB_USER: postgres
@@ -48,7 +49,7 @@ services:
       POSTGRES_PASSWORD: 1209
       POSTGRES_DB: actuator_game
     volumes:
-      - /volume1/build-your-perfect-actuator/actuator-db-data:/var/lib/postgresql/data
+      - /volume1/actuator-minigame/actuator-db-data:/var/lib/postgresql/data
     networks:
       - actuator-network
 

@@ -50,7 +50,7 @@
 ### 1. 저장소 클론
 ```bash
 git clone <repository-url>
-cd build-your-perfect-actuator
+cd actuator-minigame
 ```
 
 ### 2. 의존성 설치
@@ -147,7 +147,7 @@ npm run dev
 ## 📁 프로젝트 구조
 
 ```
-build-your-perfect-actuator/
+actuator-minigame/
 │
 ├── actuator-front/     # React + TypeScript
 │   ├── src/
@@ -236,7 +236,7 @@ GitHub에서 코드를 push하면 **자동으로** Synology NAS에 배포되도�
 ```bash
 # GitHub에서 clone
 git clone https://github.com/wwg0523/BuildYourPerfectActuator.git
-cd build-your-perfect-actuator
+cd actuator-minigame
 
 # deployment 폴더로 이동
 cd deployment
@@ -254,13 +254,13 @@ bash deploy-manager.sh
 
 **또는 간단하게 (Cron 방식):**
 ```bash
-cd /volume1/build-your-perfect-actuator
+cd /volume1/actuator-minigame
 
 # Crontab 설정
 crontab -e
 
 # 다음 추가 (매일 오전 2시):
-0 2 * * * /volume1/build-your-perfect-actuator/deployment/schedule-update.sh
+0 2 * * * /volume1/actuator-minigame/deployment/schedule-update.sh
 ```
 
 ## �🔒 보안 고려사항

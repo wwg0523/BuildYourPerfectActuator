@@ -33,6 +33,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     };
 
     // Result 화면 진입 후 이메일 발송
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (userInfo && leaderboardEntry && !emailSent) {
             sendResultEmail();

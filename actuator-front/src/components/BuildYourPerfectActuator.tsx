@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
 import Home from '../pages/Home/Home';
+import Guide from '../pages/Guide/Guide';
 import Info from '../pages/Info/Info';
 import Game from '../pages/Game/Game';
 import Result from '../pages/Result/Result';
@@ -12,7 +13,7 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:40
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
 export default function BuildYourPerfectActuator() {
-    const [screen, setScreen] = useState<'home' | 'info' | 'game' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'game' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -28,15 +29,18 @@ export default function BuildYourPerfectActuator() {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [agreeMarketing, setAgreeMarketing] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [userId, setUserId] = useState<string>('');
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [idleDetector, setIdleDetector] = useState<IdleDetector>({
         timeoutDuration: 30000,
         warningDuration: 25000, // 25초 후 경고 메시지 표시
         currentTimeout: null,
         warningTimeout: null,
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [countdown, setCountdown] = useState<number>(5);
     const countdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const currentTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -178,6 +182,7 @@ export default function BuildYourPerfectActuator() {
                 throw new Error('User information not found');
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const parsedData = JSON.parse(encryptedUserInfo);
 
             // UUID 생성 (아직 생성되지 않았으면)
@@ -517,6 +522,7 @@ export default function BuildYourPerfectActuator() {
 
         resetIdleTimer();
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         return () => {
             events.forEach(event => {
                 document.removeEventListener(event, resetIdleTimer);
@@ -548,7 +554,13 @@ export default function BuildYourPerfectActuator() {
     return (
         <div className="app-container">
             <div className="card">
-                {screen === 'home' && <Home onStartGame={handleStartGame} />}
+                {screen === 'home' && <Home onStartGame={() => setScreen('guide')} />}
+                {screen === 'guide' && (
+                    <Guide
+                        onStartGame={handleStartGame}
+                        onBack={() => setScreen('home')}
+                    />
+                )}
                 {screen === 'info' && (
                     <Info
                         userInfo={userInfo}

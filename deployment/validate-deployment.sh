@@ -5,7 +5,7 @@
 
 set -e
 
-PROJECT_DIR="/volume1/build-your-perfect-actuator"
+PROJECT_DIR="/volume1/actuator-minigame"
 LOG_DIR="${PROJECT_DIR}/logs"
 LOG_FILE="${LOG_DIR}/validation-$(date +%Y%m%d-%H%M%S).log"
 
