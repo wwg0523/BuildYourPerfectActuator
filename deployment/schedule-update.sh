@@ -23,7 +23,7 @@ set -e
 PROJECT_DIR="/volume1/actuator-minigame"
 LOG_DIR="${PROJECT_DIR}/logs"
 LOG_FILE="${LOG_DIR}/scheduled-update-$(date +%Y%m%d-%H%M%S).log"
-REPO_URL="https://github.com/wwg0523/BuildYourPerfectActuator.git"
+REPO_URL="https://github.com/wwg0523/ActuatorMinigame.git"
 LOCK_FILE="${PROJECT_DIR}/.deployment-lock"
 LOCK_TIMEOUT=600  # 10분 (배포 완료 타임아웃)
 

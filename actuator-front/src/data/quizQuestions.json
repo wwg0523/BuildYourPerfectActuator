@@ -1,0 +1,283 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "easy",
+      "question": "Which of the following is an automotive component that uses an actuator?",
+      "applicationName": "Side Mirror Adjustment",
+      "options": [
+        "A) Side mirror angle adjustment",
+        "B) Radio volume control",
+        "C) Dashboard illumination",
+        "D) Seatbelt buckle"
+      ],
+      "correctAnswer": "A",
+      "explanation": {
+        "correct": "The side mirror uses an electric actuator that allows the driver to adjust the angle from inside the vehicle. It consists of a small electric motor and gearbox that control the mirror's horizontal and vertical movement.",
+        "improvements": [
+          "Improved precision → More accurate angle adjustment",
+          "Enhanced response speed → Faster adjustment time",
+          "Increased torque → Smooth operation even for large mirrors"
+        ],
+        "realWorldExamples": [
+          "Premium vehicles: Memory function for automatic adjustment per driver",
+          "Electric vehicles: Low-power actuators for better battery efficiency"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q2",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "easy",
+      "question": "Which core component does a robot vacuum use to change direction?",
+      "applicationName": "Robot Vacuum Wheel Drive",
+      "options": [
+        "A) Camera",
+        "B) Wheel drive motor actuator",
+        "C) Dustbin",
+        "D) Battery"
+      ],
+      "correctAnswer": "B",
+      "explanation": {
+        "correct": "A robot vacuum has independent DC motor actuators attached to each wheel. It controls the speed of left and right wheels differently to rotate, and adjusts forward/backward movement.",
+        "improvements": [
+          "Increased torque → Easy movement over high-resistance floors like carpets",
+          "Precise control → Accurate navigation in narrow spaces",
+          "Low-noise design → Quiet cleaning operation"
+        ],
+        "realWorldExamples": [
+          "Budget models: Simple 2-wheel drive for basic navigation",
+          "Premium models: 4-wheel independent drive for complex path planning"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q3",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "medium",
+      "question": "What is used to adjust the height and angle of a hospital bed?",
+      "applicationName": "Hospital Bed Height Control",
+      "options": [
+        "A) Manual crank",
+        "B) Hydraulic cylinder",
+        "C) Electric linear actuator",
+        "D) Spring"
+      ],
+      "correctAnswer": "C",
+      "explanation": {
+        "correct": "Modern hospital beds use electric linear actuators to precisely adjust bed height, backrest angle, and leg rest angle. This simultaneously improves patient comfort and caregiver work efficiency.",
+        "improvements": [
+          "Increased load capacity → Safely supports heavier patients",
+          "Reduced noise → Minimizes patient sleep disturbance",
+          "Speed control → Smooth movement for patient safety",
+          "Enhanced durability → Long-lasting even with frequent use"
+        ],
+        "realWorldExamples": [
+          "Standard hospital beds: 3-5 linear actuators for multi-position adjustment",
+          "ICU beds: Advanced sensors with safety override features"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q4",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "easy",
+      "question": "Which component enables automatic height adjustment in office desks?",
+      "applicationName": "Electric Standing Desk",
+      "options": [
+        "A) Hydraulic cylinder",
+        "B) Spring",
+        "C) Electric linear actuator",
+        "D) Chain hoist"
+      ],
+      "correctAnswer": "C",
+      "explanation": {
+        "correct": "Modern office desks use electric linear actuators to smoothly adjust the desk height electronically. This allows users to easily switch between sitting and standing positions.",
+        "improvements": [
+          "Programmable presets → One-touch height adjustment",
+          "Quiet operation → Minimal workplace disturbance",
+          "Load capacity → Supports heavy desktop equipment"
+        ],
+        "realWorldExamples": [
+          "Basic models: Single motor with smooth adjustment",
+          "Premium models: Dual motors for stable movement with heavy loads"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q5",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "medium",
+      "question": "How does an automated home theater projector screen move up and down automatically?",
+      "applicationName": "Motorized Projector Screen",
+      "options": [
+        "A) Tubular motor actuator",
+        "B) Manual pulley",
+        "C) Pneumatic cylinder",
+        "D) Electromagnet"
+      ],
+      "correctAnswer": "A",
+      "explanation": {
+        "correct": "A motorized projector screen uses a tubular motor actuator inside the rolled-up screen mechanism. The motor drives the chain or belt inside to smoothly pull the screen up or down.",
+        "improvements": [
+          "Silent operation → No noise during deployment",
+          "Precise positioning → Accurate height control",
+          "Programmable presets → Automatic screen control via remote or app"
+        ],
+        "realWorldExamples": [
+          "Home theaters: Manual override for emergency situations",
+          "Commercial systems: Synchronized with lighting and audio equipment"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q6",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "easy",
+      "question": "What component senses the washing load weight and rotates the drum in a washing machine?",
+      "applicationName": "Washing Machine Motor",
+      "options": [
+        "A) Temperature sensor",
+        "B) Motor actuator",
+        "C) Drain pump",
+        "D) Detergent dispenser"
+      ],
+      "correctAnswer": "B",
+      "explanation": {
+        "correct": "Washing machines use motor actuators to drive the drum rotation. The motor receives signals from the load sensor and adjusts rotation speed accordingly for optimal washing performance.",
+        "improvements": [
+          "Energy efficiency → Reduced power consumption",
+          "Variable speed control → Better cleaning for different fabric types",
+          "Reduced vibration → Quieter operation and longer machine life"
+        ],
+        "realWorldExamples": [
+          "Standard washers: Single-speed motor for basic operation",
+          "Smart washers: Variable-speed motors with automatic load detection"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q7",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "medium",
+      "question": "Which component enables a smart home electric curtain to open and close automatically?",
+      "applicationName": "Electric Curtain Motor",
+      "options": [
+        "A) Manual pulley",
+        "B) Curtain rail motor actuator",
+        "C) Wind power",
+        "D) Gravity"
+      ],
+      "correctAnswer": "B",
+      "explanation": {
+        "correct": "Smart curtains use motor actuators installed on or inside the curtain rail. The motor drives the track or pulley system, allowing wireless control via remote, app, or voice commands.",
+        "improvements": [
+          "Programmable schedules → Automatic opening/closing at set times",
+          "Integration with smart home → Voice control and automation routines",
+          "Soft start/stop → Smooth motion preventing wear and noise"
+        ],
+        "realWorldExamples": [
+          "Basic systems: Single motor for simple open/close",
+          "Advanced systems: Dual motors for synchronized multi-panel control"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q8",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "medium",
+      "question": "Doubling the torque of an electric window actuator allows heavier windows to open and close more easily.",
+      "applicationName": "Electric Window Torque",
+      "options": ["O", "X"],
+      "correctAnswer": "O",
+      "explanation": {
+        "correct": "Torque represents rotational force. When actuator torque increases, it can deliver greater force, enabling smooth operation of heavier or larger windows.",
+        "improvements": [
+          "Winter frozen windows also operate smoothly",
+          "Works reliably in aging vehicles with friction",
+          "Enhanced safety (faster response to obstacle detection)"
+        ],
+        "realWorldExamples": [
+          "Standard sedans: 5-10 Nm actuators",
+          "SUVs/Large vehicles: 15-20 Nm actuators",
+          "Bulletproof vehicles: 30+ Nm ultra-high-torque actuators"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q9",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "medium",
+      "question": "Reducing hospital bed actuator noise from 40dB to 30dB improves the patient's sleep environment.",
+      "applicationName": "Hospital Bed Noise Reduction",
+      "options": ["O", "X"],
+      "correctAnswer": "O",
+      "explanation": {
+        "correct": "A 10dB reduction is perceived as approximately half the noise level. Low-noise actuators are essential in medical environments to prevent patient disturbance.",
+        "improvements": [
+          "Better patient rest and recovery",
+          "Reduced stress on patients and caregivers",
+          "Improved hospital ratings and patient satisfaction"
+        ],
+        "realWorldExamples": [
+          "Standard actuators: 40-45dB (comparable to conversation)",
+          "Low-noise medical actuators: 25-30dB (comparable to whisper)",
+          "Silent actuators: Under 20dB (barely perceptible)"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q10",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "hard",
+      "question": "Improving an industrial robot's position precision from 0.1mm to 0.01mm enables more delicate assembly work.",
+      "applicationName": "Robot Arm Precision",
+      "options": ["O", "X"],
+      "correctAnswer": "O",
+      "explanation": {
+        "correct": "10-fold precision improvement enables much finer work. This is essential in semiconductor manufacturing, precision machining, and medical device production.",
+        "improvements": [
+          "Reduced defect rate → Lower production costs",
+          "Faster work speed → Reduced rework time",
+          "Access to new applications requiring tight tolerances"
+        ],
+        "realWorldExamples": [
+          "Electronics assembly (0.1mm precision): Smartphone component assembly",
+          "Semiconductor manufacturing (0.01mm = 10μm precision): Wafer handling and chip bonding",
+          "Medical devices (0.01mm+ precision): Surgical robots and dispensing systems"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    }
+  ]
+}

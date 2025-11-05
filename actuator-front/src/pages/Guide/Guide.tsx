@@ -46,8 +46,8 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                 <motion.div className="guide-section" variants={itemVariants}>
                     <h2>📋 Game Overview</h2>
                     <p>
-                        Welcome to <strong>"Build Your Perfect Actuator"</strong>! In this game, you'll test your knowledge
-                        about actuator components and their compatibility with different applications.
+                        Welcome to <strong>"Actuator Quiz Challenge"</strong>! In this game, you'll discover actuators 
+                        hidden in everyday products and learn about how changing actuator specifications impacts real-world applications.
                     </p>
                     <p>
                         Answer all 5 questions correctly to earn a high score and compete on the leaderboard for amazing prizes!
@@ -92,8 +92,8 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                         {/* Multiple Choice */}
                         <div className="question-type-card">
                             <div className="type-header">
-                                <div className="type-icon">🔹</div>
-                                <h3>Multiple Choice (Questions 1-3)</h3>
+                                <div className="type-icon">🏠</div>
+                                <h3>Daily Life Applications (Questions 1-3)</h3>
                             </div>
                             <div className="type-content">
                                 <p>
@@ -101,21 +101,15 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                                 </p>
                                 <div className="type-examples">
                                     <div className="example-group">
-                                        <h4>📌 Question Type A (Questions 1, 3)</h4>
+                                        <h4>📌 Find Actuators in Everyday Products</h4>
                                         <p className="question-text">
-                                            "Which of the following is <span className="highlight-required">REQUIRED</span> for this application?"
+                                            "Which of the following uses an actuator?"
                                         </p>
                                         <p className="instruction">
-                                            ✓ Select the component that <strong>IS needed</strong>
+                                            ✓ Identify which everyday product uses an actuator
                                         </p>
-                                    </div>
-                                    <div className="example-group">
-                                        <h4>📌 Question Type B (Question 2)</h4>
-                                        <p className="question-text">
-                                            "Which of the following is <span className="highlight-not-required">NOT required</span> for this application?"
-                                        </p>
-                                        <p className="instruction">
-                                            ✓ Select the component that is <strong>NOT needed</strong>
+                                        <p className="examples-text">
+                                            Examples: Car side mirrors, robot vacuums, hospital beds, standing desks, motorized screens
                                         </p>
                                     </div>
                                 </div>
@@ -125,8 +119,8 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                         {/* OX Quiz */}
                         <div className="question-type-card">
                             <div className="type-header">
-                                <div className="type-icon">⭕</div>
-                                <h3>True/False Quiz (Questions 4-5)</h3>
+                                <div className="type-icon">⚙️</div>
+                                <h3>Specification Impact (Questions 4-5)</h3>
                             </div>
                             <div className="type-content">
                                 <p>
@@ -134,12 +128,15 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                                 </p>
                                 <div className="type-examples">
                                     <div className="example-group">
-                                        <h4>📌 Simple True/False Statement</h4>
+                                        <h4>📌 Understand Specification Changes</h4>
                                         <p className="question-text">
-                                            "Is [Component] required for [Application]?"
+                                            "If we change [specification], what happens?"
                                         </p>
                                         <p className="instruction">
-                                            ✓ Answer <strong>O (True)</strong> or <strong>X (False)</strong>
+                                            ✓ Answer <strong>O (True)</strong> or <strong>X (False)</strong> about actuator improvements
+                                        </p>
+                                        <p className="examples-text">
+                                            Topics: Torque, Precision, Speed, Noise, Durability, Energy Efficiency
                                         </p>
                                     </div>
                                 </div>
@@ -175,10 +172,10 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                 <motion.div className="guide-section" variants={itemVariants}>
                     <h2>💡 Tips for Success</h2>
                     <ul className="tips-list">
-                        <li>📖 Read each question carefully before answering</li>
-                        <li>🖼️ Pay attention to the application images to understand the context</li>
+                        <li>📖 Read each question carefully to understand what's being asked</li>
+                        <li>🏠 Think about everyday products you use - many contain actuators!</li>
                         <li>⚡ Take your time - there's no penalty for thinking</li>
-                        <li>🎯 Focus on the component compatibility with each application</li>
+                        <li>💡 Use the explanations after each question to learn more</li>
                         <li>✅ Double-check your answer before submitting</li>
                     </ul>
                 </motion.div>

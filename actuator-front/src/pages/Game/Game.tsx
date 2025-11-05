@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GameSession, UserAnswer } from '../../lib/utils';
+import { GameSession, UserAnswer, GameQuestion } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Game.scss';
 
@@ -10,27 +10,28 @@ interface GameProps {
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
-interface FeedbackModal {
+interface ExplanationModal {
     isOpen: boolean;
+    question: GameQuestion | null;
+    selectedAnswer: string | null;
     isCorrect: boolean;
-    selectedAnswer: string;
-    correctAnswer: string;
 }
 
 const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, setScreen }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
-    const [feedbackModal, setFeedbackModal] = useState<FeedbackModal>({
+    const [questionTime, setQuestionTime] = useState<number>(0);
+    const [explanationModal, setExplanationModal] = useState<ExplanationModal>({
         isOpen: false,
+        question: null,
+        selectedAnswer: null,
         isCorrect: false,
-        selectedAnswer: '',
-        correctAnswer: '',
     });
 
     const currentQuestion = gameSession.questions[gameSession.currentQuestionIndex];
 
     useEffect(() => {
-        // 게임 시작 시간부터 경과 시간 계산
+        // Calculate elapsed time from game start
         const timer = setInterval(() => {
             const now = new Date();
             const elapsed = Math.floor((now.getTime() - gameSession.startTime.getTime()) / 1000);
@@ -40,30 +41,44 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         return () => clearInterval(timer);
     }, [gameSession.startTime]);
 
+    useEffect(() => {
+        // Reset question timer when question changes
+        setQuestionTime(0);
+        setSelectedAnswer(null);
+    }, [gameSession.currentQuestionIndex]);
+
+    useEffect(() => {
+        // Track time spent on current question
+        const timer = setInterval(() => {
+            setQuestionTime(prev => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
     const handleAnswerSubmit = () => {
         if (!currentQuestion || selectedAnswer === null) return;
 
         const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
-        const correctAnswer = currentQuestion.correctAnswer;
 
-        // 피드백 모달 표시
-        setFeedbackModal({
+        // Show explanation modal
+        setExplanationModal({
             isOpen: true,
-            isCorrect,
+            question: currentQuestion,
             selectedAnswer,
-            correctAnswer,
+            isCorrect,
         });
     };
 
-    const handleModalClose = () => {
+    const handleExplanationClose = () => {
         if (!currentQuestion) return;
 
-        const isCorrect = feedbackModal.isCorrect;
+        const isCorrect = explanationModal.isCorrect;
         const answer: UserAnswer = {
             questionId: currentQuestion.id,
-            selectedComponents: [feedbackModal.selectedAnswer],
+            selectedComponents: [explanationModal.selectedAnswer || ''],
             isCorrect,
-            answerTime: elapsedTime * 1000,
+            answerTime: questionTime * 1000,
             timestamp: new Date(),
         };
 
@@ -76,8 +91,12 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
             };
         });
 
-        setSelectedAnswer(null);
-        setFeedbackModal({ isOpen: false, isCorrect: false, selectedAnswer: '', correctAnswer: '' });
+        setExplanationModal({
+            isOpen: false,
+            question: null,
+            selectedAnswer: null,
+            isCorrect: false,
+        });
 
         if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
             setGameSession(prev => {
@@ -85,8 +104,8 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                 return {
                     ...prev,
                     endTime: new Date(),
-                    totalScore: prev.answers.filter(a => a.isCorrect).length,
-                    completionTime: elapsedTime * 1000, // 타이머 값을 ms로 저장
+                    totalScore: [...prev.answers.slice(0, gameSession.currentQuestionIndex + 1), answer].filter(a => a.isCorrect).length,
+                    completionTime: elapsedTime * 1000,
                 };
             });
             handleSubmit();
@@ -121,28 +140,18 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                 <div className="game-content">
                     <div className="question-content">
                         <h3>{currentQuestion.question}</h3>
-                        {currentQuestion.questionImage && (
-                            <img 
-                                src={currentQuestion.questionImage}
-                                alt={currentQuestion.applicationName}
-                                className="question-image"
-                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                            />
-                        )}
                         
-                        {currentQuestion.questionType === 'multiple_choice' ? (
+                        {currentQuestion.type === 'multiple-choice' ? (
                             <>
                                 <p className="required-components">
-                                    {currentQuestion.question.includes('REQUIRED')
-                                        ? 'Select the ONE that IS needed for this application'
-                                        : <>Select the ONE that is <span style={{ color: '#dc3545', fontWeight: 'bold' }}>NOT</span> needed for this application</>}
+                                    Select the correct answer
                                 </p>
                                 <div className="options-grid">
                                     {currentQuestion.options.map((option, index) => (
                                         <button
                                             key={index}
-                                            className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
-                                            onClick={() => setSelectedAnswer(option)}
+                                            className={`option-button ${selectedAnswer === option.charAt(0) ? 'selected' : ''}`}
+                                            onClick={() => setSelectedAnswer(option.charAt(0))}
                                         >
                                             <span className="option-name">{option}</span>
                                         </button>
@@ -187,23 +196,43 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                 </div>
             </div>
 
-            {/* 피드백 모달 */}
-            {feedbackModal.isOpen && (
+            {/* Explanation Modal */}
+            {explanationModal.isOpen && explanationModal.question && (
                 <div className="modal-overlay">
-                    <div className={`feedback-modal ${feedbackModal.isCorrect ? 'correct' : 'incorrect'}`}>
+                    <div className={`feedback-modal ${explanationModal.isCorrect ? 'correct' : 'incorrect'}`}>
                         <div className="modal-icon">
-                            {feedbackModal.isCorrect ? '✅' : '❌'}
+                            {explanationModal.isCorrect ? '✅' : '❌'}
                         </div>
-                        <h2>{feedbackModal.isCorrect ? 'Correct!' : 'Incorrect!'}</h2>
-                        <p className="modal-selected">
-                            Your answer: <strong>{feedbackModal.selectedAnswer}</strong>
-                        </p>
-                        {!feedbackModal.isCorrect && (
-                            <p className="modal-correct">
-                                Correct answer: <strong>{feedbackModal.correctAnswer}</strong>
-                            </p>
-                        )}
-                        <button onClick={handleModalClose} className="modal-button">
+                        <h2>{explanationModal.isCorrect ? 'Correct!' : 'Incorrect!'}</h2>
+                        
+                        <div className="explanation-section">
+                            <h3>💡 Explanation</h3>
+                            <p>{explanationModal.question.explanation.correct}</p>
+                            
+                            {explanationModal.question.explanation.improvements && (
+                                <div className="improvements-section">
+                                    <h4>🔧 Specification Improvements:</h4>
+                                    <ul>
+                                        {explanationModal.question.explanation.improvements.map((improvement, idx) => (
+                                            <li key={idx}>{improvement}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            
+                            {explanationModal.question.explanation.realWorldExamples && (
+                                <div className="examples-section">
+                                    <h4>🏭 Real-World Examples:</h4>
+                                    <ul>
+                                        {explanationModal.question.explanation.realWorldExamples.map((example, idx) => (
+                                            <li key={idx}>{example}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <button onClick={handleExplanationClose} className="modal-button">
                             {gameSession.currentQuestionIndex + 1 >= gameSession.questions.length
                                 ? 'View Results'
                                 : 'Next Question'}

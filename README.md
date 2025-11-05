@@ -235,7 +235,7 @@ GitHub에서 코드를 push하면 **자동으로** Synology NAS에 배포되도�
 **NAS에서 배포 설정 (deployment 폴더):**
 ```bash
 # GitHub에서 clone
-git clone https://github.com/wwg0523/BuildYourPerfectActuator.git
+git clone https://github.com/wwg0523/ActuatorMinigame.git
 cd actuator-minigame
 
 # deployment 폴더로 이동

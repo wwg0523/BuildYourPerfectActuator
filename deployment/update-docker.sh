@@ -9,7 +9,7 @@ set -e
 PROJECT_DIR="/volume1/actuator-minigame"
 LOG_DIR="/volume1/actuator-minigame/logs"
 LOG_FILE="${LOG_DIR}/update-$(date +%Y%m%d-%H%M%S).log"
-REPO_URL="https://github.com/wwg0523/BuildYourPerfectActuator.git"
+REPO_URL="https://github.com/wwg0523/ActuatorMinigame.git"
 
 # 로그 디렉토리 생성
 mkdir -p "${LOG_DIR}"

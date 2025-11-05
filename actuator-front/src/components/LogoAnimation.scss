@@ -1,0 +1,33 @@
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f6f9fc;
+}
+
+.logo-svg {
+    max-width: 400px;
+    overflow: visible;
+}
+
+.product-image {
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
+    transition: all 0.5s ease-in-out;
+}
+
+.logo-text {
+    fill: #0a2540;
+    font-weight: 500;
+    opacity: 0;
+}
+
+.logo-text-L {
+    fill: #0a2540;
+    font-weight: 700;
+}
+
+.logo-text-B {
+    fill: #00d9c0;
+    font-weight: 700;
+}

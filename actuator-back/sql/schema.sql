@@ -1,4 +1,4 @@
--- Schema for BuildYourPerfectActuator
+-- Schema for ActuatorMinigame
 
 CREATE TABLE IF NOT EXISTS game_users (
   id UUID PRIMARY KEY,

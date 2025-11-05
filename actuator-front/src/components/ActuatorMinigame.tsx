@@ -12,7 +12,7 @@ import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, Lead
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
-export default function BuildYourPerfectActuator() {
+export default function ActuatorMinigame() {
     const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'game' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
@@ -242,7 +242,7 @@ export default function BuildYourPerfectActuator() {
                     body: JSON.stringify({
                         userId: currentUserId,
                         selectedComponents: gameSession.questions.length > 0 ? gameSession.questions[0].options : [],
-                        compatibleApplications: gameSession.questions.length > 0 ? gameSession.questions[0].requiredComponents : [],
+                        compatibleApplications: gameSession.questions.length > 0 ? gameSession.questions[0].category : '',
                         successRate: correctAnswers / gameSession.questions.length,
                         completionTime: completionTime,
                         score: correctAnswers,

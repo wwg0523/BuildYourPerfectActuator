@@ -9,7 +9,7 @@ param(
 $LogDir = Join-Path $ProjectDir "logs"
 $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $LogFile = Join-Path $LogDir "update-$Timestamp.log"
-$RepoUrl = "https://github.com/wwg0523/BuildYourPerfectActuator.git"
+$RepoUrl = "https://github.com/wwg0523/ActuatorMinigame.git"
 
 # 로그 디렉토리 생성
 if (-not (Test-Path $LogDir)) {
