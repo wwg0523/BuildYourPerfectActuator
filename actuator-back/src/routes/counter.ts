@@ -15,11 +15,11 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/counter/increment: 새로운 참가자 추가 (game_users 테이블에 행 추가)
+// POST /api/counter/increment: Add new participant (add row to game_users table)
 router.post('/increment', async (req: Request, res: Response) => {
     try {
-        // 단순히 게임 시작 시 기존 행 개수를 조회하여 새로운 참가자 카운트
-        // 실제 사용자 데이터는 프론트에서 게임 완료 후에 저장됨
+        // Simply query existing row count to track new participant count
+        // Actual user data is saved from frontend after game completion
         const result = await pool.query('SELECT COUNT(*) as count FROM game_users');
         const count = Number(result.rows[0].count) || 0;
         

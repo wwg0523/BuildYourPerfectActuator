@@ -32,10 +32,10 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         return '🎯';
     };
 
-    // 점수 기반 등급 정보 조회
+    // Retrieve grade information based on score
     const gradeInfo = leaderboardEntry ? getRankInfo(leaderboardEntry.finalScore) : null;
 
-    // Result 화면 진입 후 이메일 발송
+    // Send result email after entering Result screen
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (userInfo && leaderboardEntry && !emailSent) {
@@ -43,7 +43,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         }
     }, [leaderboardEntry]);
 
-    // 이메일 발송 완료 메시지 3초 후 사라지기
+    // Hide email completion message after 3 seconds
     useEffect(() => {
         if (emailSent) {
             const timer = setTimeout(() => {
@@ -93,7 +93,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         const secs = completionSeconds % 60;
         const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
         
-        // 등급 정보 조회
+        // Retrieve grade information
         const gradeInfo = getRankInfo(leaderboardEntry.finalScore);
 
         const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.score}/5`;

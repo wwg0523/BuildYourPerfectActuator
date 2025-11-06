@@ -202,11 +202,11 @@ export default function ActuatorMinigame() {
                 phone: userInfo.phone,
             };
 
-            // 게임 완료 시간 및 점수 계산
-            // gameSession의 completionTime을 사용 (타이머에서 계산된 정확한 값)
+            // Calculate game completion time and score
+            // Use completionTime from gameSession (accurate value calculated from timer)
             completionTime = gameSession.completionTime || 0;
             
-            // completionTime이 0이면 startTime과 endTime으로 계산
+            // If completionTime is 0, calculate from startTime and endTime
             if (completionTime === 0 && gameSession.endTime) {
                 completionTime = gameSession.endTime.getTime() - gameSession.startTime.getTime();
             }

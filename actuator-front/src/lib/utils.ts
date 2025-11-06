@@ -87,10 +87,10 @@ export interface GameQuestion {
 }
 
 export interface ScoreCalculation {
-    basePoints: number;        // 기본 점수 (정답 시 20점)
-    timeBonus: number;         // 시간 보너스 (남은 시간 / 3)
-    difficultyMultiplier: number; // 난이도 배수
-    finalScore: number;        // 최종 점수
+    basePoints: number;        // Base points (20 for correct answer)
+    timeBonus: number;         // Time bonus (remaining time / 3)
+    difficultyMultiplier: number; // Difficulty multiplier
+    finalScore: number;        // Final score
 }
 
 export interface RankInfo {
@@ -107,8 +107,8 @@ export interface UserAnswer {
     isCorrect: boolean;
     answerTime: number;
     timestamp: Date;
-    difficulty?: 'easy' | 'medium' | 'hard'; // 난이도
-    timeRemaining?: number; // 질문 시간 제한 내에 남은 시간 (초)
+    difficulty?: 'easy' | 'medium' | 'hard'; // Difficulty level
+    timeRemaining?: number; // Remaining time within question time limit (seconds)
 }
 
 export interface GameSession {
@@ -120,7 +120,7 @@ export interface GameSession {
     startTime: Date;
     endTime?: Date;
     totalScore: number;
-    completionTime?: number; // 게임 완료 시간 (ms)
+    completionTime?: number; // Game completion time (ms)
 }
 
 export interface LeaderboardEntry {
@@ -264,40 +264,40 @@ export class GameEngine {
     }
 }
 
-// 등급 시스템 정의
+// Grade System Definition
 const rankSystem: RankInfo[] = [
     {
         rank: 'S',
-        title: '액추에이터 마스터',
-        description: '완벽한 이해도를 보여주셨습니다!',
+        title: 'Actuator Master',
+        description: 'You demonstrated perfect understanding!',
         minScore: 90,
         badge: '🏆'
     },
     {
         rank: 'A',
-        title: '액추에이터 전문가',
-        description: '훌륭한 이해도를 가지고 계십니다.',
+        title: 'Actuator Expert',
+        description: 'You have excellent understanding.',
         minScore: 75,
         badge: '🥇'
     },
     {
         rank: 'B',
-        title: '액추에이터 숙련자',
-        description: '좋은 이해도를 보여주셨습니다.',
+        title: 'Actuator Specialist',
+        description: 'You demonstrated good understanding.',
         minScore: 60,
         badge: '🥈'
     },
     {
         rank: 'C',
-        title: '액추에이터 학습자',
-        description: '더 배워나가는 중입니다.',
+        title: 'Actuator Learner',
+        description: 'You are continuing to learn.',
         minScore: 40,
         badge: '🥉'
     },
     {
         rank: 'D',
-        title: '액추에이터 입문자',
-        description: '시작이 반입니다!',
+        title: 'Actuator Beginner',
+        description: 'Every beginning is half the victory!',
         minScore: 0,
         badge: '📚'
     }
@@ -355,18 +355,18 @@ export class LeaderboardManager {
             rank: 0,
             playerName: this.maskPlayerName(userInfo.name),
             company: userInfo.company,
-            score: correctCount,  // 정답 개수 (0~5)
+            score: correctCount,  // Correct answer count (0~5)
             completionTime: completionTime,
-            finalScore,  // 계산된 최종 점수
+            finalScore,  // Calculated final score
             playedAt: new Date(),
         };
 
         try {
-            // 1. 사용자의 순위 계산 (daily_leaderboard VIEW 기반)
+            // Calculate user's rank (based on daily_leaderboard VIEW)
             entry.rank = await this.calculateRank(entry);
 
-            // 2. 이메일 발송은 Result 화면에서 처리 (useEffect)
-            // (더 이상 여기서 비동기로 발송하지 않음)
+            // Email sending is handled in Result screen (useEffect)
+            // (no longer sending async here)
         } catch (error) {
             console.error('Error submitting score:', error);
         }

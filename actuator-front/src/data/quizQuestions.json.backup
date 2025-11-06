@@ -103,15 +103,15 @@
       ],
       "correctAnswer": "C",
       "explanation": {
-        "correct": "Electric standing desks use linear actuators to smoothly adjust desk height. This allows workers to alternate between sitting and standing positions throughout the day.",
+        "correct": "Modern office desks use electric linear actuators to smoothly adjust the desk height electronically. This allows users to easily switch between sitting and standing positions.",
         "improvements": [
-          "Smooth motion → Comfortable height adjustment",
-          "Load capacity → Supports heavy equipment and materials",
-          "Quiet operation → Non-disruptive in office environment"
+          "Programmable presets → One-touch height adjustment",
+          "Quiet operation → Minimal workplace disturbance",
+          "Load capacity → Supports heavy desktop equipment"
         ],
         "realWorldExamples": [
-          "Basic models: Single motor actuator for synchronized rise",
-          "Premium models: Dual motor for independent control and level correction"
+          "Basic models: Single motor with smooth adjustment",
+          "Premium models: Dual motors for stable movement with heavy loads"
         ]
       },
       "points": 20,
@@ -122,7 +122,7 @@
       "type": "multiple-choice",
       "category": "daily-life",
       "difficulty": "medium",
-      "question": "What is used to raise and lower a projector screen automatically in a home theater?",
+      "question": "How does an automated home theater projector screen move up and down automatically?",
       "applicationName": "Motorized Projector Screen",
       "options": [
         "A) Tubular motor actuator",
@@ -132,15 +132,15 @@
       ],
       "correctAnswer": "A",
       "explanation": {
-        "correct": "Home theater projector screens use tubular motor actuators (tube motors) that are integrated into the screen roller. These silent, compact motors smoothly raise and lower the screen with electronic control.",
+        "correct": "A motorized projector screen uses a tubular motor actuator inside the rolled-up screen mechanism. The motor drives the chain or belt inside to smoothly pull the screen up or down.",
         "improvements": [
-          "Silent operation → No noise during movie viewing",
-          "Smooth speed → Gradual screen deployment",
-          "Integrated design → Compact mounting inside screen tube"
+          "Silent operation → No noise during deployment",
+          "Precise positioning → Accurate height control",
+          "Programmable presets → Automatic screen control via remote or app"
         ],
         "realWorldExamples": [
-          "Basic theater: Simple on/off motor control",
-          "Advanced systems: Variable speed with position memory"
+          "Home theaters: Manual override for emergency situations",
+          "Commercial systems: Synchronized with lighting and audio equipment"
         ]
       },
       "points": 20,
@@ -150,26 +150,26 @@
       "id": "q6",
       "type": "multiple-choice",
       "category": "daily-life",
-      "difficulty": "medium",
-      "question": "Which sensor-actuator system is used in a washing machine for load-dependent operation?",
-      "applicationName": "Intelligent Washing Machine",
+      "difficulty": "easy",
+      "question": "What component senses the washing load weight and rotates the drum in a washing machine?",
+      "applicationName": "Washing Machine Motor",
       "options": [
-        "A) Temperature sensor only",
-        "B) Motor actuator for drum rotation",
-        "C) Drain pump only",
+        "A) Temperature sensor",
+        "B) Motor actuator",
+        "C) Drain pump",
         "D) Detergent dispenser"
       ],
       "correctAnswer": "B",
       "explanation": {
-        "correct": "The motor actuator in a washing machine drives the drum rotation. It adapts to the load weight detected by sensors to optimize water usage, spin speed, and cycle time.",
+        "correct": "Washing machines use motor actuators to drive the drum rotation. The motor receives signals from the load sensor and adjusts rotation speed accordingly for optimal washing performance.",
         "improvements": [
-          "Energy efficiency → Reduced power consumption for smaller loads",
-          "Water savings → Proportional water usage based on load",
-          "Fabric protection → Variable speed prevents damage"
+          "Energy efficiency → Reduced power consumption",
+          "Variable speed control → Better cleaning for different fabric types",
+          "Reduced vibration → Quieter operation and longer machine life"
         ],
         "realWorldExamples": [
-          "Budget models: Fixed speed operation",
-          "Smart models: AI-powered load detection and cycle optimization"
+          "Standard washers: Single-speed motor for basic operation",
+          "Smart washers: Variable-speed motors with automatic load detection"
         ]
       },
       "points": 20,
@@ -180,25 +180,25 @@
       "type": "multiple-choice",
       "category": "daily-life",
       "difficulty": "medium",
-      "question": "What powers the movement in an electric wheelchair?",
-      "applicationName": "Electric Wheelchair Mobility",
+      "question": "Which component enables a smart home electric curtain to open and close automatically?",
+      "applicationName": "Electric Curtain Motor",
       "options": [
-        "A) Battery power alone",
-        "B) Wheel drive DC motor actuators",
-        "C) Hydraulic pump",
-        "D) Generator"
+        "A) Manual pulley",
+        "B) Curtain rail motor actuator",
+        "C) Wind power",
+        "D) Gravity"
       ],
       "correctAnswer": "B",
       "explanation": {
-        "correct": "Electric wheelchairs use independently controlled DC motor actuators on each wheel. These enable smooth acceleration, precise turning, and smooth deceleration with proportional joystick control.",
+        "correct": "Smart curtains use motor actuators installed on or inside the curtain rail. The motor drives the track or pulley system, allowing wireless control via remote, app, or voice commands.",
         "improvements": [
-          "Extended range → Improved battery efficiency",
-          "Smooth control → Better maneuverability in tight spaces",
-          "Safety features → Automatic speed reduction on slopes"
+          "Programmable schedules → Automatic opening/closing at set times",
+          "Integration with smart home → Voice control and automation routines",
+          "Soft start/stop → Smooth motion preventing wear and noise"
         ],
         "realWorldExamples": [
-          "Manual control: Joystick-based movement",
-          "Advanced models: Head control, voice commands, autonomous navigation"
+          "Basic systems: Single motor for simple open/close",
+          "Advanced systems: Dual motors for synchronized multi-panel control"
         ]
       },
       "points": 20,
@@ -206,13 +206,88 @@
     },
     {
       "id": "q8",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "medium",
+      "question": "Doubling the torque of an electric window actuator allows heavier windows to open and close more easily.",
+      "applicationName": "Electric Window Torque",
+      "options": ["O", "X"],
+      "correctAnswer": "O",
+      "explanation": {
+        "correct": "Torque represents rotational force. When actuator torque increases, it can deliver greater force, enabling smooth operation of heavier or larger windows.",
+        "improvements": [
+          "Winter frozen windows also operate smoothly",
+          "Works reliably in aging vehicles with friction",
+          "Enhanced safety (faster response to obstacle detection)"
+        ],
+        "realWorldExamples": [
+          "Standard sedans: 5-10 Nm actuators",
+          "SUVs/Large vehicles: 15-20 Nm actuators",
+          "Bulletproof vehicles: 30+ Nm ultra-high-torque actuators"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q9",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "medium",
+      "question": "Reducing hospital bed actuator noise from 40dB to 30dB improves the patient's sleep environment.",
+      "applicationName": "Hospital Bed Noise Reduction",
+      "options": ["O", "X"],
+      "correctAnswer": "O",
+      "explanation": {
+        "correct": "A 10dB reduction is perceived as approximately half the noise level. Low-noise actuators are essential in medical environments to prevent patient disturbance.",
+        "improvements": [
+          "Better patient rest and recovery",
+          "Reduced stress on patients and caregivers",
+          "Improved hospital ratings and patient satisfaction"
+        ],
+        "realWorldExamples": [
+          "Standard actuators: 40-45dB (comparable to conversation)",
+          "Low-noise medical actuators: 25-30dB (comparable to whisper)",
+          "Silent actuators: Under 20dB (barely perceptible)"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q10",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "hard",
+      "question": "Improving an industrial robot's position precision from 0.1mm to 0.01mm enables more delicate assembly work.",
+      "applicationName": "Robot Arm Precision",
+      "options": ["O", "X"],
+      "correctAnswer": "O",
+      "explanation": {
+        "correct": "10-fold precision improvement enables much finer work. This is essential in semiconductor manufacturing, precision machining, and medical device production.",
+        "improvements": [
+          "Reduced defect rate → Lower production costs",
+          "Faster work speed → Reduced rework time",
+          "Access to new applications requiring tight tolerances"
+        ],
+        "realWorldExamples": [
+          "Electronics assembly (0.1mm precision): Smartphone component assembly",
+          "Semiconductor manufacturing (0.01mm = 10μm precision): Wafer handling and chip bonding",
+          "Medical devices (0.01mm+ precision): Surgical robots and dispensing systems"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 30
+    },
+    {
+      "id": "q11",
       "type": "multiple-choice",
       "category": "daily-life",
-      "difficulty": "medium",
-      "question": "Which products use motor actuators in a smart home system? (Select all that apply)",
+      "difficulty": "hard",
+      "question": "Which of the following products use actuators in a smart home system?",
       "applicationName": "Smart Home Integration",
       "options": [
-        "A) Automatic curtain system, Smart door lock",
+        "A) Automatic curtain system, Smart door lock, Temperature sensor",
         "B) Automatic curtain system, Smart door lock, Robot vacuum brush motor",
         "C) Smart door lock, Temperature sensor, Robot vacuum brush motor",
         "D) Automatic curtain system, Temperature sensor, Robot vacuum brush motor"
@@ -235,11 +310,11 @@
       "timeLimit": 35
     },
     {
-      "id": "q9",
+      "id": "q12",
       "type": "multiple-choice",
       "category": "daily-life",
       "difficulty": "hard",
-      "question": "Which motor actuator systems are essential in electric vehicles?",
+      "question": "Which systems in an electric vehicle rely on motor actuators for their core operation?",
       "applicationName": "EV Powertrain System",
       "options": [
         "A) Inverter, Power steering, Regenerative braking motor",
@@ -265,11 +340,11 @@
       "timeLimit": 35
     },
     {
-      "id": "q10",
+      "id": "q13",
       "type": "multiple-choice",
       "category": "specification",
       "difficulty": "hard",
-      "question": "Which combination represents the correct actuators in a 6-axis industrial robot?",
+      "question": "Which combination represents the correct actuators used in a 6-axis industrial robot?",
       "applicationName": "Industrial Robot Actuators",
       "options": [
         "A) Servo motors + Harmonic drive reducer, Encoder (position sensor)",
@@ -295,61 +370,11 @@
       "timeLimit": 35
     },
     {
-      "id": "q11",
+      "id": "q14",
       "type": "true-false",
       "category": "specification",
-      "difficulty": "easy",
-      "question": "Increasing the torque of an electric window actuator by 2x allows heavier glass windows to be operated more easily.",
-      "applicationName": "Electric Window Torque",
-      "options": ["O", "X"],
-      "correctAnswer": "O",
-      "explanation": {
-        "correct": "True. Torque represents rotational force. Increased actuator torque enables heavier windows and larger-sized windows to operate smoothly.",
-        "improvements": [
-          "Real-world examples show compact actuators (5-10 Nm) for standard vehicles and high-torque actuators (15-20 Nm) for SUVs/large vehicles"
-        ],
-        "realWorldExamples": [
-          "Standard passenger car: Small actuator (5-10 Nm)",
-          "SUV/large vehicle: High-torque actuator (15-20 Nm)",
-          "Armored vehicle: Ultra-high-torque actuator (30+ Nm)",
-          "Winter benefit: Frozen windows can still operate reliably",
-          "Safety enhancement: Rapid response when obstacle detected"
-        ]
-      },
-      "points": 20,
-      "timeLimit": 30
-    },
-    {
-      "id": "q12",
-      "type": "true-false",
-      "category": "specification",
-      "difficulty": "easy",
-      "question": "Improving industrial robot arm position precision from 0.1mm to 0.01mm enables more delicate assembly work.",
-      "applicationName": "Robot Arm Precision",
-      "options": ["O", "X"],
-      "correctAnswer": "O",
-      "explanation": {
-        "correct": "True. 10-fold precision improvement enables much finer work. This is essential in semiconductor manufacturing, precision machining, and medical device production.",
-        "improvements": [
-          "Reduced defect rate → Lower production costs",
-          "Faster work speed → Reduced rework time",
-          "Access to new applications requiring tight tolerances"
-        ],
-        "realWorldExamples": [
-          "Electronics assembly (0.1mm precision): Smartphone component assembly",
-          "Semiconductor manufacturing (0.01mm = 10μm precision): Wafer handling and chip bonding",
-          "Medical devices (0.01mm+ precision): Surgical robots and dispensing systems"
-        ]
-      },
-      "points": 20,
-      "timeLimit": 30
-    },
-    {
-      "id": "q13",
-      "type": "true-false",
-      "category": "specification",
-      "difficulty": "medium",
-      "question": "To increase e-scooter range, doubling the motor's maximum power will improve battery efficiency and extend travel distance.",
+      "difficulty": "hard",
+      "question": "To increase the driving range of an electric scooter, doubling the motor's maximum power will improve battery efficiency and extend the travel distance.",
       "applicationName": "E-scooter Motor Optimization",
       "options": ["O", "X"],
       "correctAnswer": "X",
@@ -363,34 +388,7 @@
         "realWorldExamples": [
           "Xiaomi Mi Scooter Pro 2: Efficiency improvements achieved 45km range",
           "Segway Ninebot Max: Regenerative braking + large battery = 65km capability",
-          "Ather S1: Motor efficiency optimization without power increase"
-        ]
-      },
-      "points": 20,
-      "timeLimit": 35
-    },
-    {
-      "id": "q14",
-      "type": "true-false",
-      "category": "specification",
-      "difficulty": "medium",
-      "question": "Doubling automotive windshield wiper motor speed will improve visibility without affecting motor lifespan or noise.",
-      "applicationName": "Wiper Motor Design Trade-offs",
-      "options": ["O", "X"],
-      "correctAnswer": "X",
-      "explanation": {
-        "correct": "False. Speed doubling causes serious issues: (1) Centrifugal force increases 4x (proportional to speed squared), (2) Bearing wear accelerates → 30-50% lifespan reduction, (3) Air noise increases with speed cubed, (4) Brush sparking increases. Better solutions: Adaptive speed control (based on rain sensor), pressure optimization, and brushless motor design for durability.",
-        "improvements": [
-          "Adaptive speed control → 3-5 speed levels based on rainfall intensity",
-          "Brushless motor → 3x longer lifespan with self-diagnostic capability",
-          "Blade optimization → Graphite coating reduces friction and noise",
-          "Temperature compensation → Prevents freezing without excess power"
-        ],
-        "realWorldExamples": [
-          "Mercedes-Benz: AI analyzes raindrops to optimize wiping pattern",
-          "Tesla: Electronic wipers with variable speed + pressure control",
-          "BMW: Temperature-compensated control with frost detection mode",
-          "Data: Standard speed (60/min) lifespan 1M cycles vs 2x speed (120/min) lifespan 40-50K cycles"
+          "ather S1: Motor efficiency optimization without power increase"
         ]
       },
       "points": 20,
@@ -401,25 +399,26 @@
       "type": "true-false",
       "category": "specification",
       "difficulty": "hard",
-      "question": "Reducing hospital bed actuator noise from 40dB to 30dB improves patient sleep quality.",
-      "applicationName": "Medical Equipment Noise Control",
+      "question": "Doubling an automotive windshield wiper motor's speed will improve visibility in heavy rain without affecting motor lifespan or noise levels.",
+      "applicationName": "Wiper Motor Design Trade-offs",
       "options": ["O", "X"],
-      "correctAnswer": "O",
+      "correctAnswer": "X",
       "explanation": {
-        "correct": "True. A 10dB reduction represents approximately a 50% perceived reduction in noise. Quieter actuators are essential in medical environments to maintain patient rest and recovery.",
+        "correct": "False. Speed doubling causes serious issues: (1) Centrifugal force increases 4x (proportional to speed squared), (2) Bearing wear accelerates → 30-50% lifespan reduction, (3) Air noise increases with speed cubed, (4) Brush sparking increases in AC motors. Better solutions: Adaptive speed control (based on rain sensor), pressure optimization, and brushless motor design for durability.",
         "improvements": [
-          "Sleep quality → Uninterrupted patient recovery",
-          "Stress reduction → Lower cortisol levels during hospitalization",
-          "Better healing → Quality sleep accelerates recovery process"
+          "Adaptive speed control → 3-5 speed levels based on rainfall intensity",
+          "Brushless motor → 3x longer lifespan with self-diagnostic capability",
+          "Blade optimization → Graphite coating reduces friction and noise",
+          "Temperature compensation → Prevents freezing without excess power"
         ],
         "realWorldExamples": [
-          "Low-noise medical actuators: 25-30dB (comparable to whisper)",
-          "Silent actuators: Under 20dB (barely perceptible)",
-          "Standard industrial actuators: 50-60dB (comparison: normal conversation)"
+          "Mercedes-Benz: AI analyzes raindrops to optimize wiping pattern",
+          "Tesla: Electronic wipers with variable speed + pressure control",
+          "BMW: Temperature-compensated control with frost detection mode"
         ]
       },
       "points": 20,
-      "timeLimit": 35
+      "timeLimit": 40
     }
   ]
 }
