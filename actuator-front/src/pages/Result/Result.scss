@@ -1,4 +1,4 @@
-/* Page-specific styles for Result.tsx */
+/* Result Page Styles */
 .page-result {
   position: relative;
   
@@ -100,8 +100,6 @@
   }
 }
 
-
-
 .result-container {
   background: white;
   border-radius: 0 0 12px 12px;
@@ -109,312 +107,333 @@
   overflow: hidden;
 }
 
-.result-header {
-  display: none;
-}
-
-.score-display-large {
-  text-align: center;
-  background: #f9f9f9;
-  border-bottom: 2px solid #eee;
-  
-  @media (min-width: 1024px) {
-    padding: 45px 25px;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    padding: 40px 20px;
-  }
-  
-  @media (max-width: 640px) {
-    padding: 20px 12px;
-  }
-
-  .score-main {
-    font-weight: bold;
-    color: #4CAF50;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 5px;
-    
-    @media (min-width: 1024px) {
-      font-size: 4.5em;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      font-size: 4em;
-    }
-    
-    @media (max-width: 640px) {
-      font-size: 2.5em;
-    }
-
-    .score-total {
-      color: #999;
-      margin-top: 10px;
-      
-      @media (min-width: 1024px) {
-        font-size: 0.6em;
-      }
-      
-      @media (min-width: 641px) and (max-width: 1023px) {
-        font-size: 0.6em;
-      }
-      
-      @media (max-width: 640px) {
-        font-size: 0.55em;
-      }
-    }
-  }
-
-  .score-label {
-    color: #666;
-    margin: 10px 0 0 0;
-    
-    @media (min-width: 1024px) {
-      font-size: 1em;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      font-size: 0.95em;
-    }
-    
-    @media (max-width: 640px) {
-      font-size: 0.9em;
-    }
-  }
-}
-
-.result-stats {
-  display: grid;
-  background: white;
-  
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 15px;
-    padding: 25px;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    padding: 20px;
-  }
-  
-  @media (max-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .stat-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #eee;
-    transition: all 0.2s;
-    
-    @media (min-width: 1024px) {
-      padding: 18px;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      padding: 15px;
-    }
-    
-    @media (max-width: 640px) {
-      padding: 8px;
-    }
-
-    &:hover {
-      border-color: #ddd;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    &.rank-highlight {
-      background: linear-gradient(135deg, #fffacd 0%, #fff8dc 100%);
-      border: 2px solid #FFD700;
-      grid-column: span 2;
-    }
-
-    .stat-icon {
-      font-size: 2em;
-      margin-bottom: 8px;
-      
-      @media (max-width: 640px) {
-        font-size: 1.3em;
-        margin-bottom: 4px;
-      }
-    }
-
-    .stat-content {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-
-      .stat-value {
-        font-size: 1.4em;
-        font-weight: bold;
-        color: #333;
-        
-        @media (max-width: 640px) {
-          font-size: 0.95em;
-        }
-      }
-
-      .stat-name {
-        font-size: 0.8em;
-        color: #999;
-        
-        @media (max-width: 640px) {
-          font-size: 0.7em;
-        }
-      }
-    }
-  }
-}
-
-.rank-badge-large {
-  margin: 20px;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 12px;
+/* Score Section */
+.score-section {
   display: flex;
-  align-items: center;
-  gap: 15px;
-  text-align: left;
-  
-  @media (max-width: 640px) {
-    margin: 12px;
-    padding: 12px;
-    gap: 10px;
-  }
+  flex-direction: column;
+  gap: 24px;
+}
 
-  .badge-emoji {
-    font-size: 3em;
+.score-main-display {
+  text-align: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f3f4f8 100%);
+  border-radius: 12px;
+  border: 2px solid #e8e8f0;
+  
+  .score-value {
+    font-size: 56px;
+    font-weight: 800;
+    color: #333;
+    margin: 0;
     line-height: 1;
     
     @media (max-width: 640px) {
-      font-size: 2em;
+      font-size: 44px;
     }
-  }
-
-  .badge-text {
-    flex: 1;
-    font-size: 1.2em;
-    font-weight: bold;
     
-    @media (max-width: 640px) {
-      font-size: 0.9em;
-    }
-
-    .badge-subtext {
-      display: block;
-      font-size: 0.8em;
-      opacity: 0.9;
-      margin-top: 5px;
-      font-weight: normal;
+    .score-max {
+      font-size: 28px;
+      color: #999;
       
       @media (max-width: 640px) {
-        font-size: 0.7em;
-        margin-top: 3px;
+        font-size: 22px;
+      }
+    }
+  }
+  
+  .score-label {
+    margin: 12px 0 0 0;
+    font-size: 16px;
+    color: #666;
+    font-weight: 500;
+    
+    @media (max-width: 640px) {
+      font-size: 14px;
+    }
+  }
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  
+  @media (max-width: 640px) {
+    gap: 12px;
+  }
+  
+  .stat-item {
+    padding: 20px;
+    background: #f9f9f9;
+    border: 2px solid #e8e8f0;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+    
+    @media (max-width: 640px) {
+      padding: 16px;
+    }
+    
+    &:hover {
+      background: #f0f0f7;
+      border-color: #667eea;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: 700;
+      color: #667eea;
+      margin: 0 0 8px 0;
+      
+      @media (max-width: 640px) {
+        font-size: 26px;
+      }
+    }
+    
+    .stat-text {
+      font-size: 13px;
+      color: #666;
+      font-weight: 500;
+      margin: 0;
+      
+      @media (max-width: 640px) {
+        font-size: 12px;
       }
     }
   }
 }
 
-.actions {
-  display: grid;
-  gap: 10px;
+/* Rank Section */
+.rank-section {
   padding: 20px;
-  background: #f9f9f9;
-  border-top: 1px solid #eee;
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
   
-  @media (min-width: 641px) and (max-width: 1023px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .btn {
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    color: white;
-    
-    @media (min-width: 1024px) {
-      padding: 14px 16px;
-      font-size: 0.95em;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      padding: 12px 14px;
-      font-size: 0.9em;
-    }
+  .rank-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     
     @media (max-width: 640px) {
-      padding: 12px 14px;
-      font-size: 0.9em;
+      gap: 12px;
     }
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    
+    .rank-emoji {
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      @media (max-width: 640px) {
+        font-size: 40px;
+      }
     }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    &.play {
-      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-    }
-
-    &.leaderboard {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    }
-
-    &.home {
-      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    }
-
-    &.delete {
-      background: linear-gradient(135deg, #fd7e14 0%, #dc3545 100%);
+    
+    .rank-info {
+      color: white;
+      flex: 1;
+      
+      .rank-position {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        
+        @media (max-width: 640px) {
+          font-size: 14px;
+        }
+      }
+      
+      .rank-total {
+        font-size: 13px;
+        opacity: 0.9;
+        margin: 0;
+        
+        @media (max-width: 640px) {
+          font-size: 12px;
+        }
+      }
     }
   }
 }
 
-@media (max-width: 600px) {
-  .result-stats {
-    grid-template-columns: 1fr 1fr;
-
-    .stat-card.rank-highlight {
-      grid-column: span 2;
-    }
+/* Email Status */
+.email-status {
+  padding: 12px 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  
+  &.sending {
+    background: #e3f2fd;
+    color: #1976d2;
   }
+  
+  &.sent {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+}
 
-  .rank-badge-large {
+/* Main Content Area */
+.result-content-main {
+  padding: 28px;
+  
+  @media (min-width: 1024px) {
+    padding: 32px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 28px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 20px;
+  }
+}
+
+/* Footer with Action Buttons */
+.actions {
+  padding: 24px;
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  
+  @media (min-width: 1024px) {
+    gap: 16px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    gap: 12px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 16px;
+    gap: 10px;
     flex-direction: column;
-    text-align: center;
-
-    .badge-text {
-      text-align: center;
-    }
   }
+}
+
+/* Action Buttons */
+.actions .btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  white-space: nowrap;
+  
+  @media (min-width: 1024px) {
+    font-size: 16px;
+    padding: 14px 28px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+  
+  @media (max-width: 640px) {
+    flex: 1;
+    min-width: unset;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Primary Button (Legacy Support) */
+.btn-primary {
+  flex: 1;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  
+  @media (max-width: 640px) {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Animations */
+@keyframes bounce {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.score-section {
+  animation: slideUp 0.6s ease-out;
+}
+
+.stats-grid {
+  animation: slideUp 0.7s ease-out;
+}
+
+.rank-section {
+  animation: slideUp 0.8s ease-out;
+}
+
+.actions {
+  animation: slideUp 0.9s ease-out;
 }

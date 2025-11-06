@@ -183,62 +183,58 @@ YOUR RESULTS:
             </div>
 
             <div className="result-container">
-                <div className="result-header">
-                    {/* Title moved to header-top, so this is now empty or can be removed */}
-                </div>
+                {/* Main Content - New Improved Layout */}
+                <div className="result-content-main">
+                    {/* Score Section */}
+                    <div className="score-section">
+                        <div className="score-main-display">
+                            <div className="score-value">
+                                {leaderboardEntry?.finalScore || 0}
+                                <span className="score-max">/100</span>
+                            </div>
+                            <p className="score-label">Your Score</p>
+                        </div>
 
-                <div className="score-display-large">
-                    <div className="score-main">
-                        {correctAnswers}
-                        <span className="score-total">/5</span>
-                    </div>
-                    <p className="score-label">Correct Answers</p>
-                </div>
-
-                {/* 이메일 발송 상태 표시 */}
-                {emailSending && (
-                    <div style={{ textAlign: 'center', padding: '10px', color: '#666' }}>
-                        📧 Sending your results email...
-                    </div>
-                )}
-                {emailSent && (
-                    <div style={{ textAlign: 'center', padding: '10px', color: '#4CAF50', fontWeight: 'bold' }}>
-                        ✅ Email sent successfully!
-                    </div>
-                )}
-
-                <div className="result-stats">
-                    <div className="stat-card">
-                        <div className="stat-icon">⏱️</div>
-                        <div className="stat-content">
-                            <div className="stat-value">{minutes}:{seconds.toString().padStart(2, '0')}</div>
-                            <div className="stat-name">Completion Time</div>
+                        {/* Stats Grid */}
+                        <div className="stats-grid">
+                            <div className="stat-item">
+                                <div className="stat-number">{correctAnswers}/5</div>
+                                <div className="stat-text">Correct Answers</div>
+                            </div>
+                            <div className="stat-item">
+                                <div className="stat-number">+{leaderboardEntry?.finalScore ? Math.max(0, (leaderboardEntry.finalScore - correctAnswers * 20)) : 0}</div>
+                                <div className="stat-text">Time Bonus</div>
+                            </div>
                         </div>
                     </div>
 
+                    {/* Rank Section */}
                     {leaderboardEntry && (
-                        <>
-                            <div className="stat-card">
-                                <div className="stat-icon">🎯</div>
-                                <div className="stat-content">
-                                    <div className="stat-value">{leaderboardEntry.finalScore}</div>
-                                    <div className="stat-name">Final Score</div>
+                        <div className="rank-section">
+                            <div className="rank-badge">
+                                <div className="rank-emoji">{getRankEmoji(leaderboardEntry.rank)}</div>
+                                <div className="rank-info">
+                                    <div className="rank-position">Today's Rank: #{leaderboardEntry.rank}</div>
+                                    <div className="rank-total">out of participants</div>
                                 </div>
                             </div>
-                        </>
+                        </div>
+                    )}
+
+                    {/* Email Status */}
+                    {emailSending && (
+                        <div className="email-status sending">
+                            📧 Sending your results email...
+                        </div>
+                    )}
+                    {emailSent && (
+                        <div className="email-status sent">
+                            ✅ Email sent successfully!
+                        </div>
                     )}
                 </div>
 
-                {leaderboardEntry && (
-                    <div className="rank-badge-large">
-                        <div className="badge-emoji">{getRankEmoji(leaderboardEntry.rank)}</div>
-                        <div className="badge-text">
-                            Rank #{leaderboardEntry.rank} Today<br/>
-                            <span className="badge-subtext">{correctAnswers}/5 • {minutes}:{seconds.toString().padStart(2, '0')}</span>
-                        </div>
-                    </div>
-                )}
-
+                {/* Footer with Action Buttons */}
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
                     <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>
