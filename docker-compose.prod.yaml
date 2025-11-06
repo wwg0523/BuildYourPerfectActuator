@@ -1,26 +1,11 @@
 services:
-  nginx:
-    image: nginx:latest
-    container_name: actuator-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - actuator-network
-    restart: unless-stopped
-
   frontend:
     build:
       context: ./actuator-front
     image: actuator-front:latest
     container_name: actuator-front
-    expose:
-      - "5005"
+    ports:
+      - "5005:5005"
     depends_on:
       - backend
     networks:
@@ -32,8 +17,8 @@ services:
       context: ./actuator-back
     image: actuator-back:latest
     container_name: actuator-back
-    expose:
-      - "4004"
+    ports:
+      - "4004:4004"
     depends_on:
       - actuator-db
     environment:
@@ -52,8 +37,8 @@ services:
   actuator-db:
     image: postgres:16.10
     container_name: actuator-db
-    expose:
-      - "5433"
+    ports:
+      - "5433:5433"
     command: ["postgres", "-c", "port=5433"]
     environment:
       POSTGRES_USER: postgres

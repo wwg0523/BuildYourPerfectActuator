@@ -15,23 +15,21 @@ COPY src/ ./src/
 COPY tsconfig.json ./
 
 # 빌드 시 환경 변수 설정
-ARG REACT_APP_BACKEND_URL=http://actuator-back:4004
-ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+ARG REACT_APP_ENCRYPTION_KEY=your-32byte-secret-key
+ENV REACT_APP_ENCRYPTION_KEY=$REACT_APP_ENCRYPTION_KEY
 
 # 프로덕션 빌드
 RUN npm run build
 
-# 최종 스테이지
-FROM node:18-alpine
+# 최종 스테이지 - Nginx 사용
+FROM nginx:alpine
 
 WORKDIR /app
 
-# serve만 설치
-RUN npm install -g serve
-
-# 빌드된 파일 복사
+# Nginx 설정 복사
 COPY --from=builder /app/build ./build
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 5005
 
-CMD serve -s build -l 5005
+CMD ["nginx", "-g", "daemon off;"]
