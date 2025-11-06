@@ -88,7 +88,6 @@ export interface GameQuestion {
 
 export interface ScoreCalculation {
     basePoints: number;        // Base points (20 for correct answer)
-    timeBonus: number;         // Time bonus (remaining time / 3)
     difficultyMultiplier: number; // Difficulty multiplier
     finalScore: number;        // Final score
 }
@@ -105,10 +104,8 @@ export interface UserAnswer {
     questionId: string;
     selectedComponents: string[];
     isCorrect: boolean;
-    answerTime: number;
     timestamp: Date;
     difficulty?: 'easy' | 'medium' | 'hard'; // Difficulty level
-    timeRemaining?: number; // Remaining time within question time limit (seconds)
 }
 
 export interface GameSession {
@@ -287,31 +284,27 @@ const rankSystem: RankInfo[] = [
 // 점수 계산 함수
 export const calculateScore = (
     isCorrect: boolean,
-    timeRemaining: number,
     difficulty: 'easy' | 'medium' | 'hard'
 ): ScoreCalculation => {
     if (!isCorrect) {
         return {
             basePoints: 0,
-            timeBonus: 0,
             difficultyMultiplier: 1,
             finalScore: 0
         };
     }
 
     const basePoints = 20;
-    const timeBonus = Math.floor(timeRemaining / 3);
     const difficultyMultiplier = {
         easy: 1.0,
         medium: 1.2,
         hard: 1.5
     }[difficulty];
 
-    const finalScore = Math.round((basePoints + timeBonus) * difficultyMultiplier);
+    const finalScore = Math.round(basePoints * difficultyMultiplier);
 
     return {
         basePoints,
-        timeBonus,
         difficultyMultiplier,
         finalScore
     };
@@ -362,8 +355,7 @@ export class LeaderboardManager {
             }
             
             const difficulty = answer.difficulty || 'medium';
-            const timeRemaining = answer.timeRemaining || 0;
-            const scoreCalc = calculateScore(true, timeRemaining, difficulty);
+            const scoreCalc = calculateScore(true, difficulty);
             
             return sum + scoreCalc.finalScore;
         }, 0);

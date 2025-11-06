@@ -58,9 +58,7 @@ const TermsModal: React.FC<TermsModalProps> = ({
                         For any questions regarding your personal data or to exercise your rights,
                         please contact our Data Protection Officer at: privacy@lebot.co.kr
                     </p>
-                </div>
 
-                <div className="consent-section-center">
                     <p>I have read and agree to the Terms and Conditions</p>
                     <p>I consent to receive marketing communications</p>
                 </div>

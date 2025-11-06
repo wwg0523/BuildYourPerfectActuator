@@ -21,7 +21,6 @@ interface ExplanationState {
 const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, setScreen }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
-    const [questionTime, setQuestionTime] = useState<number>(0);
     const [explanationState, setExplanationState] = useState<ExplanationState>({
         isOpen: false,
         question: null,
@@ -32,7 +31,12 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
     const currentQuestion = gameSession.questions[gameSession.currentQuestionIndex];
 
     useEffect(() => {
-        // Calculate elapsed time from game start
+        // Only run timer when explanation is not open
+        if (explanationState.isOpen) {
+            return;
+        }
+
+        // Calculate elapsed time from game start (누적 게임 시간)
         const timer = setInterval(() => {
             const now = new Date();
             const elapsed = Math.floor((now.getTime() - gameSession.startTime.getTime()) / 1000);
@@ -40,22 +44,12 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [gameSession.startTime]);
+    }, [gameSession.startTime, explanationState.isOpen]);
 
     useEffect(() => {
-        // Reset question timer when question changes
-        setQuestionTime(0);
+        // Reset selected answer when question changes
         setSelectedAnswer(null);
     }, [gameSession.currentQuestionIndex]);
-
-    useEffect(() => {
-        // Track time spent on current question
-        const timer = setInterval(() => {
-            setQuestionTime(prev => prev + 1);
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, []);
 
     const handleAnswerSubmit = () => {
         if (!currentQuestion || selectedAnswer === null) return;
@@ -75,16 +69,13 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         if (!currentQuestion) return;
 
         const isCorrect = explanationState.isCorrect;
-        const timeRemaining = Math.max(0, currentQuestion.timeLimit - questionTime);
         
         const answer: UserAnswer = {
             questionId: currentQuestion.id,
             selectedComponents: [explanationState.selectedAnswer || ''],
             isCorrect,
-            answerTime: questionTime * 1000,
             timestamp: new Date(),
             difficulty: currentQuestion.difficulty,
-            timeRemaining: timeRemaining,
         };
 
         setGameSession(prev => {
@@ -133,8 +124,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         };
 
         // 점수 계산
-        const timeRemaining = Math.max(0, explanationState.question.timeLimit - questionTime);
-        const scoreDetails = calculateScore(explanationState.isCorrect, timeRemaining, explanationState.question.difficulty);
+        const scoreDetails = calculateScore(explanationState.isCorrect, explanationState.question.difficulty);
         const displayScore = scoreDetails.finalScore;
 
         return (
@@ -175,7 +165,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                     {/* Product Image */}
                     <div className="product-image-container">
                         <img 
-                            src={`/assets/questions/q${gameSession.currentQuestionIndex + 1}-${currentQuestion.applicationName.toLowerCase().replace(/\s+/g, '-')}.png`}
+                            src={`/assets/questions/${currentQuestion.id}-${currentQuestion.applicationName.toLowerCase().replace(/\s+/g, '-')}.png`}
                             alt={currentQuestion.applicationName}
                             className="product-image"
                             onError={(e) => {

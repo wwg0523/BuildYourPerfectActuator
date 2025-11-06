@@ -88,12 +88,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
 }
 
 .rank-badge {
   font-size: 1.5em;
   font-weight: bold;
   min-width: 40px;
+  
+  @media (max-width: 640px) {
+    min-width: auto;
+  }
 }
 
 .rank-number {

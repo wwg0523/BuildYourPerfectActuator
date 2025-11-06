@@ -222,10 +222,6 @@ YOUR RESULTS:
                                 <div className="stat-number">{correctAnswers}/5</div>
                                 <div className="stat-text">Correct Answers</div>
                             </div>
-                            <div className="stat-item">
-                                <div className="stat-number">+{leaderboardEntry?.finalScore ? Math.max(0, (leaderboardEntry.finalScore - correctAnswers * 20)) : 0}</div>
-                                <div className="stat-text">Time Bonus</div>
-                            </div>
                         </div>
                     </div>
 

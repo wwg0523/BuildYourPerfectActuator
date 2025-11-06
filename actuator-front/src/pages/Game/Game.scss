@@ -156,7 +156,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #ff9800;
+    background: #d97706;
     color: white;
     padding: 6px 12px;
     border-radius: 6px;
@@ -179,11 +179,11 @@
 /* Fixed timer at top right */
 .timer-fixed {
   position: fixed;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #d97706;
   color: white;
   border-radius: 8px;
   font-weight: bold;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
   z-index: 100;
   top: 15px;
   right: 20px;
@@ -674,7 +674,7 @@
   }
 }
 
-/* ?¼ë“œë°?ëª¨ë‹¬ ?¤í???*/
+/* ?ï¿½ë“œï¿½?ëª¨ë‹¬ ?ï¿½ï¿½???*/
 .modal-overlay {
   position: fixed;
   top: 0;

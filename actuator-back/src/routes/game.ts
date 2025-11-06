@@ -76,8 +76,8 @@ router.post('/submit', async (req, res) => {
                 await pool.query(
                     `INSERT INTO user_answers (
                         id, user_id, game_result_id, question_id, selected_answer, is_correct,
-                        time_taken, points_earned
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                        points_earned
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                     [
                         answerId,
                         userId,
@@ -85,7 +85,6 @@ router.post('/submit', async (req, res) => {
                         answer.questionId,
                         JSON.stringify(answer.selectedComponents || []),
                         answer.isCorrect || false,
-                        Number(answer.answerTime) || 0,
                         Number(answer.pointsEarned) || 0,
                     ]
                 );

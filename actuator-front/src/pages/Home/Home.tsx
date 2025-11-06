@@ -34,7 +34,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame, theme = 'light', onToggleTheme
     }, [onStartGame]);
 
     const handleClickOrTouch = () => {
-        // 클릭이나 터치 시 Guide 화면으로 이동
+        // 클릭이나 터치 시 Info 화면으로 이동
         onStartGame();
     };
 

@@ -55,7 +55,6 @@ CREATE TABLE quiz_questions_cache (
   correct_answer VARCHAR(10) NOT NULL,
   explanation JSONB,
   points INT DEFAULT 20,
-  time_limit INT DEFAULT 30,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -68,7 +67,6 @@ CREATE TABLE user_answers (
   question_id VARCHAR(10) NOT NULL REFERENCES quiz_questions_cache(id),
   selected_answer VARCHAR(10),
   is_correct BOOLEAN,
-  time_taken INT,
   points_earned INT,
   created_at TIMESTAMP DEFAULT NOW()
 );

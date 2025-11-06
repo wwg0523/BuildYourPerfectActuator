@@ -2,19 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
 import Home from '../pages/Home/Home';
-import Guide from '../pages/Guide/Guide';
 import Info from '../pages/Info/Info';
 import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
-import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData } from '../lib/utils';
+import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter } from '../lib/utils';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         const saved = localStorage.getItem('theme');
         return (saved as 'light' | 'dark') || 'light';
@@ -40,8 +39,8 @@ export default function ActuatorMinigame() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [idleDetector, setIdleDetector] = useState<IdleDetector>({
-        timeoutDuration: 30000,
-        warningDuration: 25000, // 25초 후 경고 메시지 표시
+        timeoutDuration: 35000,
+        warningDuration: 30000, // 30초 후 경고 메시지 표시
         currentTimeout: null,
         warningTimeout: null,
     });
@@ -55,6 +54,7 @@ export default function ActuatorMinigame() {
 
     const gameEngine = new GameEngine();
     const leaderboardManager = new LeaderboardManager();
+    const participantCounter = new ParticipantCounter();
 
     const clearAllTimers = () => {
         if (countdownTimeoutRef.current) {
@@ -114,10 +114,19 @@ export default function ActuatorMinigame() {
         setShowModal(true);
     };
 
-    const handleStartGame = () => {
+    const handleStartGame = async () => {
         setUserInfo({ name: '', company: '', email: '', phone: '' });
         setErrors({});
         setTermsAccepted(false);
+        
+        // Home에서 Info로 넘어갈 때 참가자 수 증가
+        try {
+            await participantCounter.incrementParticipant();
+            console.log('Participant count incremented');
+        } catch (error) {
+            console.error('Failed to increment participant count:', error);
+        }
+        
         setScreen('info');
     };
 
@@ -267,7 +276,6 @@ export default function ActuatorMinigame() {
                             questionId: answer.questionId,
                             selectedComponents: answer.selectedComponents || [],
                             isCorrect: answer.isCorrect || false,
-                            answerTime: answer.answerTime || 0,
                             pointsEarned: answer.isCorrect ? (gameSession.questions[idx]?.points || 0) : 0,
                         }))
                     }),
@@ -535,7 +543,7 @@ export default function ActuatorMinigame() {
 
     useEffect(() => {
         const events = ['touchstart', 'click', 'keypress', 'mousemove'] as const;
-        if (screen === 'home' || screen === 'game' || screen === 'leaderboard') {
+        if (screen === 'home') {
             clearAllTimers();
             hideWarningMessage();
             return;
@@ -580,12 +588,6 @@ export default function ActuatorMinigame() {
         <div className="app-container">
             <div className="card">
                 {screen === 'home' && <Home onStartGame={handleStartGame} theme={theme} onToggleTheme={toggleTheme} />}
-                {screen === 'guide' && (
-                    <Guide
-                        onStartGame={handleStartGame}
-                        onBack={() => setScreen('home')}
-                    />
-                )}
                 {screen === 'info' && (
                     <Info
                         userInfo={userInfo}

@@ -36,7 +36,7 @@ const Explanation: React.FC<ExplanationProps> = ({
                     {/* Question Display */}
                     <div className="original-question">
                         <h3>📌 Question</h3>
-                        <p className="question-text">{question.question}</p>
+                        <p className="question-text"><span className="question-number">Q{question.id}) </span>{question.question}</p>
                         <div className="answer-display">
                             <span className="label">Your Answer:</span>
                             <span className={`answer ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`}>
@@ -74,13 +74,6 @@ const Explanation: React.FC<ExplanationProps> = ({
                             </ul>
                         </div>
                     )}
-
-                    {/* Learn More Card */}
-                    <div className="learn-more-card">
-                        <span className="card-icon">💡</span>
-                        <span className="card-text">Learn More</span>
-                        <span className="card-arrow">→</span>
-                    </div>
                 </div>
 
                 {/* Footer Section */}

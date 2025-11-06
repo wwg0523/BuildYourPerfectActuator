@@ -30,6 +30,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         return `#${rank}`;
     };
 
+    const isMobileView = (): boolean => {
+        return typeof window !== 'undefined' && window.innerWidth <= 640;
+    };
+
     return (
         <div className="page-leaderboard">
             {/* Header with HOME, Title, and STATS */}
@@ -61,7 +65,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                             <div key={`${entry.rank}-${entry.playedAt.getTime()}`} className="leaderboard-item">
                                 <div className="rank-and-badge">
                                     <div className="rank-badge">{getRankBadge(entry.rank)}</div>
-                                    <div className="rank-number">#{entry.rank}</div>
                                 </div>
                                 
                                 <div className="player-info">
