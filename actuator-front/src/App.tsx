@@ -3,7 +3,6 @@ import { ParticipantCounterProvider } from './context/ParticipantCounterContext'
 import ActuatorMinigame from './components/ActuatorMinigame';
 import Analytics from './components/Analytics';
 import ParticipantCountDisplay from './components/ParticipantCountDisplay';
-import LogoAnimation from "./components/LogoAnimation";
 
 function App() {
     return (
@@ -13,7 +12,6 @@ function App() {
                     <Route path="/" element={<ActuatorMinigame />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/count" element={<ParticipantCountDisplay />} />
-                    <Route path="/logo" element={<LogoAnimation />} />
                 </Routes>
             </Router>
         </ParticipantCounterProvider>

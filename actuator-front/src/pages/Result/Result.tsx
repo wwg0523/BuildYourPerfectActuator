@@ -7,7 +7,7 @@ interface ResultProps {
     gameSession: GameSession;
     leaderboardEntry?: LeaderboardEntry;
     handlePlayAgain: () => void;
-    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    setScreen: (screen: 'animation' | 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
     handleDeleteUserData?: () => Promise<void>;
     userInfo?: { id: string; name: string; company: string; email: string; phone: string };
 }
@@ -191,7 +191,7 @@ YOUR RESULTS:
         <div className="page-result">
             {/* Header with HOME, Title, and STATS */}
             <div className="result-header-top">
-                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                <button className="header-button home-button" onClick={() => setScreen('animation')} title="Home">
                     🏠 HOME
                 </button>
                 <div className="header-title">
@@ -272,7 +272,7 @@ YOUR RESULTS:
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
                     <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>
-                    <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
+                    <button onClick={() => setScreen('animation')} className="btn home">🏠 HOME</button>
                 </div>
             </div>
         </div>

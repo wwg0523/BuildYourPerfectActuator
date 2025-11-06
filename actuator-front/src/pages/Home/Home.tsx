@@ -1,144 +1,18 @@
-import React from 'react';
-import { useParticipantCounter } from '../../context/ParticipantCounterContext';
-import { motion, Variants } from 'framer-motion';
-import myPngImage from '../../components/le-bot-logo-light.png';
+﻿import React from 'react';
 import './Home.scss';
-
-const textVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-            delay: i * 0.3,
-            duration: 0.6,
-            ease: 'easeOut',
-        },
-    }),
-};
 
 interface HomeProps {
     onStartGame: () => void;
 }
 
 const Home: React.FC<HomeProps> = ({ onStartGame }) => {
-    const participantCounter = useParticipantCounter();
-
-    const handleStartGameClick = async () => {
-        try {
-            await participantCounter.incrementParticipant();
-            const newCount = await participantCounter.getTotalParticipants();
-            console.log('Participant count incremented:', newCount);
-            onStartGame();
-        } catch (error) {
-            console.error('Failed to increment participant count:', error);
-            alert('Failed to update participant count.');
-            onStartGame();
-        }
-    };
     return (
         <div className="page-home">
-            <motion.h1
-                className="home-title"
-                custom={0}
-                initial="hidden"
-                animate="visible"
-                variants={textVariants}
-            >
-                Welcome!
-            </motion.h1>
-
-            <div className="home-subtitle">
-                {"Actuator that makes your Life good’s Better".split('').map((char, i) => (
-                    <motion.span
-                        key={`${char}-${i}`}
-                        className="char"
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{
-                            duration: 1.1,
-                            repeat: 1,
-                            ease: 'easeInOut',
-                            delay: i * 0.06
-                        }}
-                    >
-                        {char}
-                    </motion.span>
-                ))}
+            <div className="home-dummy">
+                <h1> Home Page</h1>
+                <p>This page is currently a placeholder.</p>
+                <button onClick={onStartGame}>Go to Guide</button>
             </div>
-
-            {/* 🏆 Prize Section */}
-            <motion.div
-                className="prizes-container"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-            >
-                <h2 className="prizes-title">🏆 Challenge Prizes</h2>
-                <div className="prizes-grid">
-                    <motion.div
-                        className="prize-card prize-1st"
-                        whileHover={{ scale: 1.05, y: -5 }}
-                        transition={{ type: 'spring', stiffness: 400 }}
-                    >
-                        <div className="medal">🥇</div>
-                        <h3 className="rank">1st Place</h3>
-                        <p className="prize-name">Premium Actuator Kit</p>
-                        <p className="prize-description">Advanced components & accessories</p>
-                    </motion.div>
-
-                    <motion.div
-                        className="prize-card prize-2nd"
-                        whileHover={{ scale: 1.05, y: -5 }}
-                        transition={{ type: 'spring', stiffness: 400 }}
-                    >
-                        <div className="medal">🥈</div>
-                        <h3 className="rank">2nd Place</h3>
-                        <p className="prize-name">Professional Kit</p>
-                        <p className="prize-description">Standard components & tools</p>
-                    </motion.div>
-
-                    <motion.div
-                        className="prize-card prize-3rd"
-                        whileHover={{ scale: 1.05, y: -5 }}
-                        transition={{ type: 'spring', stiffness: 400 }}
-                    >
-                        <div className="medal">🥉</div>
-                        <h3 className="rank">3rd Place</h3>
-                        <p className="prize-name">Starter Pack</p>
-                        <p className="prize-description">Essential components & guide</p>
-                    </motion.div>
-                </div>
-            </motion.div>
-
-            <motion.button
-                className="button"
-                onClick={handleStartGameClick}
-                whileHover={{
-                    scale: 1.05,
-                    transition: { type: 'spring', stiffness: 400, damping: 12, delay: 0 }
-                }}
-                whileTap={{
-                    scale: 0.95,
-                    transition: { type: 'spring', stiffness: 600, damping: 10, delay: 0 }
-                }}
-            >
-                START GAME
-            </motion.button>
-
-            <motion.p
-                className="home-powered"
-                custom={0}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                variants={textVariants}
-            >
-                Powered by
-                <img 
-                    src={myPngImage} 
-                    alt="lebot-logo" 
-                    className="home-logo"
-                />
-            </motion.p>
         </div>
     );
 };

@@ -233,11 +233,21 @@
 .answer-display {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding: 12px 16px;
   background: #f9f9f9;
   border-radius: 8px;
   border: 2px solid #e0e0e0;
+  margin: 0 auto;
+  
+  @media (min-width: 1024px) {
+    width: fit-content;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    width: fit-content;
+  }
   
   .label {
     font-size: 14px;

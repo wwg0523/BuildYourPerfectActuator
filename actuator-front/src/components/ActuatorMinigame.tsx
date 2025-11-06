@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
+import Animation from '../pages/Animation/Animation';
 import Home from '../pages/Home/Home';
 import Guide from '../pages/Guide/Guide';
 import Info from '../pages/Info/Info';
@@ -14,7 +15,7 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:40
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'animation' | 'home' | 'guide' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('animation');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -166,7 +167,7 @@ export default function ActuatorMinigame() {
         localStorage.removeItem('encryptedUserInfo');
         setGameSession(null);
         setLeaderboardEntry(null);
-        setScreen('home');
+        setScreen('animation');
     };
 
     const handleSubmit = async () => {
@@ -555,11 +556,14 @@ export default function ActuatorMinigame() {
     return (
         <div className="app-container">
             <div className="card">
+                {screen === 'animation' && (
+                    <Animation onAnimationEnd={() => setScreen('info')} />
+                )}
                 {screen === 'home' && <Home onStartGame={() => setScreen('guide')} />}
                 {screen === 'guide' && (
                     <Guide
                         onStartGame={handleStartGame}
-                        onBack={() => setScreen('home')}
+                        onBack={() => setScreen('animation')}
                     />
                 )}
                 {screen === 'info' && (

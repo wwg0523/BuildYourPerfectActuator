@@ -76,11 +76,11 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack }) => {
 
                     {/* Action Buttons */}
                     <div className="gamestart-actions">
-                        <button className="button button-primary" onClick={onStartGame}>
-                            Start Game →
-                        </button>
                         <button className="button button-secondary" onClick={onBack}>
                             ← Back
+                        </button>
+                        <button className="button button-primary" onClick={onStartGame}>
+                            Start Game →
                         </button>
                     </div>
                 </motion.div>

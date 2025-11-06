@@ -8,7 +8,7 @@ interface GameProps {
     gameSession: GameSession;
     setGameSession: React.Dispatch<React.SetStateAction<GameSession | null>>;
     handleSubmit: () => void;
-    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    setScreen: (screen: 'animation' | 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
 interface ExplanationState {
@@ -154,7 +154,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                 {/* Header Section with HOME, Question, Timer */}
                 <div className="game-header">
                     <div className="header-left">
-                        <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                        <button className="header-button home-button" onClick={() => setScreen('animation')} title="Home">
                             🏠 HOME
                         </button>
                     </div>
@@ -170,50 +170,60 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
 
                 {/* Content Section */}
                 <div className="game-content">
-                    <div className="question-content">
-                        <h3>{currentQuestion.question}</h3>
-                        
-                        {currentQuestion.type === 'multiple-choice' ? (
-                            <>
-                                <p className="required-components">
-                                    Select the correct answer
-                                </p>
-                                <div className="options-grid">
-                                    {currentQuestion.options.map((option, index) => (
-                                        <button
-                                            key={index}
-                                            className={`option-button ${selectedAnswer === option.charAt(0) ? 'selected' : ''}`}
-                                            onClick={() => setSelectedAnswer(option.charAt(0))}
-                                        >
-                                            <span className="option-name">{option}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <p className="required-components">
-                                    Select <span style={{ fontWeight: 'bold' }}>True (O) or False (X)</span>
-                                </p>
-                                <div className="ox-options">
-                                    <button
-                                        className={`ox-button ox-true ${selectedAnswer === 'O' ? 'selected' : ''}`}
-                                        onClick={() => setSelectedAnswer('O')}
-                                    >
-                                        <span className="ox-label">O</span>
-                                        <span className="ox-text">True</span>
-                                    </button>
-                                    <button
-                                        className={`ox-button ox-false ${selectedAnswer === 'X' ? 'selected' : ''}`}
-                                        onClick={() => setSelectedAnswer('X')}
-                                    >
-                                        <span className="ox-label">X</span>
-                                        <span className="ox-text">False</span>
-                                    </button>
-                                </div>
-                            </>
-                        )}
+                    <h3>{currentQuestion.question}</h3>
+                    
+                    {/* Product Image */}
+                    <div className="product-image-container">
+                        <img 
+                            src={`/assets/questions/q${gameSession.currentQuestionIndex + 1}-${currentQuestion.applicationName.toLowerCase().replace(/\s+/g, '-')}.png`}
+                            alt={currentQuestion.applicationName}
+                            className="product-image"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                        />
                     </div>
+                    
+                    {currentQuestion.type === 'multiple-choice' ? (
+                        <>
+                            <p className="required-components">
+                                Select the correct answer
+                            </p>
+                            <div className="options-grid">
+                                {currentQuestion.options.map((option, index) => (
+                                    <button
+                                        key={index}
+                                        className={`option-button ${selectedAnswer === option.charAt(0) ? 'selected' : ''}`}
+                                        onClick={() => setSelectedAnswer(option.charAt(0))}
+                                    >
+                                        <span className="option-name">{option}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <p className="required-components">
+                                Select <span style={{ fontWeight: 'bold' }}>True (O) or False (X)</span>
+                            </p>
+                            <div className="ox-options">
+                                <button
+                                    className={`ox-button ox-true ${selectedAnswer === 'O' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedAnswer('O')}
+                                >
+                                    <span className="ox-label">O</span>
+                                    <span className="ox-text">True</span>
+                                </button>
+                                <button
+                                    className={`ox-button ox-false ${selectedAnswer === 'X' ? 'selected' : ''}`}
+                                    onClick={() => setSelectedAnswer('X')}
+                                >
+                                    <span className="ox-label">X</span>
+                                    <span className="ox-text">False</span>
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Footer Section with Submit Button */}

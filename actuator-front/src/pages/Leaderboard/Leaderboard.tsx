@@ -7,7 +7,7 @@ interface LeaderboardProps {
     leaderboardData: LeaderboardEntry[];
     fetchLeaderboard: () => Promise<void>;
     handlePlayAgain: () => void;
-    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    setScreen: (screen: 'animation' | 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
     handleDeleteUserData?: () => Promise<void>;
 }
 
@@ -34,7 +34,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         <div className="page-leaderboard">
             {/* Header with HOME, Title, and STATS */}
             <div className="leaderboard-header-top">
-                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                <button className="header-button home-button" onClick={() => setScreen('animation')} title="Home">
                     🏠 HOME
                 </button>
                 <div className="header-title">
@@ -84,7 +84,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                 )}
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
-                    <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
+                    <button onClick={() => setScreen('animation')} className="btn home">🏠 HOME</button>
                 </div>
             </div>
         </div>

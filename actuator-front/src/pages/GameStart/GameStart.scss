@@ -208,11 +208,13 @@
 /* Action Buttons */
 .gamestart-actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
   margin-top: 8px;
+  justify-content: space-between;
   
   .button {
+    flex: 1;
     padding: 14px 24px;
     font-size: 16px;
     font-weight: 600;

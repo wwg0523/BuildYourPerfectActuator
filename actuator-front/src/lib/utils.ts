@@ -222,35 +222,16 @@ export class GameEngine {
         const quizQuestionsImport = require('../data/quizQuestions.json');
         const allQuizQuestions: GameQuestion[] = quizQuestionsImport.questions;
         
-        // Randomly select 5 questions from the pool (now supports up to 15 questions)
-        const shuffledQuestions = this.shuffleArray(allQuizQuestions).slice(0, 5);
+        // 문제 1-3: 4지선다 (일상 제품 속 액추에이터 찾기)
+        const multipleChoiceQuestions = allQuizQuestions.filter(q => q.type === 'multiple-choice' && q.category === 'daily-life');
+        const selectedMultipleChoice = this.shuffleArray(multipleChoiceQuestions).slice(0, 3);
         
-        // Ensure balanced difficulty distribution
-        const easyQuestions = shuffledQuestions.filter(q => q.difficulty === 'easy');
-        const mediumQuestions = shuffledQuestions.filter(q => q.difficulty === 'medium');
-        const hardQuestions = shuffledQuestions.filter(q => q.difficulty === 'hard');
-
-
-        // Ensure balanced difficulty distribution (aim for 2 easy, 2 medium, 1 hard)
-        let questions: GameQuestion[] = [];
-        const targetQuestions: GameQuestion[] = [];
+        // 문제 4-5: OX 퀴즈 (액추에이터 사양 변경 효과)
+        const trueFalseQuestions = allQuizQuestions.filter(q => q.type === 'true-false' && q.category === 'specification');
+        const selectedTrueFalse = this.shuffleArray(trueFalseQuestions).slice(0, 2);
         
-        // Add 2 easy questions if available
-        targetQuestions.push(...easyQuestions.slice(0, 2));
-        // Add 2 medium questions if available
-        targetQuestions.push(...mediumQuestions.slice(0, 2));
-        // Add 1 hard question if available
-        if (hardQuestions.length > 0) {
-            targetQuestions.push(...hardQuestions.slice(0, 1));
-        }
-        
-        // If we don't have enough, fill with remaining questions
-        if (targetQuestions.length < 5) {
-            const allRemaining = shuffledQuestions.filter(q => !targetQuestions.includes(q));
-            targetQuestions.push(...allRemaining.slice(0, 5 - targetQuestions.length));
-        }
-        
-        questions = targetQuestions.slice(0, 5);
+        // 최종 게임 문제 구성
+        const questions = [...selectedMultipleChoice, ...selectedTrueFalse];
 
         return {
             sessionId: generateUUID(),
