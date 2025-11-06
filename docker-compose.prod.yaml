@@ -2,10 +2,14 @@ services:
   frontend:
     build:
       context: ./actuator-front
+      args:
+        REACT_APP_BACKEND_URL: http://actuator-back:4004
     image: actuator-front:latest
     container_name: actuator-front
     ports:
       - "5005:5005"
+    depends_on:
+      - backend
     networks:
       - actuator-network
 
@@ -16,6 +20,8 @@ services:
     container_name: actuator-back
     ports:
       - "4004:4004"
+    depends_on:
+      - actuator-db
     environment:
       DB_HOST: actuator-db
       DB_PORT: 5433

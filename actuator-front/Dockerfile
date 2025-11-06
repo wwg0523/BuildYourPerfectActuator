@@ -14,6 +14,10 @@ COPY public/ ./public/
 COPY src/ ./src/
 COPY tsconfig.json ./
 
+# 빌드 시 환경 변수 설정
+ARG REACT_APP_BACKEND_URL=http://actuator-back:4004
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+
 # 프로덕션 빌드
 RUN npm run build
 
