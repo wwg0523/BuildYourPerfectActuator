@@ -181,6 +181,30 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                     </ul>
                 </motion.div>
 
+                {/* Advanced Topics Section */}
+                <motion.div className="guide-section" variants={itemVariants}>
+                    <h2>🚀 Advanced Topics</h2>
+                    <p>As you progress, you'll encounter more complex scenarios:</p>
+                    <div className="advanced-topics">
+                        <div className="topic-card">
+                            <h4>🏠 Smart Home Systems</h4>
+                            <p>Understanding how sensors, controllers, and actuators work together in modern connected homes.</p>
+                        </div>
+                        <div className="topic-card">
+                            <h4>🚗 Electric Vehicles</h4>
+                            <p>Learning about multiple actuator systems in EVs: power steering, active suspension, and regenerative braking.</p>
+                        </div>
+                        <div className="topic-card">
+                            <h4>🤖 Industrial Automation</h4>
+                            <p>Exploring precision control, servo systems, and industrial robot design with harmonic drives and grippers.</p>
+                        </div>
+                        <div className="topic-card">
+                            <h4>⚙️ Design Trade-offs</h4>
+                            <p>Analyzing how design decisions affect performance, durability, efficiency, and noise levels.</p>
+                        </div>
+                    </div>
+                </motion.div>
+
                 {/* Action Buttons */}
                 <motion.div className="guide-actions" variants={itemVariants}>
                     <button className="button button-secondary" onClick={onBack}>

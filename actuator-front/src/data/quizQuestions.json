@@ -278,6 +278,147 @@
       },
       "points": 20,
       "timeLimit": 30
+    },
+    {
+      "id": "q11",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "hard",
+      "question": "Which of the following products use actuators in a smart home system?",
+      "applicationName": "Smart Home Integration",
+      "options": [
+        "A) Automatic curtain system, Smart door lock, Temperature sensor",
+        "B) Automatic curtain system, Smart door lock, Robot vacuum brush motor",
+        "C) Smart door lock, Temperature sensor, Robot vacuum brush motor",
+        "D) Automatic curtain system, Temperature sensor, Robot vacuum brush motor"
+      ],
+      "correctAnswer": "B",
+      "explanation": {
+        "correct": "Automatic curtain systems, smart door locks, and robot vacuum motors are all actuators. Temperature sensors are input devices (not actuators). Modern smart homes integrate: Sensors (input) → Controller (processing) → Actuators (output).",
+        "improvements": [
+          "Enhanced integration → Unified smartphone control",
+          "Improved automation → Routine tasks execute automatically",
+          "Energy efficiency → Coordinated device operation reduces power consumption"
+        ],
+        "realWorldExamples": [
+          "Samsung SmartThings: Integrated control of curtains, locks, and vacuum",
+          "Philips Hue: LED drivers (actuators) for brightness and color adjustment",
+          "Nest Thermostat: Learns patterns and controls HVAC actuators automatically"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 35
+    },
+    {
+      "id": "q12",
+      "type": "multiple-choice",
+      "category": "daily-life",
+      "difficulty": "hard",
+      "question": "Which systems in an electric vehicle rely on motor actuators for their core operation?",
+      "applicationName": "EV Powertrain System",
+      "options": [
+        "A) Inverter, Power steering, Regenerative braking motor",
+        "B) Power steering, Regenerative braking motor, Active suspension",
+        "C) Inverter, Regenerative braking motor, Active suspension",
+        "D) Inverter, Power steering, Active suspension"
+      ],
+      "correctAnswer": "B",
+      "explanation": {
+        "correct": "Electric power steering (EPS) and regenerative braking motor are actuators. Active suspension uses electromagnetic or hydraulic actuators. The inverter is a power converter (not an actuator). It controls the motor but doesn't produce mechanical motion itself.",
+        "improvements": [
+          "EPS precision → Variable assist based on speed (light at low speed, heavy at high speed)",
+          "Regenerative efficiency → Recovers up to 30% of kinetic energy as electricity",
+          "Suspension responsiveness → Real-time damping adjustment (0.001 second reaction time)"
+        ],
+        "realWorldExamples": [
+          "Tesla Model S: Dual motor AWD with air suspension",
+          "Hyundai Ioniq 5: Regenerative braking paddles with integrated EPS control",
+          "Audi e-tron: Predictive active suspension with torque vectoring"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 35
+    },
+    {
+      "id": "q13",
+      "type": "multiple-choice",
+      "category": "specification",
+      "difficulty": "hard",
+      "question": "Which combination represents the correct actuators used in a 6-axis industrial robot?",
+      "applicationName": "Industrial Robot Actuators",
+      "options": [
+        "A) Servo motors + Harmonic drive reducer, Encoder (position sensor)",
+        "B) Servo motors + Harmonic drive reducer, Pneumatic gripper",
+        "C) Encoder, Pneumatic gripper, PLC (control computer)",
+        "D) Servo motors + Harmonic drive reducer, PLC controller"
+      ],
+      "correctAnswer": "B",
+      "explanation": {
+        "correct": "Servo motors with harmonic drives and pneumatic grippers are the actuators. Encoders are sensors (feedback), and PLCs are controllers. A complete 6-axis robot combines: servo motors (joint actuation) + pneumatic grippers (end effector) with encoder feedback and PLC control.",
+        "improvements": [
+          "Servo precision → ±0.02mm repeatability through high-resolution encoders",
+          "Harmonic drive → Backlash under 1 arcminute for smooth operation",
+          "Gripper response → 0.01 second pick-and-place cycle for assembly tasks"
+        ],
+        "realWorldExamples": [
+          "Welding robots: High-power servo (5-10kW) + rigid harmonic drives",
+          "Assembly robots: Lightweight harmonic drives (1-3kW) for precision",
+          "Handling robots: High-speed pneumatic grippers with vision system integration"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 35
+    },
+    {
+      "id": "q14",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "hard",
+      "question": "To increase the driving range of an electric scooter, doubling the motor's maximum power will improve battery efficiency and extend the travel distance.",
+      "applicationName": "E-scooter Motor Optimization",
+      "options": ["O", "X"],
+      "correctAnswer": "X",
+      "explanation": {
+        "correct": "False. Doubling max power doesn't improve range - it often worsens it. Higher output requires more copper windings, adding weight and losses. Better efficiency comes from: (1) Motor efficiency improvement (85% → 92%), (2) Algorithm optimization (FOC control, Eco mode, enhanced regenerative braking), (3) Lightweight design (aluminum housing, reduced iron loss).",
+        "improvements": [
+          "Efficiency gains → 7% improvement yields 8-10% range increase",
+          "Regenerative braking → 20% → 35% recovery increases city range 15-20%",
+          "Lightweight construction → 20% weight reduction improves acceleration without range loss"
+        ],
+        "realWorldExamples": [
+          "Xiaomi Mi Scooter Pro 2: Efficiency improvements achieved 45km range",
+          "Segway Ninebot Max: Regenerative braking + large battery = 65km capability",
+          "ather S1: Motor efficiency optimization without power increase"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 40
+    },
+    {
+      "id": "q15",
+      "type": "true-false",
+      "category": "specification",
+      "difficulty": "hard",
+      "question": "Doubling an automotive windshield wiper motor's speed will improve visibility in heavy rain without affecting motor lifespan or noise levels.",
+      "applicationName": "Wiper Motor Design Trade-offs",
+      "options": ["O", "X"],
+      "correctAnswer": "X",
+      "explanation": {
+        "correct": "False. Speed doubling causes serious issues: (1) Centrifugal force increases 4x (proportional to speed squared), (2) Bearing wear accelerates → 30-50% lifespan reduction, (3) Air noise increases with speed cubed, (4) Brush sparking increases in AC motors. Better solutions: Adaptive speed control (based on rain sensor), pressure optimization, and brushless motor design for durability.",
+        "improvements": [
+          "Adaptive speed control → 3-5 speed levels based on rainfall intensity",
+          "Brushless motor → 3x longer lifespan with self-diagnostic capability",
+          "Blade optimization → Graphite coating reduces friction and noise",
+          "Temperature compensation → Prevents freezing without excess power"
+        ],
+        "realWorldExamples": [
+          "Mercedes-Benz: AI analyzes raindrops to optimize wiping pattern",
+          "Tesla: Electronic wipers with variable speed + pressure control",
+          "BMW: Temperature-compensated control with frost detection mode"
+        ]
+      },
+      "points": 20,
+      "timeLimit": 40
     }
   ]
 }

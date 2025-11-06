@@ -222,21 +222,35 @@ export class GameEngine {
         const quizQuestionsImport = require('../data/quizQuestions.json');
         const allQuizQuestions: GameQuestion[] = quizQuestionsImport.questions;
         
-        // Randomly select 5 questions from the pool of 10
+        // Randomly select 5 questions from the pool (now supports up to 15 questions)
         const shuffledQuestions = this.shuffleArray(allQuizQuestions).slice(0, 5);
         
-        // Ensure 3 multiple-choice (daily-life) and 2 true-false (specification)
-        const multipleChoiceQuestions = shuffledQuestions.filter(q => q.type === 'multiple-choice');
-        const trueFalseQuestions = shuffledQuestions.filter(q => q.type === 'true-false');
-        
-        // If we don't have exactly 3 and 2, rebalance
+        // Ensure balanced difficulty distribution
+        const easyQuestions = shuffledQuestions.filter(q => q.difficulty === 'easy');
+        const mediumQuestions = shuffledQuestions.filter(q => q.difficulty === 'medium');
+        const hardQuestions = shuffledQuestions.filter(q => q.difficulty === 'hard');
+
+
+        // Ensure balanced difficulty distribution (aim for 2 easy, 2 medium, 1 hard)
         let questions: GameQuestion[] = [];
-        if (multipleChoiceQuestions.length >= 3 && trueFalseQuestions.length >= 2) {
-            questions = [...multipleChoiceQuestions.slice(0, 3), ...trueFalseQuestions.slice(0, 2)];
-        } else {
-            // Fallback: use first 5 questions as is
-            questions = shuffledQuestions.slice(0, 5);
+        const targetQuestions: GameQuestion[] = [];
+        
+        // Add 2 easy questions if available
+        targetQuestions.push(...easyQuestions.slice(0, 2));
+        // Add 2 medium questions if available
+        targetQuestions.push(...mediumQuestions.slice(0, 2));
+        // Add 1 hard question if available
+        if (hardQuestions.length > 0) {
+            targetQuestions.push(...hardQuestions.slice(0, 1));
         }
+        
+        // If we don't have enough, fill with remaining questions
+        if (targetQuestions.length < 5) {
+            const allRemaining = shuffledQuestions.filter(q => !targetQuestions.includes(q));
+            targetQuestions.push(...allRemaining.slice(0, 5 - targetQuestions.length));
+        }
+        
+        questions = targetQuestions.slice(0, 5);
 
         return {
             sessionId: generateUUID(),
