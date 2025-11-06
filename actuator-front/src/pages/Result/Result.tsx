@@ -7,7 +7,7 @@ interface ResultProps {
     gameSession: GameSession;
     leaderboardEntry?: LeaderboardEntry;
     handlePlayAgain: () => void;
-    setScreen: (screen: 'animation' | 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
     handleDeleteUserData?: () => Promise<void>;
     userInfo?: { id: string; name: string; company: string; email: string; phone: string };
 }
@@ -96,7 +96,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         // Retrieve grade information
         const gradeInfo = getRankInfo(leaderboardEntry.finalScore);
 
-        const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.score}/5`;
+        const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.finalScore}/100`;
 
         const htmlContent = `
 <!DOCTYPE html>
@@ -129,7 +129,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
             <div class="result-card">
                 <h2>Hello ${userInfo.name},</h2>
                 <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
-                <div class="score-display">${leaderboardEntry.score}/5</div>
+                <div class="score-display">${leaderboardEntry.finalScore}/100</div>
                 <p style="text-align: center; color: #666;">Correct Answers</p>
                 <div style="text-align: center;">
                     <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
@@ -176,7 +176,8 @@ Actuator Challenge Results
 Hello ${userInfo.name},
 
 YOUR RESULTS:
-- Score: ${leaderboardEntry.score}/5 correct answers
+- Score: ${leaderboardEntry.finalScore}/100 points
+- Correct Answers: ${leaderboardEntry.score}/5
 - Daily Rank: #${leaderboardEntry.rank}
 - Completion Time: ${timeStr}
 - Final Score: ${leaderboardEntry.finalScore} points
@@ -191,7 +192,7 @@ YOUR RESULTS:
         <div className="page-result">
             {/* Header with HOME, Title, and STATS */}
             <div className="result-header-top">
-                <button className="header-button home-button" onClick={() => setScreen('animation')} title="Home">
+                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
                     🏠 HOME
                 </button>
                 <div className="header-title">
@@ -210,7 +211,7 @@ YOUR RESULTS:
                         <div className="score-main-display">
                             <div className="score-value">
                                 {leaderboardEntry?.finalScore || 0}
-                                <span className="score-max">/500</span>
+                                <span className="score-max">/100</span>
                             </div>
                             <p className="score-label">Your Score</p>
                         </div>
@@ -272,7 +273,7 @@ YOUR RESULTS:
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
                     <button onClick={() => setScreen('leaderboard')} className="btn leaderboard">🏆 LEADERBOARD</button>
-                    <button onClick={() => setScreen('animation')} className="btn home">🏠 HOME</button>
+                    <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
                 </div>
             </div>
         </div>

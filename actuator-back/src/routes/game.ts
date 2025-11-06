@@ -4,9 +4,9 @@ import { pool } from '../db.js';
 
 const router = Router();
 
-// POST /api/game/submit: 게임 결과 저장
+// POST /api/game/submit: 게임 결과 저장 및 개별 답변 기록
 router.post('/submit', async (req, res) => {
-    const { userId, selectedComponents, compatibleApplications, successRate, completionTime } = req.body;
+    const { userId, selectedComponents, compatibleApplications, successRate, completionTime, answers } = req.body;
 
     // 입력 검증
     if (!userId || !selectedComponents || !compatibleApplications || successRate == null || completionTime == null) {
@@ -35,9 +35,14 @@ router.post('/submit', async (req, res) => {
     }
 
     const totalQuestions = Number(req.body.totalQuestions ?? 5);
-    const score = Number(req.body.score ?? Math.round(Number(successRate) * totalQuestions));
-
-    const finalScore = Number(req.body.finalScore ?? Math.round(score * 100));
+    // 포인트 기반 점수 계산: answers 배열에서 각 정답의 points_earned 합산
+    // 최대 점수: 5개 문제 × 20포인트 = 100포인트
+    let totalPoints = 0;
+    if (Array.isArray(answers) && answers.length > 0) {
+        totalPoints = answers.reduce((sum: number, ans: any) => sum + (Number(ans.pointsEarned) || 0), 0);
+    }
+    const score = totalPoints > 0 ? totalPoints : Number(req.body.score ?? 0);
+    const finalScore = Number(req.body.finalScore ?? score);
 
     try {
         // user_id가 game_users에 존재하는지 확인
@@ -46,6 +51,7 @@ router.post('/submit', async (req, res) => {
             return res.status(400).json({ error: 'Invalid user_id: User does not exist' });
         }
 
+        // game_results 테이블에 게임 결과 저장
         await pool.query(
             `INSERT INTO game_results (
                 id, user_id, selected_components, compatible_applications, success_rate, completion_time,
@@ -62,7 +68,31 @@ router.post('/submit', async (req, res) => {
                 finalScore,
             ]
         );
-        res.status(201).json({ message: 'Game result saved successfully', id });
+
+        // 개별 답변을 user_answers 테이블에 저장
+        if (Array.isArray(answers) && answers.length > 0) {
+            for (const answer of answers) {
+                const answerId = uuidv4();
+                await pool.query(
+                    `INSERT INTO user_answers (
+                        id, user_id, game_result_id, question_id, selected_answer, is_correct,
+                        time_taken, points_earned
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                    [
+                        answerId,
+                        userId,
+                        id,
+                        answer.questionId,
+                        JSON.stringify(answer.selectedComponents || []),
+                        answer.isCorrect || false,
+                        Number(answer.answerTime) || 0,
+                        Number(answer.pointsEarned) || 0,
+                    ]
+                );
+            }
+        }
+
+        res.status(201).json({ message: 'Game result saved successfully', id, score, finalScore });
     } catch (err: any) {
         console.error(err);
         if (err.code === '22P02') {
@@ -78,14 +108,23 @@ router.post('/submit', async (req, res) => {
     }
 });
 
-// GET /api/game/submit: 결과 조회 (리더보드용)
+// GET /api/game/submit: 결과 조회 (리더보드용 - 포인트 기반)
 router.get('/submit', async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT gr.*, gu.name, gu.company
+            `SELECT 
+                gr.id,
+                gr.user_id,
+                gu.name,
+                gu.company,
+                COALESCE(SUM(ua.points_earned), 0) as score,
+                gr.completion_time,
+                gr.created_at
             FROM game_results gr
             JOIN game_users gu ON gr.user_id = gu.id
-            ORDER BY gr.success_rate DESC, gr.completion_time ASC
+            LEFT JOIN user_answers ua ON gr.id = ua.game_result_id
+            GROUP BY gr.id, gr.user_id, gu.name, gu.company, gr.completion_time, gr.created_at
+            ORDER BY score DESC, gr.completion_time ASC
             LIMIT 10`
         );
         res.json(result.rows);

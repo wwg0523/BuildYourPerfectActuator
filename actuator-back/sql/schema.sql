@@ -123,7 +123,7 @@ CREATE INDEX idx_api_counter_logs_created_at ON api_counter_logs(created_at DESC
 -- Create Views
 -- ============================================
 
--- Daily leaderboard: Today's top scores ranked by final_score and completion time
+-- Daily leaderboard: Today's top scores ranked by total points earned and completion time
 CREATE VIEW daily_leaderboard AS
 SELECT
   gr.id,
@@ -133,15 +133,17 @@ SELECT
     ELSE gu.name
   END AS player_name,
   gu.company,
-  gr.score,
+  COALESCE(SUM(ua.points_earned), 0) as score,
   gr.completion_time,
-  gr.final_score,
+  COALESCE(SUM(ua.points_earned), 0) as final_score,
   gr.created_at AS played_at,
-  ROW_NUMBER() OVER (ORDER BY gr.final_score DESC, gr.completion_time ASC, gr.created_at ASC) AS rank
+  ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(ua.points_earned), 0) DESC, gr.completion_time ASC, gr.created_at ASC) AS rank
 FROM game_results gr
 JOIN game_users gu ON gr.user_id = gu.id
+LEFT JOIN user_answers ua ON gr.id = ua.game_result_id
 WHERE DATE(gr.created_at AT TIME ZONE 'UTC') = CURRENT_DATE AT TIME ZONE 'UTC'
-ORDER BY gr.final_score DESC, gr.completion_time ASC, gr.created_at ASC;
+GROUP BY gr.id, gr.user_id, gu.name, gu.company, gr.completion_time, gr.created_at
+ORDER BY score DESC, gr.completion_time ASC, gr.created_at ASC;
 
 -- Game analytics: Overall game statistics
 CREATE VIEW game_analytics AS

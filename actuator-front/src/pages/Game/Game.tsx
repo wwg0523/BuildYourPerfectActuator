@@ -8,7 +8,7 @@ interface GameProps {
     gameSession: GameSession;
     setGameSession: React.Dispatch<React.SetStateAction<GameSession | null>>;
     handleSubmit: () => void;
-    setScreen: (screen: 'animation' | 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
 interface ExplanationState {
@@ -154,7 +154,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                 {/* Header Section with HOME, Question, Timer */}
                 <div className="game-header">
                     <div className="header-left">
-                        <button className="header-button home-button" onClick={() => setScreen('animation')} title="Home">
+                        <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
                             🏠 HOME
                         </button>
                     </div>

@@ -19,7 +19,7 @@
 
 /* Game Card Container */
 .game-card {
-  background: white;
+  background: var(--bg-card, white);
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -128,7 +128,7 @@
     text-overflow: ellipsis;
     font-size: clamp(12px, 3vw, 20px);
     line-height: 1.2;
-    color: #FFD700;
+    color: #87ceeb;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     
@@ -156,7 +156,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #FFB347;
+    background: #ff9800;
     color: white;
     padding: 6px 12px;
     border-radius: 6px;
@@ -297,7 +297,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  background: white;
+  background: var(--bg-card, white);
   padding: 0;
   margin-bottom: 0;
   min-height: 100%;
@@ -460,7 +460,7 @@
 .page-game .option-button {
   border: 2px solid #ddd;
   border-radius: 8px;
-  background: white;
+  background: var(--bg-card, white);
   cursor: pointer;
   transition: all 0.3s ease;
   color: #333;
@@ -674,7 +674,7 @@
   }
 }
 
-/* 피드백 모달 스타일 */
+/* ?�드�?모달 ?��???*/
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -689,7 +689,7 @@
 }
 
 .feedback-modal {
-  background: white;
+  background: var(--bg-card, white);
   padding: 40px;
   border-radius: 12px;
   text-align: center;
@@ -817,7 +817,7 @@
   padding: 24px 16px;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
-  background: white;
+  background: var(--bg-card, white);
   cursor: pointer;
   font-size: 16px;
   transition: all 0.3s ease;

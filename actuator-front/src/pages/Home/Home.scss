@@ -1,260 +1,124 @@
-/* Page-specific styles for Home.tsx */
+/* Home Page Styles - Video Animation */
 .page-home {
-  text-align: center;
-}
-
-.page-home .home-title {
-  font-weight: bold;
-  margin: 20px;
-  
-  @media (min-width: 1024px) {
-    font-size: 3em;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    font-size: 2.5rem;
-  }
-  
-  @media (max-width: 640px) {
-    font-size: 2rem;
-  }
-}
-
-.page-home .home-subtitle {
-  margin: 1rem 0;
-  display: flex;
-  justify-content: center;
-  color: #4b5563;
-  
-  @media (min-width: 1024px) {
-    font-size: 1.35rem;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    font-size: 1.25rem;
-  }
-  
-  @media (max-width: 640px) {
-    font-size: 1.1rem;
-  }
-}
-
-.page-home .char {
-  display: inline-block;
-  white-space: pre;
-}
-
-.page-home .home-powered {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #6b7280;
+  height: 100vh;
+  width: 100%;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
   margin: 0;
-  gap: 10px;
-  
-  @media (min-width: 1024px) {
-    font-size: 0.95rem;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    font-size: 0.875rem;
-  }
-  
-  @media (max-width: 640px) {
-    font-size: 0.8rem;
-  }
 }
 
-.page-home .home-logo {
-  height: auto;
-  margin-left: 10px;
-  
-  @media (min-width: 1024px) {
-    width: 120px;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    width: 100px;
-  }
-  
-  @media (max-width: 640px) {
-    width: 80px;
-  }
-}
-
-/* üèÜ Prize Section Styles */
-.prizes-container {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-  border-radius: 12px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  
-  @media (min-width: 1024px) {
-    padding: 1.5rem;
-    margin: 2rem 0;
-  }
-}
-
-.prizes-title {
-  color: #667eea;
-  font-weight: bold;
-  margin: 0 0 0.8rem 0;
-  
-  @media (min-width: 1024px) {
-    font-size: 1.5rem;
-    margin: 0 0 1.5rem 0;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    font-size: 1.2rem;
-    margin: 0 0 1rem 0;
-  }
-  
-  @media (max-width: 640px) {
-    font-size: 1rem;
-  }
-}
-
-.prizes-grid {
-  display: grid;
-  gap: 0.8rem;
-  margin-bottom: 0.5rem;
-  
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  @media (max-width: 640px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.6rem;
-  }
-}
-
-.prize-card {
-  background: white;
-  border-radius: 8px;
-  padding: 0.8rem 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+/* ?åÎßà ?†Í? Î≤ÑÌäº */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.1);
   }
 
-  .medal {
-    font-size: 2rem;
-    margin-bottom: 0.3rem;
-    line-height: 1;
-    
-    @media (min-width: 1024px) {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      font-size: 2.2rem;
-      margin-bottom: 0.4rem;
-    }
-    
-    @media (max-width: 640px) {
-      font-size: 1.8rem;
-    }
-  }
-
-  .rank {
-    color: #667eea;
-    font-weight: bold;
-    margin: 0.2rem 0;
-    line-height: 1.2;
-    
-    @media (min-width: 1024px) {
-      font-size: 1.1rem;
-      margin: 0.5rem 0;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      font-size: 0.95rem;
-      margin: 0.3rem 0;
-    }
-    
-    @media (max-width: 640px) {
-      font-size: 0.75rem;
-    }
-  }
-
-  .prize-name {
-    color: #333;
-    font-weight: 600;
-    margin: 0.2rem 0 0 0;
-    line-height: 1.1;
-    
-    @media (min-width: 1024px) {
-      font-size: 1.05rem;
-      margin: 0.5rem 0;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      font-size: 0.9rem;
-      margin: 0.3rem 0;
-    }
-    
-    @media (max-width: 640px) {
-      font-size: 0.7rem;
-    }
-  }
-
-  .prize-description {
-    color: #999;
-    font-size: 0.6rem;
-    margin: 0;
-    display: none;
-    
-    @media (min-width: 1024px) {
-      font-size: 0.85rem;
-      margin: 0.5rem 0 0 0;
-      display: block;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-      font-size: 0.75rem;
-      margin: 0.2rem 0 0 0;
-      display: block;
-    }
+  @media (max-width: 640px) {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    top: 15px;
+    right: 15px;
   }
 }
 
-.prize-card.prize-1st {
-  border-color: #ffd700;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
-  
-  @media (min-width: 1024px) {
-    transform: scale(1.05);
+.home-video {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+
+@media (max-width: 1024px) {
+  .home-video {
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 100px);
   }
 }
 
-.prize-card.prize-2nd {
-  border-color: #c0c0c0;
-  background: linear-gradient(135deg, rgba(192, 192, 192, 0.1) 0%, rgba(192, 192, 192, 0.05) 100%);
+@media (max-width: 640px) {
+  .home-video {
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 120px);
+    object-fit: contain;
+  }
 }
 
-.prize-card.prize-3rd {
-  border-color: #cd7f32;
-  background: linear-gradient(135deg, rgba(205, 127, 50, 0.1) 0%, rgba(205, 127, 50, 0.05) 100%);
+.home-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  pointer-events: none;
+  width: 90%;
 }
 
-/* reuse .button class from global styles for the start button */
+@media (max-width: 640px) {
+  .home-overlay {
+    bottom: 15px;
+  }
+}
 
+.click-hint {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  animation: pulse 2s infinite;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .click-hint {
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 6px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}

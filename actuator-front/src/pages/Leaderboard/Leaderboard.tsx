@@ -7,7 +7,7 @@ interface LeaderboardProps {
     leaderboardData: LeaderboardEntry[];
     fetchLeaderboard: () => Promise<void>;
     handlePlayAgain: () => void;
-    setScreen: (screen: 'animation' | 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
+    setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
     handleDeleteUserData?: () => Promise<void>;
 }
 
@@ -34,7 +34,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         <div className="page-leaderboard">
             {/* Header with HOME, Title, and STATS */}
             <div className="leaderboard-header-top">
-                <button className="header-button home-button" onClick={() => setScreen('animation')} title="Home">
+                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
                     🏠 HOME
                 </button>
                 <div className="header-title">
@@ -57,24 +57,29 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                     </div>
                 ) : (
                     <div className="leaderboard-list">
-                        {leaderboardData.map((entry) => (
+                        {leaderboardData.map((entry, index) => (
                             <div key={`${entry.rank}-${entry.playedAt.getTime()}`} className="leaderboard-item">
-                                <div className="rank-badge">{getRankBadge(entry.rank)}</div>
+                                <div className="rank-and-badge">
+                                    <div className="rank-badge">{getRankBadge(entry.rank)}</div>
+                                    <div className="rank-number">#{entry.rank}</div>
+                                </div>
+                                
                                 <div className="player-info">
                                     <div className="player-name">{entry.playerName}</div>
                                     <div className="player-company">{entry.company}</div>
                                 </div>
+                                
                                 <div className="player-stats">
                                     <div className="stat">
-                                        <span className="stat-label">⭐ Score</span>
-                                        <span className="stat-value">{entry.score}/5</span>
+                                        <span className="stat-label">Score</span>
+                                        <span className="stat-value">{entry.score}/100</span>
                                     </div>
                                     <div className="stat">
-                                        <span className="stat-label">⏱️ Time</span>
+                                        <span className="stat-label">Time</span>
                                         <span className="stat-value">{formatTime(entry.completionTime)}</span>
                                     </div>
                                     <div className="stat">
-                                        <span className="stat-label">🎯 Final</span>
+                                        <span className="stat-label">Final</span>
                                         <span className="stat-value">{entry.finalScore}pts</span>
                                     </div>
                                 </div>
@@ -84,7 +89,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                 )}
                 <div className="actions">
                     <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
-                    <button onClick={() => setScreen('animation')} className="btn home">🏠 HOME</button>
+                    <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
                 </div>
             </div>
         </div>

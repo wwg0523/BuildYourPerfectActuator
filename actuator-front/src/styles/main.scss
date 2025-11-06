@@ -4,6 +4,31 @@ $primary-color: #4f46e5;
 $error-color: #dc2626;
 $hover-color: #2563eb;
 
+// 테마 색상 변수
+:root[data-theme="light"] {
+    --bg-primary: #f0f4f8;
+    --bg-secondary: #F6F9FC;
+    --bg-card: white;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --question-color: #4f46e5;
+    --timer-color: #4f46e5;
+}
+
+:root[data-theme="dark"] {
+    --bg-primary: #1f2937;
+    --bg-secondary: #111827;
+    --bg-card: #374151;
+    --text-primary: #f3f4f6;
+    --text-secondary: #d1d5db;
+    --border-color: #4b5563;
+    --header-bg: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+    --question-color: #60a5fa;
+    --timer-color: #60a5fa;
+}
+
 // 1024px 기준 반응형 믹스인
 @mixin mobile {
     @media (max-width: 640px) {
@@ -39,7 +64,9 @@ $hover-color: #2563eb;
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: $app-bg;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 // App 중앙 컨테이너
@@ -48,6 +75,9 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 // 카드 UI

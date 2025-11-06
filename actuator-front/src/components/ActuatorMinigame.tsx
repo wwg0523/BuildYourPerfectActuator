@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
-import Animation from '../pages/Animation/Animation';
 import Home from '../pages/Home/Home';
 import Guide from '../pages/Guide/Guide';
 import Info from '../pages/Info/Info';
@@ -15,7 +14,11 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:40
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'animation' | 'home' | 'guide' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('animation');
+    const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        const saved = localStorage.getItem('theme');
+        return (saved as 'light' | 'dark') || 'light';
+    });
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -118,6 +121,17 @@ export default function ActuatorMinigame() {
         setScreen('info');
     };
 
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.setAttribute('data-theme', newTheme);
+    };
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
+
     const handleContinue = async () => {
         if (!validate()) return;
         if (!termsAccepted) {
@@ -167,7 +181,7 @@ export default function ActuatorMinigame() {
         localStorage.removeItem('encryptedUserInfo');
         setGameSession(null);
         setLeaderboardEntry(null);
-        setScreen('animation');
+        setScreen('home');
     };
 
     const handleSubmit = async () => {
@@ -238,7 +252,7 @@ export default function ActuatorMinigame() {
 
             // 게임 결과 저장
             try {
-                await fetch(`${backendUrl}/api/game/submit`, {
+                const gameResultResponse = await fetch(`${backendUrl}/api/game/submit`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -249,8 +263,17 @@ export default function ActuatorMinigame() {
                         completionTime: completionTime,
                         score: correctAnswers,
                         totalQuestions: gameSession.questions.length,
+                        answers: gameSession.answers.map((answer, idx) => ({
+                            questionId: answer.questionId,
+                            selectedComponents: answer.selectedComponents || [],
+                            isCorrect: answer.isCorrect || false,
+                            answerTime: answer.answerTime || 0,
+                            pointsEarned: answer.isCorrect ? (gameSession.questions[idx]?.points || 0) : 0,
+                        }))
                     }),
                 });
+                const gameResultData = await gameResultResponse.json();
+                // gameResultData.id를 사용해야 user_answers에 game_result_id로 저장
             } catch (err) {
                 console.warn('Game result save warning (non-critical):', err);
             }
@@ -556,14 +579,11 @@ export default function ActuatorMinigame() {
     return (
         <div className="app-container">
             <div className="card">
-                {screen === 'animation' && (
-                    <Animation onAnimationEnd={() => setScreen('info')} />
-                )}
-                {screen === 'home' && <Home onStartGame={() => setScreen('guide')} />}
+                {screen === 'home' && <Home onStartGame={handleStartGame} theme={theme} onToggleTheme={toggleTheme} />}
                 {screen === 'guide' && (
                     <Guide
                         onStartGame={handleStartGame}
-                        onBack={() => setScreen('animation')}
+                        onBack={() => setScreen('home')}
                     />
                 )}
                 {screen === 'info' && (

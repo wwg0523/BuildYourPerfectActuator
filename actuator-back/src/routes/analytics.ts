@@ -14,26 +14,153 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/', authMiddleware, async (req: Request, res: Response) => {
     try {
-        const result = await pool.query('SELECT * FROM game_analytics LIMIT 1');
-        if (result.rowCount === 0) {
-            return res.status(200).json({
-                totalParticipants: 0,
-                completionRate: 0,
-                averageCompletionTime: 0,
-                topCompanyParticipants: [],
-                popularComponentCombinations: [],
-                successRateByExperience: {}
-            });
-        }
+        // 점수 시스템: 5개 문제 × 20포인트 = 최대 100포인트
+        // 포인트 기반 메트릭: user_answers 테이블의 points_earned 합산
+        
+        // 1. 기본 KPI 데이터 (포인트 기반: 최대 100포인트)
+        const basicKpiResult = await pool.query(`
+            SELECT 
+                COUNT(DISTINCT gr.user_id) as total_started,
+                COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gr.user_id END) as total_completed,
+                ROUND(CAST(COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gr.user_id END) AS numeric) / 
+                      NULLIF(COUNT(DISTINCT gr.user_id), 0) * 100, 2) as completion_rate,
+                ROUND(AVG(CAST(gr.completion_time AS numeric)) / 1000, 2) as average_completion_time_sec,
+                ROUND(AVG(COALESCE(ua_stats.total_points, 0))::numeric, 2) as average_score
+            FROM game_results gr
+            LEFT JOIN (
+                SELECT game_result_id, SUM(points_earned) as total_points
+                FROM user_answers
+                GROUP BY game_result_id
+            ) ua_stats ON gr.id = ua_stats.game_result_id
+        `);
 
-        const data = result.rows[0];
+        // 2. 문제별 정답률 및 포인트 분석
+        const questionPerformanceResult = await pool.query(`
+            SELECT 
+                ua.question_id,
+                qq.application_name,
+                qq.difficulty,
+                qq.points as max_points,
+                COUNT(*) as total_attempts,
+                SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) as correct_attempts,
+                ROUND(100.0 * SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) / 
+                      NULLIF(COUNT(*), 0), 2) as success_rate,
+                ROUND(AVG(COALESCE(ua.points_earned, 0))::numeric, 2) as avg_points_earned
+            FROM user_answers ua
+            JOIN quiz_questions_cache qq ON ua.question_id = qq.id
+            GROUP BY ua.question_id, qq.application_name, qq.difficulty, qq.points
+            ORDER BY success_rate ASC
+        `);
+
+        // 3. 난이도별 정답률 및 포인트
+        const difficultyResult = await pool.query(`
+            SELECT 
+                qq.difficulty,
+                SUM(qq.points) as max_difficulty_points,
+                COUNT(*) as total_attempts,
+                SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) as correct_attempts,
+                ROUND(100.0 * SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) / 
+                      NULLIF(COUNT(*), 0), 2) as success_rate,
+                ROUND(AVG(COALESCE(ua.points_earned, 0))::numeric, 2) as avg_points_earned
+            FROM user_answers ua
+            JOIN quiz_questions_cache qq ON ua.question_id = qq.id
+            GROUP BY qq.difficulty
+            ORDER BY qq.difficulty
+        `);
+
+        // 4. 리드 품질 분석 (포인트 기반)
+        const leadQualityResult = await pool.query(`
+            SELECT 
+                gu.company,
+                COUNT(DISTINCT gu.id) as participant_count,
+                ROUND(AVG(ua_stats.total_points)::numeric, 2) as avg_score,
+                ROUND(AVG(gr.completion_time)::numeric / 1000, 2) as avg_completion_time_sec,
+                COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gu.id END) as completed_count,
+                ROUND(CAST(COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gu.id END) AS numeric) / 
+                      NULLIF(COUNT(DISTINCT gu.id), 0) * 100, 2) as completion_rate
+            FROM game_users gu
+            LEFT JOIN game_results gr ON gu.id = gr.user_id
+            LEFT JOIN (
+                SELECT game_result_id, SUM(points_earned) as total_points
+                FROM user_answers
+                GROUP BY game_result_id
+            ) ua_stats ON gr.id = ua_stats.game_result_id
+            WHERE gu.company IS NOT NULL AND gu.company != ''
+            GROUP BY gu.company
+            ORDER BY participant_count DESC
+        `);
+
+        // 5. 일일 참여 현황 (포인트 기반)
+        const dailyTrendResult = await pool.query(`
+            SELECT 
+                DATE(gr.created_at AT TIME ZONE 'UTC') as date,
+                COUNT(DISTINCT gr.user_id) as participants,
+                COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gr.user_id END) as completions,
+                ROUND(AVG(ua_stats.total_points)::numeric, 2) as avg_score
+            FROM game_results gr
+            LEFT JOIN (
+                SELECT game_result_id, SUM(points_earned) as total_points
+                FROM user_answers
+                GROUP BY game_result_id
+            ) ua_stats ON gr.id = ua_stats.game_result_id
+            GROUP BY DATE(gr.created_at AT TIME ZONE 'UTC')
+            ORDER BY date DESC
+            LIMIT 30
+        `);
+
+        const basicKpi = basicKpiResult.rows[0] || {
+            total_started: 0,
+            total_completed: 0,
+            completion_rate: 0,
+            average_completion_time_sec: 0,
+            average_score: 0
+        };
+
         res.json({
-            totalParticipants: Number(data.total_participants) || 0,
-            completionRate: Number(data.completion_rate) || 0,
-            averageCompletionTime: Number(data.average_completion_time) || 0,
-            topCompanyParticipants: Array.isArray(data.top_company_participants) ? data.top_company_participants : [],
-            popularComponentCombinations: Array.isArray(data.popular_component_combinations) ? data.popular_component_combinations : [],
-            successRateByExperience: data.success_rate_by_experience && typeof data.success_rate_by_experience === 'object' ? data.success_rate_by_experience : {}
+            // KPI 요약 (포인트 기반)
+            summary: {
+                totalParticipants: Number(basicKpi.total_started) || 0,
+                totalCompleted: Number(basicKpi.total_completed) || 0,
+                completionRate: Number(basicKpi.completion_rate) || 0,
+                averageCompletionTime: Number(basicKpi.average_completion_time_sec) || 0,
+                averageScore: Number(basicKpi.average_score) || 0
+            },
+            // 문제별 정답률 및 포인트
+            questionPerformance: questionPerformanceResult.rows.map((row: any) => ({
+                questionId: row.question_id,
+                applicationName: row.application_name,
+                difficulty: row.difficulty,
+                maxPoints: Number(row.max_points),
+                totalAttempts: Number(row.total_attempts),
+                correctAttempts: Number(row.correct_attempts),
+                successRate: Number(row.success_rate),
+                avgPointsEarned: Number(row.avg_points_earned)
+            })),
+            // 난이도별 정답률 및 포인트
+            difficultyAnalysis: difficultyResult.rows.map((row: any) => ({
+                difficulty: row.difficulty,
+                maxPoints: Number(row.max_difficulty_points),
+                totalAttempts: Number(row.total_attempts),
+                correctAttempts: Number(row.correct_attempts),
+                successRate: Number(row.success_rate),
+                avgPointsEarned: Number(row.avg_points_earned)
+            })),
+            // 리드 품질 분석 (포인트 기반)
+            leadQuality: leadQualityResult.rows.map((row: any) => ({
+                company: row.company,
+                participantCount: Number(row.participant_count),
+                avgScore: Number(row.avg_score),
+                avgCompletionTime: Number(row.avg_completion_time_sec),
+                completedCount: Number(row.completed_count),
+                completionRate: Number(row.completion_rate)
+            })),
+            // 일일 트렌드 (포인트 기반)
+            dailyTrend: dailyTrendResult.rows.map((row: any) => ({
+                date: row.date,
+                participants: Number(row.participants),
+                completions: Number(row.completions),
+                avgScore: Number(row.avg_score)
+            }))
         });
     } catch (err) {
         console.error(err);

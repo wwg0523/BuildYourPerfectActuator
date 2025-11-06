@@ -22,7 +22,7 @@
 
 /* Main Container */
 .guide-container {
-    background: white;
+    background: var(--bg-card, white);
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     max-width: 900px;
@@ -290,7 +290,7 @@
 }
 
 .example-group {
-    background: white;
+    background: var(--bg-card, white);
     border-left: 4px solid #667eea;
     padding: 14px;
     margin-bottom: 12px;
@@ -484,7 +484,7 @@
 }
 
 .button-secondary {
-    background: white;
+    background: var(--bg-card, white);
     color: #667eea;
     border: 2px solid #667eea;
 
