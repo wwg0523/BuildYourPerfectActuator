@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GameSession, UserAnswer, GameQuestion } from '../../lib/utils';
+import { GameSession, UserAnswer, GameQuestion, calculateScore } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Game.scss';
 import Explanation from '../Explanation/Explanation';
@@ -75,12 +75,16 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         if (!currentQuestion) return;
 
         const isCorrect = explanationState.isCorrect;
+        const timeRemaining = Math.max(0, currentQuestion.timeLimit - questionTime);
+        
         const answer: UserAnswer = {
             questionId: currentQuestion.id,
             selectedComponents: [explanationState.selectedAnswer || ''],
             isCorrect,
             answerTime: questionTime * 1000,
             timestamp: new Date(),
+            difficulty: currentQuestion.difficulty,
+            timeRemaining: timeRemaining,
         };
 
         setGameSession(prev => {
@@ -128,12 +132,17 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
             }
         };
 
+        // 점수 계산
+        const timeRemaining = Math.max(0, explanationState.question.timeLimit - questionTime);
+        const scoreDetails = calculateScore(explanationState.isCorrect, timeRemaining, explanationState.question.difficulty);
+        const displayScore = scoreDetails.finalScore;
+
         return (
             <Explanation
                 question={explanationState.question}
                 selectedAnswer={explanationState.selectedAnswer || ''}
                 isCorrect={explanationState.isCorrect}
-                score={explanationState.isCorrect ? 20 : 0}
+                score={displayScore}
                 onNext={handleExplanationNext}
             />
         );

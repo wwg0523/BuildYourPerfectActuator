@@ -150,21 +150,22 @@ const Guide: React.FC<GuideProps> = ({ onStartGame, onBack }) => {
                     <h2>🏆 Scoring & Leaderboard</h2>
                     <div className="scoring-info">
                         <div className="scoring-item">
-                            <div className="scoring-label">Total Questions</div>
-                            <div className="scoring-value">5</div>
+                            <div className="scoring-label">Base Points</div>
+                            <div className="scoring-value">20</div>
                         </div>
                         <div className="scoring-item">
-                            <div className="scoring-label">Points per Question</div>
-                            <div className="scoring-value">1</div>
+                            <div className="scoring-label">Time Bonus</div>
+                            <div className="scoring-value">Max 30</div>
                         </div>
                         <div className="scoring-item">
-                            <div className="scoring-label">Perfect Score</div>
-                            <div className="scoring-value">5</div>
+                            <div className="scoring-label">Difficulty Multiplier</div>
+                            <div className="scoring-value">1.0-1.5x</div>
                         </div>
                     </div>
                     <p className="scoring-description">
-                        Your final score will be displayed at the end of the game. The faster you complete the game, 
-                        the higher your ranking! Your score and completion time determine your position on the leaderboard.
+                        Each correct answer earns 20 base points plus a time bonus (remaining seconds ÷ 3). 
+                        Your score is multiplied by the difficulty level: Easy (1.0x), Medium (1.2x), Hard (1.5x). 
+                        The faster you complete the game, the higher your ranking! Your score and completion time determine your position on the leaderboard.
                     </p>
                 </motion.div>
 

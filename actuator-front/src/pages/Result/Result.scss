@@ -259,6 +259,71 @@
   }
 }
 
+/* Grade Section */
+.grade-section {
+  padding: 20px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 12px;
+  
+  .grade-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    @media (max-width: 640px) {
+      gap: 12px;
+    }
+    
+    .grade-emoji {
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      @media (max-width: 640px) {
+        font-size: 40px;
+      }
+    }
+    
+    .grade-info {
+      color: white;
+      flex: 1;
+      
+      .grade-rank {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+        letter-spacing: 2px;
+        
+        @media (max-width: 640px) {
+          font-size: 16px;
+        }
+      }
+      
+      .grade-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        
+        @media (max-width: 640px) {
+          font-size: 14px;
+        }
+      }
+      
+      .grade-description {
+        font-size: 13px;
+        opacity: 0.95;
+        margin: 0;
+        
+        @media (max-width: 640px) {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
 /* Email Status */
 .email-status {
   padding: 12px 16px;

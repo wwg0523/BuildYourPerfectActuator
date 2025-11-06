@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GameSession, LeaderboardEntry } from '../../lib/utils';
+import { GameSession, LeaderboardEntry, getRankInfo } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Result.scss';
 
@@ -31,6 +31,9 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         if (rank <= 10) return '🏅';
         return '🎯';
     };
+
+    // 점수 기반 등급 정보 조회
+    const gradeInfo = leaderboardEntry ? getRankInfo(leaderboardEntry.finalScore) : null;
 
     // Result 화면 진입 후 이메일 발송
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,6 +92,9 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         const mins = Math.floor(completionSeconds / 60);
         const secs = completionSeconds % 60;
         const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
+        
+        // 등급 정보 조회
+        const gradeInfo = getRankInfo(leaderboardEntry.finalScore);
 
         const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.score}/5`;
 
@@ -105,6 +111,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         .content { background: #f9f9f9; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
         .result-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .score-display { font-size: 2.5em; font-weight: bold; color: #4CAF50; text-align: center; margin: 20px 0; }
+        .grade-badge { background: #f093fb; color: white; padding: 12px 16px; border-radius: 8px; font-weight: bold; display: inline-block; margin: 10px 0; font-size: 1.2em; }
         .rank-badge { background: #FFD700; color: #333; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin: 10px 0; }
         .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .stats-label { font-weight: bold; color: #666; }
@@ -127,11 +134,22 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                 <div style="text-align: center;">
                     <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
                 </div>
+                <div style="text-align: center;">
+                    <span class="grade-badge">${gradeInfo.badge} Grade: ${gradeInfo.rank}</span>
+                </div>
                 
                 <h3>📊 Performance Summary</h3>
                 <div class="stats-row">
                     <span class="stats-label">Total Score:</span>
                     <span class="stats-value">${leaderboardEntry.finalScore} points</span>
+                </div>
+                <div class="stats-row">
+                    <span class="stats-label">Correct Answers:</span>
+                    <span class="stats-value">${leaderboardEntry.score}/5</span>
+                </div>
+                <div class="stats-row">
+                    <span class="stats-label">Grade:</span>
+                    <span class="stats-value">${gradeInfo.rank} - ${gradeInfo.title}</span>
                 </div>
                 <div class="stats-row">
                     <span class="stats-label">Completion Time:</span>
@@ -162,6 +180,8 @@ YOUR RESULTS:
 - Daily Rank: #${leaderboardEntry.rank}
 - Completion Time: ${timeStr}
 - Final Score: ${leaderboardEntry.finalScore} points
+- Grade: ${gradeInfo.rank} - ${gradeInfo.title}
+- Grade Description: ${gradeInfo.description}
         `;
 
         return { subject, htmlContent, textContent };
@@ -190,7 +210,7 @@ YOUR RESULTS:
                         <div className="score-main-display">
                             <div className="score-value">
                                 {leaderboardEntry?.finalScore || 0}
-                                <span className="score-max">/100</span>
+                                <span className="score-max">/500</span>
                             </div>
                             <p className="score-label">Your Score</p>
                         </div>
@@ -216,6 +236,20 @@ YOUR RESULTS:
                                 <div className="rank-info">
                                     <div className="rank-position">Today's Rank: #{leaderboardEntry.rank}</div>
                                     <div className="rank-total">out of participants</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Grade Section */}
+                    {gradeInfo && (
+                        <div className="grade-section">
+                            <div className="grade-badge">
+                                <div className="grade-emoji">{gradeInfo.badge}</div>
+                                <div className="grade-info">
+                                    <div className="grade-rank">Grade: {gradeInfo.rank}</div>
+                                    <div className="grade-title">{gradeInfo.title}</div>
+                                    <div className="grade-description">{gradeInfo.description}</div>
                                 </div>
                             </div>
                         </div>

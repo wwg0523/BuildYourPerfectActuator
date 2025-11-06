@@ -86,12 +86,29 @@ export interface GameQuestion {
     timeLimit: number;
 }
 
+export interface ScoreCalculation {
+    basePoints: number;        // 기본 점수 (정답 시 20점)
+    timeBonus: number;         // 시간 보너스 (남은 시간 / 3)
+    difficultyMultiplier: number; // 난이도 배수
+    finalScore: number;        // 최종 점수
+}
+
+export interface RankInfo {
+    rank: string;
+    title: string;
+    description: string;
+    minScore: number;
+    badge: string;
+}
+
 export interface UserAnswer {
     questionId: string;
     selectedComponents: string[];
     isCorrect: boolean;
     answerTime: number;
     timestamp: Date;
+    difficulty?: 'easy' | 'medium' | 'hard'; // 난이도
+    timeRemaining?: number; // 질문 시간 제한 내에 남은 시간 (초)
 }
 
 export interface GameSession {
@@ -233,12 +250,89 @@ export class GameEngine {
     }
 }
 
+// 등급 시스템 정의
+const rankSystem: RankInfo[] = [
+    {
+        rank: 'S',
+        title: '액추에이터 마스터',
+        description: '완벽한 이해도를 보여주셨습니다!',
+        minScore: 90,
+        badge: '🏆'
+    },
+    {
+        rank: 'A',
+        title: '액추에이터 전문가',
+        description: '훌륭한 이해도를 가지고 계십니다.',
+        minScore: 75,
+        badge: '🥇'
+    },
+    {
+        rank: 'B',
+        title: '액추에이터 숙련자',
+        description: '좋은 이해도를 보여주셨습니다.',
+        minScore: 60,
+        badge: '🥈'
+    },
+    {
+        rank: 'C',
+        title: '액추에이터 학습자',
+        description: '더 배워나가는 중입니다.',
+        minScore: 40,
+        badge: '🥉'
+    },
+    {
+        rank: 'D',
+        title: '액추에이터 입문자',
+        description: '시작이 반입니다!',
+        minScore: 0,
+        badge: '📚'
+    }
+];
+
+// 점수 계산 함수
+export const calculateScore = (
+    isCorrect: boolean,
+    timeRemaining: number,
+    difficulty: 'easy' | 'medium' | 'hard'
+): ScoreCalculation => {
+    if (!isCorrect) {
+        return {
+            basePoints: 0,
+            timeBonus: 0,
+            difficultyMultiplier: 1,
+            finalScore: 0
+        };
+    }
+
+    const basePoints = 20;
+    const timeBonus = Math.floor(timeRemaining / 3);
+    const difficultyMultiplier = {
+        easy: 1.0,
+        medium: 1.2,
+        hard: 1.5
+    }[difficulty];
+
+    const finalScore = Math.round((basePoints + timeBonus) * difficultyMultiplier);
+
+    return {
+        basePoints,
+        timeBonus,
+        difficultyMultiplier,
+        finalScore
+    };
+};
+
+// 등급 조회 함수
+export const getRankInfo = (score: number): RankInfo => {
+    return rankSystem.find(rank => score >= rank.minScore) || rankSystem[rankSystem.length - 1];
+};
+
 export class LeaderboardManager {
     private backendUrl: string = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 
     async submitScore(gameSession: GameSession, userInfo: UserInfo): Promise<LeaderboardEntry> {
-        const baseScore = this.calculateScore(gameSession);
-        const finalScore = baseScore * 100;
+        const finalScore = this.calculateScore(gameSession);
+        const correctCount = gameSession.answers.filter(a => a.isCorrect).length;
         const completionTime = gameSession.endTime
             ? gameSession.endTime.getTime() - gameSession.startTime.getTime()
             : 0;
@@ -247,9 +341,9 @@ export class LeaderboardManager {
             rank: 0,
             playerName: this.maskPlayerName(userInfo.name),
             company: userInfo.company,
-            score: baseScore,
+            score: correctCount,  // 정답 개수 (0~5)
             completionTime: completionTime,
-            finalScore,
+            finalScore,  // 계산된 최종 점수
             playedAt: new Date(),
         };
 
@@ -266,7 +360,20 @@ export class LeaderboardManager {
     }
 
     calculateScore(gameSession: GameSession): number {
-        return gameSession.answers.filter(answer => answer.isCorrect).length;
+        // 모든 답변의 개별 점수를 계산해서 합산
+        const totalScore = gameSession.answers.reduce((sum, answer) => {
+            if (!answer.isCorrect) {
+                return sum;
+            }
+            
+            const difficulty = answer.difficulty || 'medium';
+            const timeRemaining = answer.timeRemaining || 0;
+            const scoreCalc = calculateScore(true, timeRemaining, difficulty);
+            
+            return sum + scoreCalc.finalScore;
+        }, 0);
+        
+        return totalScore;
     }
 
     private maskPlayerName(name: string): string {
