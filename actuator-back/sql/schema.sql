@@ -164,7 +164,7 @@ SELECT
     COUNT(*) as total_attempts,
     SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) as correct_attempts,
     ROUND(100.0 * SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0), 2) as success_rate,
-    ROUND(AVG(ua.time_taken)::numeric, 0) as avg_time_taken
+    ROUND(AVG(COALESCE(ua.points_earned, 0))::numeric, 0) as avg_points_earned
 FROM user_answers ua
 JOIN quiz_questions_cache qq ON ua.question_id = qq.id
 GROUP BY qq.id, qq.difficulty, qq.application_name;
