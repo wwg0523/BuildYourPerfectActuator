@@ -59,10 +59,9 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
 
         setEmailSending(true);
         try {
-            const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
             const emailTemplate = generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
             
-            const response = await fetch(`${backendUrl}/api/send-email`, {
+            const response = await fetch(`/api/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

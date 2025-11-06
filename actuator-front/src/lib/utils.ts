@@ -316,7 +316,6 @@ export const getRankInfo = (score: number): RankInfo => {
 };
 
 export class LeaderboardManager {
-    private backendUrl: string = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 
     async submitScore(gameSession: GameSession, userInfo: UserInfo): Promise<LeaderboardEntry> {
         const finalScore = this.calculateScore(gameSession);
@@ -369,7 +368,7 @@ export class LeaderboardManager {
 
     private async calculateRank(entry: LeaderboardEntry): Promise<number> {
         try {
-            const response = await fetch(`${this.backendUrl}/api/game/leaderboard`, {
+            const response = await fetch(`/api/game/leaderboard`, {
                 method: 'GET',
             });
             if (!response.ok) throw new Error('Failed to fetch leaderboard');
@@ -393,7 +392,7 @@ export class LeaderboardManager {
         try {
             const emailTemplate = this.generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
             
-            const response = await fetch(`${this.backendUrl}/api/send-email`, {
+            const response = await fetch(`/api/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -536,13 +535,12 @@ Actuator Challenge Team
 }
 
 export class ParticipantCounter {
-    private backendUrl: string = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
     private updateInterval: number = 5000;
     private intervalId: NodeJS.Timeout | null = null;
 
     async getTotalParticipants(): Promise<number> {
         try {
-            const url = `${this.backendUrl}/api/counter`;
+            const url = `/api/counter`;
             console.log('Fetching participant count from:', url);
             const response = await fetch(url, {
                 method: 'GET',
@@ -562,7 +560,7 @@ export class ParticipantCounter {
 
     async incrementParticipant(): Promise<void> {
         try {
-            const url = `${this.backendUrl}/api/counter/increment`;
+            const url = `/api/counter/increment`;
             console.log('Incrementing participant count at:', url);
             const response = await fetch(url, {
                 method: 'POST',
@@ -601,8 +599,7 @@ export class ParticipantCounter {
 // Delete User Data Function
 export async function deleteUserData(userId: string): Promise<boolean> {
     try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4004';
-        const response = await fetch(`${backendUrl}/api/delete-user-data`, {
+        const response = await fetch(`/api/delete-user-data`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

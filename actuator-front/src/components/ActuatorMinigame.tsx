@@ -9,9 +9,7 @@ import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
 import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter } from '../lib/utils';
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
-
 export default function ActuatorMinigame() {
     const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -229,7 +227,7 @@ export default function ActuatorMinigame() {
             
             // game_users 테이블에 사용자 저장
             try {
-                await fetch(`${backendUrl}/api/user`, {
+                await fetch(`/api/user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -246,7 +244,7 @@ export default function ActuatorMinigame() {
 
             // 게임 결과 저장
             try {
-                const gameResultResponse = await fetch(`${backendUrl}/api/game/submit`, {
+                const gameResultResponse = await fetch(`/api/game/submit`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -333,7 +331,7 @@ export default function ActuatorMinigame() {
 
     const fetchLeaderboard = async () => {
         try {
-            const response = await fetch(`${backendUrl}/api/game/leaderboard`, { method: 'GET' });
+            const response = await fetch(`/api/game/leaderboard`, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch leaderboard data');
             const data = await response.json();
 

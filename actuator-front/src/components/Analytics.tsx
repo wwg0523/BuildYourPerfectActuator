@@ -24,8 +24,6 @@ interface GameAnalytics {
     successRateByExperience: { [key: string]: number } | null;
 }
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:4004';
-
 const Analytics: React.FC = () => {
     const [analyticsData, setAnalyticsData] = useState<GameAnalytics | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,7 +33,7 @@ const Analytics: React.FC = () => {
 
     const fetchAnalytics = useCallback(async () => {
         try {
-            const response = await fetch(`${backendUrl}/api/analytics`, {
+            const response = await fetch(`/api/analytics`, {
                 headers: { Authorization: password },
             });
             if (!response.ok) {
