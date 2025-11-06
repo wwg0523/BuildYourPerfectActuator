@@ -156,8 +156,6 @@
 
 /* Stats Grid */
 .stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 16px;
   
   @media (max-width: 640px) {
@@ -390,7 +388,7 @@
   flex: 1;
   min-width: 120px;
   padding: 14px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #059669 0%, #dc2626 100%);
   color: white;
   border: none;
   border-radius: 10px;

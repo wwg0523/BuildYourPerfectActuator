@@ -72,9 +72,7 @@ body {
     padding: 2rem;
     border-radius: 1.5rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
     width: 100%;
-    text-align: center;
     position: relative;
 
     h1,
@@ -554,16 +552,6 @@ input {
     
     @media (max-width: 640px) {
         font-size: 24px;
-    }
-}
-
-/* Large screens: avoid too much empty space, keep everything centered */
-@media (min-width: 1400px) {
-    .card {
-        max-width: 1200px;
-    }
-    .game-container {
-        height: 55vh;
     }
 }
 
