@@ -225,9 +225,9 @@ export default function ActuatorMinigame() {
             
             correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
             
-            // game_users 테이블에 사용자 저장
+            // game_users 테이블에 사용자 저장 (필수!)
             try {
-                await fetch(`/api/user`, {
+                const userResponse = await fetch(`/api/user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -238,8 +238,15 @@ export default function ActuatorMinigame() {
                         phone: userForGame.phone,
                     }),
                 });
+                if (!userResponse.ok) {
+                    const errorData = await userResponse.json().catch(() => ({}));
+                    console.error('User save failed:', userResponse.status, errorData);
+                    throw new Error(`Failed to save user: ${userResponse.status}`);
+                }
+                console.log('✅ User saved successfully');
             } catch (err) {
-                console.warn('User save warning (non-critical):', err);
+                console.error('Critical: User save failed:', err);
+                throw err; // 사용자 저장 실패는 게임을 진행할 수 없음
             }
 
             // 게임 결과 저장
@@ -263,10 +270,16 @@ export default function ActuatorMinigame() {
                         }))
                     }),
                 });
+                if (!gameResultResponse.ok) {
+                    const errorData = await gameResultResponse.json().catch(() => ({}));
+                    console.error('Game result save failed:', gameResultResponse.status, errorData);
+                    throw new Error(`Failed to save game result: ${gameResultResponse.status}`);
+                }
                 const gameResultData = await gameResultResponse.json();
-                // gameResultData.id를 사용해야 user_answers에 game_result_id로 저장
+                console.log('✅ Game result saved:', gameResultData);
             } catch (err) {
-                console.warn('Game result save warning (non-critical):', err);
+                console.error('Game result save error:', err);
+                throw err;
             }
 
             // 순위 조회 및 이메일 발송
