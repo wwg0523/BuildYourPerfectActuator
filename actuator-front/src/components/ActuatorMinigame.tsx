@@ -4,6 +4,7 @@ import CryptoJS from 'crypto-js';
 import Home from '../pages/Home/Home';
 import Guide from '../pages/Guide/Guide';
 import Info from '../pages/Info/Info';
+import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
@@ -13,7 +14,7 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://actuator-back:40
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'game' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'guide' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -146,7 +147,7 @@ export default function ActuatorMinigame() {
             }
 
             setGameSession(gameEngine.generateGameSession(currentUserId));
-            setScreen('game');
+            setScreen('gamestart');
         } catch (error) {
             console.error('Error in continue:', error);
             alert('An error occurred. Please try again.');
@@ -577,6 +578,15 @@ export default function ActuatorMinigame() {
                         setTermsAccepted={setTermsAccepted}
                         handleBack={handleBack}
                         handleContinue={handleContinue}
+                    />
+                )}
+                {screen === 'gamestart' && (
+                    <GameStart
+                        onStartGame={() => setScreen('game')}
+                        onBack={() => {
+                            setGameSession(null);
+                            setScreen('info');
+                        }}
                     />
                 )}
                 {screen === 'game' && gameSession && (

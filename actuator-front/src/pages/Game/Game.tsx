@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GameSession, UserAnswer, GameQuestion } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Game.scss';
+import Explanation from '../Explanation/Explanation';
 
 interface GameProps {
     gameSession: GameSession;
@@ -10,7 +11,7 @@ interface GameProps {
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
-interface ExplanationModal {
+interface ExplanationState {
     isOpen: boolean;
     question: GameQuestion | null;
     selectedAnswer: string | null;
@@ -21,7 +22,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
     const [questionTime, setQuestionTime] = useState<number>(0);
-    const [explanationModal, setExplanationModal] = useState<ExplanationModal>({
+    const [explanationState, setExplanationState] = useState<ExplanationState>({
         isOpen: false,
         question: null,
         selectedAnswer: null,
@@ -61,8 +62,8 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
 
         const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
 
-        // Show explanation modal
-        setExplanationModal({
+        // Show explanation page
+        setExplanationState({
             isOpen: true,
             question: currentQuestion,
             selectedAnswer,
@@ -73,10 +74,10 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
     const handleExplanationClose = () => {
         if (!currentQuestion) return;
 
-        const isCorrect = explanationModal.isCorrect;
+        const isCorrect = explanationState.isCorrect;
         const answer: UserAnswer = {
             questionId: currentQuestion.id,
-            selectedComponents: [explanationModal.selectedAnswer || ''],
+            selectedComponents: [explanationState.selectedAnswer || ''],
             isCorrect,
             answerTime: questionTime * 1000,
             timestamp: new Date(),
@@ -91,7 +92,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
             };
         });
 
-        setExplanationModal({
+        setExplanationState({
             isOpen: false,
             question: null,
             selectedAnswer: null,
@@ -114,6 +115,28 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
 
     if (!currentQuestion) {
         return <div>Loading question...</div>;
+    }
+
+    // If explanation page is open, show the Explanation page instead
+    if (explanationState.isOpen && explanationState.question) {
+        const handleExplanationNext = () => {
+            if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
+                handleExplanationClose();
+                handleSubmit();
+            } else {
+                handleExplanationClose();
+            }
+        };
+
+        return (
+            <Explanation
+                question={explanationState.question}
+                selectedAnswer={explanationState.selectedAnswer || ''}
+                isCorrect={explanationState.isCorrect}
+                score={explanationState.isCorrect ? 20 : 0}
+                onNext={handleExplanationNext}
+            />
+        );
     }
 
     return (
@@ -195,51 +218,6 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                     </button>
                 </div>
             </div>
-
-            {/* Explanation Modal */}
-            {explanationModal.isOpen && explanationModal.question && (
-                <div className="modal-overlay">
-                    <div className={`feedback-modal ${explanationModal.isCorrect ? 'correct' : 'incorrect'}`}>
-                        <div className="modal-icon">
-                            {explanationModal.isCorrect ? '✅' : '❌'}
-                        </div>
-                        <h2>{explanationModal.isCorrect ? 'Correct!' : 'Incorrect!'}</h2>
-                        
-                        <div className="explanation-section">
-                            <h3>💡 Explanation</h3>
-                            <p>{explanationModal.question.explanation.correct}</p>
-                            
-                            {explanationModal.question.explanation.improvements && (
-                                <div className="improvements-section">
-                                    <h4>🔧 Specification Improvements:</h4>
-                                    <ul>
-                                        {explanationModal.question.explanation.improvements.map((improvement, idx) => (
-                                            <li key={idx}>{improvement}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            
-                            {explanationModal.question.explanation.realWorldExamples && (
-                                <div className="examples-section">
-                                    <h4>🏭 Real-World Examples:</h4>
-                                    <ul>
-                                        {explanationModal.question.explanation.realWorldExamples.map((example, idx) => (
-                                            <li key={idx}>{example}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
-                        
-                        <button onClick={handleExplanationClose} className="modal-button">
-                            {gameSession.currentQuestionIndex + 1 >= gameSession.questions.length
-                                ? 'View Results'
-                                : 'Next Question'}
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
