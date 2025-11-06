@@ -3,11 +3,9 @@ import './Home.scss';
 
 interface HomeProps {
     onStartGame: () => void;
-    theme?: 'light' | 'dark';
-    onToggleTheme?: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onStartGame, theme = 'light', onToggleTheme }) => {
+const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,14 +38,6 @@ const Home: React.FC<HomeProps> = ({ onStartGame, theme = 'light', onToggleTheme
 
     return (
         <div className="page-home" onClick={handleClickOrTouch}>
-            {/* 테마 토글 버튼 */}
-            <button className="theme-toggle" onClick={(e) => {
-                e.stopPropagation();
-                onToggleTheme?.();
-            }} title={`Switch to ${theme === 'light' ? 'dark' : 'light'} theme`}>
-                {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-
             <video
                 ref={videoRef}
                 className="home-video"

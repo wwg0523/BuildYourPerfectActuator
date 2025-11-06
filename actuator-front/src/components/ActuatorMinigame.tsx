@@ -14,10 +14,6 @@ const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-
 
 export default function ActuatorMinigame() {
     const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-        const saved = localStorage.getItem('theme');
-        return (saved as 'light' | 'dark') || 'light';
-    });
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -129,17 +125,6 @@ export default function ActuatorMinigame() {
         
         setScreen('info');
     };
-
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
-    };
-
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-    }, [theme]);
 
     const handleContinue = async () => {
         if (!validate()) return;
@@ -587,7 +572,7 @@ export default function ActuatorMinigame() {
     return (
         <div className="app-container">
             <div className="card">
-                {screen === 'home' && <Home onStartGame={handleStartGame} theme={theme} onToggleTheme={toggleTheme} />}
+                {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'info' && (
                     <Info
                         userInfo={userInfo}
