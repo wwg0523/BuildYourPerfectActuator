@@ -1,6 +1,15 @@
 /* Leaderboard Page Styles - Vertical Layout */
 .page-leaderboard {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  @media (min-width: 1024px) {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+  }
 }
 
 .leaderboard-header-top {
@@ -47,6 +56,8 @@
   border-radius: 0 0 12px 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .leaderboard-header {
@@ -200,12 +211,6 @@
 }
 
 @media (min-width: 1024px) {
-  .page-leaderboard {
-    padding: 30px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  
   .leaderboard-item {
     padding: 16px;
     flex-direction: row;
