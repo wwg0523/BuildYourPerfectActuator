@@ -219,12 +219,18 @@ export class GameEngine {
         const quizQuestionsImport = require('../data/quizQuestions.json');
         const allQuizQuestions: GameQuestion[] = quizQuestionsImport.questions;
         
+        // q11~q15는 아직 이미지가 없으므로 제외 (q1~q10만 사용)
+        const availableQuestions = allQuizQuestions.filter(q => {
+            const questionNum = parseInt(q.id.replace('q', ''));
+            return questionNum <= 10;
+        });
+        
         // 문제 1-3: 4지선다 (일상 제품 속 액추에이터 찾기)
-        const multipleChoiceQuestions = allQuizQuestions.filter(q => q.type === 'multiple-choice' && q.category === 'daily-life');
+        const multipleChoiceQuestions = availableQuestions.filter(q => q.type === 'multiple-choice' && q.category === 'daily-life');
         const selectedMultipleChoice = this.shuffleArray(multipleChoiceQuestions).slice(0, 3);
         
         // 문제 4-5: OX 퀴즈 (액추에이터 사양 변경 효과)
-        const trueFalseQuestions = allQuizQuestions.filter(q => q.type === 'true-false' && q.category === 'specification');
+        const trueFalseQuestions = availableQuestions.filter(q => q.type === 'true-false' && q.category === 'specification');
         const selectedTrueFalse = this.shuffleArray(trueFalseQuestions).slice(0, 2);
         
         // 최종 게임 문제 구성
