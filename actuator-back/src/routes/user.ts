@@ -8,7 +8,10 @@ const router = Router();
 router.post('/', async (req, res) => {
     const { id, name, company, email, phone } = req.body;
 
+    console.log(`👤 User POST request:`, { id, name, company, email, phone });
+
     if (!id || !name) {
+        console.error(`❌ User validation failed: missing id or name`);
         return res.status(400).json({ error: 'id and name are required' });
     }
 
@@ -20,14 +23,10 @@ router.post('/', async (req, res) => {
             // 새로운 사용자 생성
             await pool.query(
                 `INSERT INTO game_users (id, name, company, email, phone)
-                 VALUES ($1, $2, $3, $4, $5)
-                 ON CONFLICT (id) DO UPDATE SET 
-                   name = EXCLUDED.name,
-                   company = EXCLUDED.company,
-                   email = EXCLUDED.email,
-                   phone = EXCLUDED.phone`,
+                 VALUES ($1, $2, $3, $4, $5)`,
                 [id, name, company || null, email || null, phone || null]
             );
+            console.log(`✅ User created: id=${id}, name=${name}, company=${company}`);
             res.status(201).json({ message: 'User created successfully', id });
         } else {
             // 기존 사용자 정보 업데이트
@@ -35,11 +34,12 @@ router.post('/', async (req, res) => {
                 `UPDATE game_users SET name = $1, company = $2, email = $3, phone = $4 WHERE id = $5`,
                 [name, company || null, email || null, phone || null, id]
             );
+            console.log(`✅ User updated: id=${id}, name=${name}, company=${company}`);
             res.status(200).json({ message: 'User updated successfully', id });
         }
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        console.error(`❌ User save error:`, err);
+        res.status(500).json({ error: 'Server error', details: (err as any).message });
     }
 });
 

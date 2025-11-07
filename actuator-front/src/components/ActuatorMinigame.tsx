@@ -236,6 +236,14 @@ export default function ActuatorMinigame() {
             
             // game_users 테이블에 사용자 저장 (필수!)
             try {
+                console.log(`\n👤 ===== USER SAVE START =====`);
+                console.log(`👤 Sending user data:`, {
+                    id: currentUserId,
+                    name: userForGame.name,
+                    company: userForGame.company,
+                    email: userForGame.email,
+                    phone: userForGame.phone,
+                });
                 const userResponse = await fetch(`/api/user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -250,13 +258,33 @@ export default function ActuatorMinigame() {
                 if (!userResponse.ok) {
                     throw new Error(`Failed to save user: ${userResponse.status}`);
                 }
+                const userData = await userResponse.json();
+                console.log(`✅ User saved successfully:`, userData);
+                console.log(`👤 ===== USER SAVE SUCCESS =====\n`);
             } catch (err) {
-                console.error('Critical: User save failed:', err);
+                console.error('❌ Critical: User save failed:', err);
                 throw err; // 사용자 저장 실패는 게임을 진행할 수 없음
             }
 
             // 게임 결과 저장
             try {
+                console.log(`\n📊 ===== GAME RESULT SAVE START =====`);
+                console.log(`📊 Sending game result data:`, {
+                    userId: currentUserId,
+                    selectedComponents: [],
+                    compatibleApplications: [],
+                    successRate: gameSession.questions.length > 0 ? correctAnswers / gameSession.questions.length : 0,
+                    completionTime: completionTime,
+                    score: correctAnswers,
+                    totalQuestions: gameSession.questions.length,
+                    answersCount: gameSession.answers.length,
+                });
+                console.log(`📊 Answers detail:`, gameSession.answers.map((a, i) => ({
+                    index: i,
+                    questionId: a.questionId,
+                    isCorrect: a.isCorrect,
+                    pointsEarned: a.isCorrect ? (gameSession.questions[i]?.points || 0) : 0,
+                })));
                 const gameResultResponse = await fetch(`/api/game/submit`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -279,8 +307,11 @@ export default function ActuatorMinigame() {
                 if (!gameResultResponse.ok) {
                     throw new Error(`Failed to save game result: ${gameResultResponse.status}`);
                 }
+                const resultData = await gameResultResponse.json();
+                console.log(`✅ Game result saved successfully:`, resultData);
+                console.log(`📊 ===== GAME RESULT SAVE SUCCESS =====\n`);
             } catch (err) {
-                console.error('Game result save error:', err);
+                console.error('❌ Game result save error:', err);
                 throw err;
             }
 

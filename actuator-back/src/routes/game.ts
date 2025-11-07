@@ -6,15 +6,29 @@ const router = Router();
 
 // POST /api/game/submit: 게임 결과 저장 및 개별 답변 기록
 router.post('/submit', async (req, res) => {
-    const { userId, selectedComponents, compatibleApplications, successRate, completionTime, answers } = req.body;
+    const { userId, selectedComponents, compatibleApplications, successRate, completionTime, answers, totalQuestions, score } = req.body;
+
+    console.log(`\n📊 ===== GAME SUBMISSION START =====`);
+    console.log(`📊 Received data:`, {
+        userId,
+        selectedComponents,
+        compatibleApplications,
+        successRate,
+        completionTime,
+        totalQuestions,
+        score,
+        answersCount: answers?.length,
+    });
 
     // 입력 검증
     if (!userId || successRate == null || completionTime == null) {
+        console.error(`❌ Validation failed: Missing required fields`);
         return res.status(400).json({ error: 'Missing required fields: userId, successRate, completionTime' });
     }
 
     // success_rate는 numeric(3,2)로, 0.00 ~ 1.00 사이 값이어야 함
     if (typeof successRate !== 'number' || successRate < 0 || successRate > 1) {
+        console.error(`❌ Validation failed: successRate out of range (${successRate})`);
         return res.status(400).json({ error: 'successRate must be a number between 0 and 1' });
     }
 
@@ -35,26 +49,33 @@ router.post('/submit', async (req, res) => {
         completionMs = completionMs * 1000;
     }
 
-    const totalQuestions = Number(req.body.totalQuestions ?? 5);
+    const totalQuestionsCount = Number(totalQuestions ?? 5);
     // 포인트 기반 점수 계산: answers 배열에서 각 정답의 points_earned 합산
     // 최대 점수: 5개 문제 × 20포인트 = 100포인트
     let totalPoints = 0;
     if (Array.isArray(answers) && answers.length > 0) {
         totalPoints = answers.reduce((sum: number, ans: any) => sum + (Number(ans.pointsEarned) || 0), 0);
     }
-    const score = totalPoints > 0 ? totalPoints : Number(req.body.score ?? 0);
-    const finalScore = Number(req.body.finalScore ?? score);
+    const finalScore_calculated = totalPoints > 0 ? totalPoints : Number(score ?? 0);
+    const finalScore = Number(req.body.finalScore ?? finalScore_calculated);
+
+    console.log(`📊 Calculated values:`, {
+        gameResultId: id,
+        completionMs,
+        totalQuestionsCount,
+        totalPointsFromAnswers: totalPoints,
+        scoreUsed: finalScore_calculated,
+        finalScore,
+    });
 
     try {
-        console.log(`📊 Game submission: userId=${userId}, answers=${answers?.length}, score=${score}`);
-        
         // user_id가 game_users에 존재하는지 확인
-        const userCheck = await pool.query('SELECT id FROM game_users WHERE id = $1', [userId]);
+        const userCheck = await pool.query('SELECT * FROM game_users WHERE id = $1', [userId]);
         if (userCheck.rowCount === 0) {
             console.error(`❌ User not found: ${userId}`);
             return res.status(400).json({ error: 'Invalid user_id: User does not exist' });
         }
-        console.log(`✅ User verified: ${userId}`);
+        console.log(`✅ User verified:`, userCheck.rows[0]);
 
         // game_results 테이블에 게임 결과 저장
         await pool.query(
@@ -69,14 +90,22 @@ router.post('/submit', async (req, res) => {
                 compatibleApplicationsJson,
                 successRate,
                 completionMs,
-                score,
+                finalScore_calculated,
                 finalScore,
             ]
         );
-        console.log(`✅ Game result saved: id=${id}, score=${score}, finalScore=${finalScore}`);
+        console.log(`✅ Game result saved to DB:`, {
+            id,
+            user_id: userId,
+            score: finalScore_calculated,
+            final_score: finalScore,
+            success_rate: successRate,
+            completion_time: completionMs,
+        });
 
         // 개별 답변을 user_answers 테이블에 저장
         if (Array.isArray(answers) && answers.length > 0) {
+            console.log(`📝 Saving ${answers.length} user answers...`);
             for (const answer of answers) {
                 const answerId = uuidv4();
                 await pool.query(
@@ -94,13 +123,15 @@ router.post('/submit', async (req, res) => {
                         Number(answer.pointsEarned) || 0,
                     ]
                 );
+                console.log(`  ✅ Answer saved: Q${answer.questionId}, correct=${answer.isCorrect}, points=${answer.pointsEarned}`);
             }
-            console.log(`✅ Saved ${answers.length} user answers for game result ${id}`);
+            console.log(`✅ All ${answers.length} user answers saved`);
         }
 
-        res.status(201).json({ message: 'Game result saved successfully', id, score, finalScore });
+        console.log(`📊 ===== GAME SUBMISSION SUCCESS =====\n`);
+        res.status(201).json({ message: 'Game result saved successfully', id, score: finalScore_calculated, finalScore });
     } catch (err: any) {
-        console.error(err);
+        console.error(`❌ ===== GAME SUBMISSION ERROR =====`, err);
         if (err.code === '22P02') {
             return res.status(400).json({ error: 'Invalid JSON format for selected_components or compatible_applications' });
         }
@@ -110,7 +141,7 @@ router.post('/submit', async (req, res) => {
         if (err.code === '23502') {
             return res.status(400).json({ error: 'NOT NULL constraint violation' });
         }
-        res.status(500).json({ error: 'Database error' });
+        res.status(500).json({ error: 'Database error', details: err.message });
     }
 });
 
