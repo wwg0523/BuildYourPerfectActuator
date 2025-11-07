@@ -36,7 +36,7 @@ const Explanation: React.FC<ExplanationProps> = ({
                     {/* Question Display */}
                     <div className="original-question">
                         <h3>📌 Question</h3>
-                        <p className="question-text"><span className="question-number">Q{question.id}) </span>{question.question}</p>
+                        <p className="question-text"><span className="question-number">{question.id.toUpperCase()}) </span>{question.question}</p>
                         <div className="answer-display">
                             <span className="label">Your Answer:</span>
                             <span className={`answer ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`}>
