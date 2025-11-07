@@ -9,8 +9,8 @@ router.post('/submit', async (req, res) => {
     const { userId, selectedComponents, compatibleApplications, successRate, completionTime, answers } = req.body;
 
     // 입력 검증
-    if (!userId || !selectedComponents || !compatibleApplications || successRate == null || completionTime == null) {
-        return res.status(400).json({ error: 'All fields are required' });
+    if (!userId || successRate == null || completionTime == null) {
+        return res.status(400).json({ error: 'Missing required fields: userId, successRate, completionTime' });
     }
 
     // success_rate는 numeric(3,2)로, 0.00 ~ 1.00 사이 값이어야 함
@@ -19,8 +19,9 @@ router.post('/submit', async (req, res) => {
     }
 
     // JSONB로 저장하기 위해 배열을 JSON 문자열로 변환
-    const selectedComponentsJson = JSON.stringify(selectedComponents);
-    const compatibleApplicationsJson = JSON.stringify(compatibleApplications);
+    // selectedComponents와 compatibleApplications는 빈 배열일 수 있음 (Quiz 게임)
+    const selectedComponentsJson = JSON.stringify(selectedComponents || []);
+    const compatibleApplicationsJson = JSON.stringify(compatibleApplications || []);
 
     // UUID 생성
     const id = uuidv4();

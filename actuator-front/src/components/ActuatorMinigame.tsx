@@ -262,9 +262,9 @@ export default function ActuatorMinigame() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         userId: currentUserId,
-                        selectedComponents: gameSession.questions.length > 0 ? gameSession.questions[0].options : [],
-                        compatibleApplications: gameSession.questions.length > 0 ? gameSession.questions[0].category : '',
-                        successRate: correctAnswers / gameSession.questions.length,
+                        selectedComponents: [], // Quiz 게임이므로 빈 배열
+                        compatibleApplications: [], // Quiz 게임이므로 빈 배열
+                        successRate: gameSession.questions.length > 0 ? correctAnswers / gameSession.questions.length : 0,
                         completionTime: completionTime,
                         score: correctAnswers,
                         totalQuestions: gameSession.questions.length,

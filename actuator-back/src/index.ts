@@ -99,6 +99,20 @@ app.post('/api/send-email', async (req, res) => {
     }
 });
 
+// Global error handler - ensure all responses are JSON
+app.use((err: any, req: any, res: any, next: any) => {
+    console.error('❌ Global error handler:', err);
+    res.status(err.status || 500).json({ 
+        error: err.message || 'Internal Server Error',
+        details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
+// 404 handler
+app.use((req: any, res: any) => {
+    res.status(404).json({ error: 'Endpoint not found', path: req.path });
+});
+
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4004;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

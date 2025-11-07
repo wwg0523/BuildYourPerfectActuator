@@ -128,26 +128,32 @@ const Analytics: React.FC = () => {
         <div className="app-container">
             <div className="card">
                 {!isAuthenticated ? (
-                    <>
-                        <h2>Analytics Dashboard</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
+                        <h2 style={{ marginBottom: '20px' }}>Analytics Dashboard</h2>
                         <input
                             type="password"
                             placeholder="Enter admin password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            style={{ maxWidth: '300px', width: '100%', marginBottom: '16px' }}
                         />
-                        <p className="error">{error || '\u00A0'}</p>
-                        <button className="button" onClick={handleLogin}>
+                        <p className="error" style={{ minHeight: '20px' }}>{error || '\u00A0'}</p>
+                        <button className="button" onClick={handleLogin} style={{ minWidth: '120px' }}>
                             Login
                         </button>
-                    </>
+                    </div>
                 ) : (
-                    <>
-                        <h2>Data Analytics Dashboard</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+                        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Data Analytics Dashboard</h2>
                         {analyticsData ? (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                            <motion.div 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }} 
+                                transition={{ duration: 0.5 }}
+                                style={{ width: '100%', maxWidth: '1200px' }}
+                            >
                                 {/* Tab Navigation */}
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #eee' }}>
+                                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #eee', justifyContent: 'center', flexWrap: 'wrap' }}>
                                     <button
                                         onClick={() => setActiveTab('chart')}
                                         style={{
@@ -180,13 +186,15 @@ const Analytics: React.FC = () => {
 
                                 {/* Chart Tab */}
                                 {activeTab === 'chart' && (
-                                    <>
-                                        <p>Total Participants: {analyticsData.totalParticipants}</p>
-                                        <p>Completion Rate: {analyticsData.completionRate}%</p>
-                                        <p>Average Completion Time: {analyticsData.averageCompletionTime} seconds</p>
-                                        <p>Top Companies: {analyticsData.topCompanyParticipants?.join(', ') || 'None'}</p>
-                                        <p>Popular Combinations (component frequency):</p>
-                                        <div style={{ width: '100%', height: 280 }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ textAlign: 'center', width: '100%' }}>
+                                            <p><strong>Total Participants:</strong> {analyticsData.totalParticipants}</p>
+                                            <p><strong>Completion Rate:</strong> {analyticsData.completionRate}%</p>
+                                            <p><strong>Average Completion Time:</strong> {analyticsData.averageCompletionTime} seconds</p>
+                                            <p><strong>Top Companies:</strong> {analyticsData.topCompanyParticipants?.join(', ') || 'None'}</p>
+                                        </div>
+                                        <p style={{ textAlign: 'center', fontWeight: 'bold' }}>Popular Combinations (component frequency):</p>
+                                        <div style={{ width: '100%', maxWidth: '800px', height: 280 }}>
                                             {componentFrequency.length > 0 ? (
                                                 <ResponsiveContainer>
                                                     <BarChart data={componentFrequency.slice(0, 20)} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
@@ -199,12 +207,11 @@ const Analytics: React.FC = () => {
                                                     </BarChart>
                                                 </ResponsiveContainer>
                                             ) : (
-                                                <p>No combinations available</p>
+                                                <p style={{ textAlign: 'center' }}>No combinations available</p>
                                             )}
                                         </div>
-
-                                        <p style={{ marginTop: 18 }}>Success Rate by Attempt Count:</p>
-                                        <div style={{ width: '100%', height: 240 }}>
+                                        <p style={{ textAlign: 'center', fontWeight: 'bold' }}>Success Rate by Attempt Count:</p>
+                                        <div style={{ width: '100%', maxWidth: '600px', height: 240 }}>
                                             {successRateData.length > 0 ? (
                                                 <ResponsiveContainer>
                                                     <PieChart>
@@ -218,27 +225,30 @@ const Analytics: React.FC = () => {
                                                     </PieChart>
                                                 </ResponsiveContainer>
                                             ) : (
-                                                <p>No success rate data available</p>
+                                                <p style={{ textAlign: 'center' }}>No success rate data available</p>
                                             )}
                                         </div>
-                                        <p>Success Rate by Attempt Count:</p>
-                                        <ul>
-                                            {analyticsData.successRateByExperience
-                                                ? Object.entries(analyticsData.successRateByExperience).map(([exp, rate]) => (
-                                                      <li key={exp}>{exp}: {rate}%</li>
-                                                  ))
-                                                : <li>No data available</li>}
-                                        </ul>
-                                    </>
+                                        <div style={{ textAlign: 'center' }}>
+                                            <p style={{ fontWeight: 'bold' }}>Success Rate by Attempt Count:</p>
+                                            <ul style={{ display: 'inline-block', textAlign: 'left' }}>
+                                                {analyticsData.successRateByExperience
+                                                    ? Object.entries(analyticsData.successRateByExperience).map(([exp, rate]) => (
+                                                          <li key={exp}>{exp}: {rate}%</li>
+                                                      ))
+                                                    : <li>No data available</li>}
+                                            </ul>
+                                        </div>
+                                    </div>
                                 )}
 
                                 {/* Table Tab */}
                                 {activeTab === 'table' && (
-                                    <div style={{ overflowX: 'auto' }}>
-                                        <table style={{
-                                            width: '100%',
-                                            borderCollapse: 'collapse',
-                                            marginBottom: '20px',
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '900px' }}>
+                                            <table style={{
+                                                width: '100%',
+                                                borderCollapse: 'collapse',
+                                                marginBottom: '20px',
                                         }}>
                                             <thead>
                                                 <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
@@ -301,20 +311,23 @@ const Analytics: React.FC = () => {
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        </div>
                                     </div>
                                 )}
 
-                                <button className="button outline" onClick={fetchAnalytics}>
-                                    REFRESH
-                                </button>
-                                <button className="button" onClick={() => (window.location.href = '/')}>
-                                    BACK TO GAME
-                                </button>
+                                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '20px', flexWrap: 'wrap' }}>
+                                    <button className="button outline" onClick={fetchAnalytics}>
+                                        REFRESH
+                                    </button>
+                                    <button className="button" onClick={() => (window.location.href = '/')}>
+                                        BACK TO GAME
+                                    </button>
+                                </div>
                             </motion.div>
                         ) : (
-                            <p>Loading analytics data...</p>
+                            <p style={{ textAlign: 'center' }}>Loading analytics data...</p>
                         )}
-                    </>
+                    </div>
                 )}
             </div>
         </div>

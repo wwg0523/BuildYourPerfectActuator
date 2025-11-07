@@ -33,19 +33,15 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
         const basicKpiResult = await pool.query(`
             SELECT 
                 COUNT(DISTINCT gr.user_id) as total_started,
-                COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gr.user_id END) as total_completed,
-                ROUND(CAST(COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gr.user_id END) AS numeric) / 
+                COUNT(DISTINCT CASE WHEN gr.score > 0 THEN gr.user_id END) as total_completed,
+                ROUND(CAST(COUNT(DISTINCT CASE WHEN gr.score > 0 THEN gr.user_id END) AS numeric) / 
                       NULLIF(COUNT(DISTINCT gr.user_id), 0) * 100, 2) as completion_rate,
                 ROUND(AVG(CAST(gr.completion_time AS numeric)) / 1000, 2) as average_completion_time_sec,
-                ROUND(AVG(COALESCE(ua_stats.total_points, 0))::numeric, 2) as average_score
+                ROUND(AVG(COALESCE(gr.score, 0))::numeric, 2) as average_score
             FROM game_results gr
-            LEFT JOIN (
-                SELECT game_result_id, SUM(points_earned) as total_points
-                FROM user_answers
-                GROUP BY game_result_id
-            ) ua_stats ON gr.id = ua_stats.game_result_id
         `);
         console.log(`✅ Basic KPI: ${JSON.stringify(basicKpiResult.rows[0])}`);
+
         // 2. 문제별 정답률 및 포인트 분석
         const questionPerformanceResult = await pool.query(`
             SELECT 
@@ -69,7 +65,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
         const difficultyResult = await pool.query(`
             SELECT 
                 qq.difficulty,
-                SUM(qq.points) as max_difficulty_points,
+                COUNT(DISTINCT qq.id) as question_count,
                 COUNT(*) as total_attempts,
                 SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) as correct_attempts,
                 ROUND(100.0 * SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) / 
@@ -87,18 +83,13 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             SELECT 
                 gu.company,
                 COUNT(DISTINCT gu.id) as participant_count,
-                ROUND(AVG(ua_stats.total_points)::numeric, 2) as avg_score,
+                ROUND(AVG(gr.score)::numeric, 2) as avg_score,
                 ROUND(AVG(gr.completion_time)::numeric / 1000, 2) as avg_completion_time_sec,
-                COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gu.id END) as completed_count,
-                ROUND(CAST(COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gu.id END) AS numeric) / 
+                COUNT(DISTINCT CASE WHEN gr.score > 0 THEN gu.id END) as completed_count,
+                ROUND(CAST(COUNT(DISTINCT CASE WHEN gr.score > 0 THEN gu.id END) AS numeric) / 
                       NULLIF(COUNT(DISTINCT gu.id), 0) * 100, 2) as completion_rate
             FROM game_users gu
             LEFT JOIN game_results gr ON gu.id = gr.user_id
-            LEFT JOIN (
-                SELECT game_result_id, SUM(points_earned) as total_points
-                FROM user_answers
-                GROUP BY game_result_id
-            ) ua_stats ON gr.id = ua_stats.game_result_id
             WHERE gu.company IS NOT NULL AND gu.company != ''
             GROUP BY gu.company
             ORDER BY participant_count DESC
@@ -110,20 +101,16 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             SELECT 
                 DATE(gr.created_at AT TIME ZONE 'UTC') as date,
                 COUNT(DISTINCT gr.user_id) as participants,
-                COUNT(DISTINCT CASE WHEN gr.success_rate > 0 THEN gr.user_id END) as completions,
-                ROUND(AVG(ua_stats.total_points)::numeric, 2) as avg_score
+                COUNT(DISTINCT CASE WHEN gr.score > 0 THEN gr.user_id END) as completions,
+                ROUND(AVG(gr.score)::numeric, 2) as avg_score
             FROM game_results gr
-            LEFT JOIN (
-                SELECT game_result_id, SUM(points_earned) as total_points
-                FROM user_answers
-                GROUP BY game_result_id
-            ) ua_stats ON gr.id = ua_stats.game_result_id
             GROUP BY DATE(gr.created_at AT TIME ZONE 'UTC')
             ORDER BY date DESC
             LIMIT 30
         `);
         console.log(`✅ Daily Trend: ${dailyTrendResult.rows.length} days`);
-                const basicKpi = basicKpiResult.rows[0] || {
+
+        const basicKpi = basicKpiResult.rows[0] || {
             total_started: 0,
             total_completed: 0,
             completion_rate: 0,
@@ -154,7 +141,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             // 난이도별 정답률 및 포인트
             difficultyAnalysis: difficultyResult.rows.map((row: any) => ({
                 difficulty: row.difficulty,
-                maxPoints: Number(row.max_difficulty_points),
+                questionCount: Number(row.question_count),
                 totalAttempts: Number(row.total_attempts),
                 correctAttempts: Number(row.correct_attempts),
                 successRate: Number(row.success_rate),
