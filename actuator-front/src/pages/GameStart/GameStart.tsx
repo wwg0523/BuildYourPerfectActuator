@@ -17,6 +17,7 @@ interface Slide {
 const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [dragStart, setDragStart] = useState(0);
+    const [direction, setDirection] = useState(0);
     const dragRef = useRef<HTMLDivElement>(null);
 
     const slides: Slide[] = [
@@ -25,22 +26,14 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '✨ The Secret Behind All Movement',
             icon: '🔧',
             content: (
-                <div className="slide-content">
-                    <div className="content-section">
-                        <h3>Technical Definition</h3>
-                        <p>
-                            An actuator is a device that takes electrical energy, hydraulic, or pneumatic power 
-                            and converts it into physical motion (linear or rotary).
-                        </p>
+                <div className="slide-content slide-with-image">
+                    <div className="slide-image-container">
+                        <img src="/assets/carousel/slide1.png" alt="Actuator Demo" className="slide-image" />
                     </div>
-                    <div className="content-section">
-                        <h3>Everyday Definition</h3>
-                        <p>
-                            From opening a door to brewing coffee and making your phone vibrate, 
-                            an actuator is hidden in all these actions. Discover the small engine 
-                            that makes our lives convenient!
-                        </p>
-                    </div>
+                    <p className="slide-description">
+                        An actuator is a device that converts energy into motion, 
+                        hidden in everyday items around you!
+                    </p>
                 </div>
             ),
         },
@@ -49,20 +42,13 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '🚀 The Core Component of Future Tech!',
             icon: '🤖',
             content: (
-                <div className="slide-content">
-                    <p className="main-text">
-                        Actuators are not just parts; they are essential for technologies ranging from 
-                        robotics and smart home appliances to wearable devices. They enable precise control 
-                        and new user experiences.
-                    </p>
-                    <div className="tech-highlights">
-                        <div className="highlight">🦾 Robotics</div>
-                        <div className="highlight">🏠 Smart Home</div>
-                        <div className="highlight">📱 Wearables</div>
-                        <div className="highlight">🚗 Autonomous Vehicles</div>
+                <div className="slide-content slide-with-image">
+                    <div className="slide-image-container">
+                        <img src="/assets/carousel/slide2.png" alt="Future Technology" className="slide-image" />
                     </div>
-                    <p className="call-to-action">
-                        Expand your knowledge and discover this hidden technology!
+                    <p className="slide-description">
+                        From robots to smart homes, actuators are the hidden engines 
+                        powering the future of technology!
                     </p>
                 </div>
             ),
@@ -125,29 +111,31 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
         },
         exit: (direction: number) => ({
             zIndex: 0,
-            x: direction < 0 ? 1000 : -1000,
+            x: direction > 0 ? -1000 : 1000,
             opacity: 0,
         }),
     };
 
     const handlePrevious = () => {
         if (currentSlide > 0) {
+            setDirection(-1); // 이전으로 갈 때 -1
             setCurrentSlide(currentSlide - 1);
         }
     };
 
     const handleNext = () => {
         if (currentSlide < slides.length - 1) {
+            setDirection(1); // 다음으로 갈 때 1
             setCurrentSlide(currentSlide + 1);
         }
     };
 
-    // 드래그 이벤트 핸들러
-    const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    // 마우스 드래그 핸들러
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         setDragStart(e.clientX);
     };
 
-    const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
         const dragEnd = e.clientX;
         const diff = dragStart - dragEnd;
 
@@ -162,7 +150,7 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
         }
     };
 
-    // 터치 이벤트 핸들러
+    // 터치 드래그 핸들러
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
         setDragStart(e.touches[0].clientX);
     };
@@ -173,8 +161,10 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
 
         if (Math.abs(diff) > 50) { // 최소 50px 드래그
             if (diff > 0) {
+                // 왼쪽으로 드래그 → 다음
                 handleNext();
             } else {
+                // 오른쪽으로 드래그 → 이전
                 handlePrevious();
             }
         }
@@ -195,16 +185,17 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                 <div 
                     className="carousel-wrapper"
                     ref={dragRef}
-                    draggable
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
+                    draggable={false}
+                    onMouseDown={handleMouseDown}
+                    onMouseUp={handleMouseUp}
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
+                    onDragStart={(e) => e.preventDefault()}
                 >
-                    <AnimatePresence initial={false} custom={currentSlide} mode="wait">
+                    <AnimatePresence initial={false} custom={direction} mode="wait">
                         <motion.div
                             key={currentSlide}
-                            custom={currentSlide}
+                            custom={direction}
                             variants={slideVariants}
                             initial="enter"
                             animate="center"

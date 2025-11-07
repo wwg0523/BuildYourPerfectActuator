@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 450px;
+  max-width: clamp(350px, 90vw, 800px);
   margin: 0 auto;
 }
 
@@ -76,7 +76,7 @@
 /* ==================== 태블릿 (641px - 1023px) ==================== */
 @media (max-width: 1023px) {
   .page-info {
-    max-width: 450px;
+    max-width: clamp(350px, 90vw, 800px);
   }
 
   .page-info h2 {

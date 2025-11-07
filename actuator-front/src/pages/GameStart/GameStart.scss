@@ -42,8 +42,9 @@
 /* Carousel Wrapper */
 .carousel-wrapper {
   position: relative;
-  width: 100%;
-  min-height: clamp(400px, 60vh, 600px);
+  min-height: auto;
+  max-height: none;
+  height: auto;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: clamp(16px, 3vw, 24px);
@@ -56,6 +57,9 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   cursor: grab;
   user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
   &:active {
     cursor: grabbing;
@@ -65,12 +69,36 @@
 /* Carousel Slide */
 .carousel-slide {
   width: 100%;
+  max-width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: clamp(15px, 3vw, 25px);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none;
+
+  img {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+
+  * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
+  }
 }
 
 .slide-icon {
@@ -99,10 +127,12 @@
 
 .slide-body {
   width: 100%;
+  max-width: 100%;
   color: #333;
   font-size: clamp(13px, 1.8vw, 16px);
   line-height: 1.6;
   text-align: center;
+  overflow: hidden;
 }
 
 
@@ -112,6 +142,42 @@
   display: flex;
   flex-direction: column;
   gap: clamp(15px, 2vw, 20px);
+}
+
+/* Slide with Image Layout */
+.slide-with-image {
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-image-container {
+  width: 100%;
+  max-width: clamp(250px, 80vw, 400px);
+  height: clamp(200px, 50vw, 350px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  border-radius: clamp(12px, 2vw, 16px);
+  border: 2px dashed rgba(102, 126, 234, 0.3);
+  overflow: hidden;
+  margin: clamp(10px, 2vh, 20px) 0;
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: clamp(10px, 2vw, 15px);
+}
+
+.slide-description {
+  text-align: center;
+  font-size: clamp(14px, 2vw, 16px);
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 100%;
 }
 
 .content-section {
@@ -266,7 +332,7 @@
   }
 }
 
-.button {
+.carousel-navigation .button {
   flex: 1;
   width: 100%;
   padding: clamp(12px, 2.5vw, 16px) clamp(20px, 3vw, 30px);
@@ -285,7 +351,7 @@
   }
 }
 
-.button-secondary {
+.carousel-navigation .button-secondary {
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -303,7 +369,7 @@
   }
 }
 
-.button-primary {
+.carousel-navigation .button-primary {
   background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
