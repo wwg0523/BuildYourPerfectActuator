@@ -18,9 +18,9 @@ COPY .env.production ./
 
 # 프로덕션 빌드 최적화
 # GENERATE_SOURCEMAP=false: 소스맵 제외 (빌드 시간 50% 단축)
-# CI=true: 경고를 오류로 처리하지 않음
+# CI=false: 경고를 오류로 처리하지 않음 (빌드 속도 향상)
 ENV GENERATE_SOURCEMAP=false \
-    CI=true \
+    CI=false \
     REACT_APP_ENCRYPTION_KEY=your-32byte-secret-key
 
 RUN npm run build

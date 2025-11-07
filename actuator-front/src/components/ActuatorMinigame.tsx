@@ -123,14 +123,14 @@ export default function ActuatorMinigame() {
         setErrors({});
         setTermsAccepted(false);
         
-        // Home에서 Info로 넘어갈 때 참가자 수 증가
+        // Home에서 GameStart로 넘어갈 때 참가자 수 증가
         try {
             await participantCounter.incrementParticipant();
         } catch (error) {
             // Silent failure
         }
         
-        setScreen('info');
+        setScreen('gamestart');
     };
 
     const handleContinue = async () => {
@@ -163,7 +163,7 @@ export default function ActuatorMinigame() {
             }
 
             setGameSession(gameEngine.generateGameSession(currentUserId));
-            setScreen('gamestart');
+            setScreen('game');
         } catch (error) {
             console.error('Error in continue:', error);
             alert('An error occurred. Please try again.');
@@ -541,9 +541,18 @@ export default function ActuatorMinigame() {
 
     useEffect(() => {
         const events = ['touchstart', 'click', 'keypress', 'mousemove'] as const;
-        if (screen === 'home') {
-            clearAllTimers();
-            hideWarningMessage();
+        
+        // Gamestart 화면에서는 idle detection 비활성화
+        if (screen === 'home' || screen === 'gamestart') {
+            // 타이머만 정리하고, setState 호출 없이 처리
+            if (currentTimeoutRef.current) clearTimeout(currentTimeoutRef.current);
+            if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
+            if (countdownTimeoutRef.current) clearTimeout(countdownTimeoutRef.current);
+            if (finalTimeoutRef.current) clearTimeout(finalTimeoutRef.current);
+            
+            const modal = document.getElementById('warning-modal');
+            if (modal) modal.remove();
+            
             return;
         }
 
@@ -557,8 +566,13 @@ export default function ActuatorMinigame() {
             events.forEach(event => {
                 document.removeEventListener(event, resetIdleTimer);
             });
-            clearAllTimers();
-            hideWarningMessage();
+            if (currentTimeoutRef.current) clearTimeout(currentTimeoutRef.current);
+            if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
+            if (countdownTimeoutRef.current) clearTimeout(countdownTimeoutRef.current);
+            if (finalTimeoutRef.current) clearTimeout(finalTimeoutRef.current);
+            
+            const modal = document.getElementById('warning-modal');
+            if (modal) modal.remove();
         };
     }, [screen, resetIdleTimer]);
 
@@ -605,11 +619,8 @@ export default function ActuatorMinigame() {
                 )}
                 {screen === 'gamestart' && (
                     <GameStart
-                        onStartGame={() => setScreen('game')}
-                        onBack={() => {
-                            setGameSession(null);
-                            setScreen('info');
-                        }}
+                        onStartGame={() => setScreen('info')}
+                        onBack={() => setScreen('home')}
                     />
                 )}
                 {screen === 'game' && gameSession && (
