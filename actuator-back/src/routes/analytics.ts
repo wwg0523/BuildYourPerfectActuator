@@ -5,15 +5,27 @@ const router: Router = Router();
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
-    const validPassword = process.env.ANALYTICS_PASSWORD;
-    if (authHeader !== validPassword) {
+    const validPassword = process.env.ANALYTICS_PASSWORD || 'admin123';
+    
+    // Authorization 헤더에서 실제 값 추출
+    // 형식: "Bearer password" 또는 그냥 "password"
+    const headerValue = authHeader?.split(' ').pop() || authHeader || '';
+    
+    console.log(`🔐 Analytics auth attempt: headerValue="${headerValue}", valid="${validPassword}"`);
+    
+    if (headerValue !== validPassword) {
+        console.error(`❌ Analytics auth failed: "${headerValue}" !== "${validPassword}"`);
         return res.status(401).json({ error: 'Unauthorized' });
     }
+    
+    console.log(`✅ Analytics auth success`);
     next();
 };
 
 router.get('/', authMiddleware, async (req: Request, res: Response) => {
     try {
+        console.log('📊 Fetching analytics data...');
+        
         // 점수 시스템: 5개 문제 × 20포인트 = 최대 100포인트
         // 포인트 기반 메트릭: user_answers 테이블의 points_earned 합산
         
@@ -33,7 +45,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
                 GROUP BY game_result_id
             ) ua_stats ON gr.id = ua_stats.game_result_id
         `);
-
+        console.log(`✅ Basic KPI: ${JSON.stringify(basicKpiResult.rows[0])}`);
         // 2. 문제별 정답률 및 포인트 분석
         const questionPerformanceResult = await pool.query(`
             SELECT 
@@ -51,6 +63,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             GROUP BY ua.question_id, qq.application_name, qq.difficulty, qq.points
             ORDER BY success_rate ASC
         `);
+        console.log(`✅ Question Performance: ${questionPerformanceResult.rows.length} rows`);
 
         // 3. 난이도별 정답률 및 포인트
         const difficultyResult = await pool.query(`
@@ -67,6 +80,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             GROUP BY qq.difficulty
             ORDER BY qq.difficulty
         `);
+        console.log(`✅ Difficulty Analysis: ${difficultyResult.rows.length} rows`);
 
         // 4. 리드 품질 분석 (포인트 기반)
         const leadQualityResult = await pool.query(`
@@ -89,6 +103,7 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             GROUP BY gu.company
             ORDER BY participant_count DESC
         `);
+        console.log(`✅ Lead Quality: ${leadQualityResult.rows.length} companies`);
 
         // 5. 일일 참여 현황 (포인트 기반)
         const dailyTrendResult = await pool.query(`
@@ -107,8 +122,8 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
             ORDER BY date DESC
             LIMIT 30
         `);
-
-        const basicKpi = basicKpiResult.rows[0] || {
+        console.log(`✅ Daily Trend: ${dailyTrendResult.rows.length} days`);
+                const basicKpi = basicKpiResult.rows[0] || {
             total_started: 0,
             total_completed: 0,
             completion_rate: 0,
@@ -162,9 +177,14 @@ router.get('/', authMiddleware, async (req: Request, res: Response) => {
                 avgScore: Number(row.avg_score)
             }))
         });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Database error' });
+        
+        console.log('✅ Analytics data sent successfully');
+    } catch (err: any) {
+        console.error('❌ Analytics error:', err);
+        res.status(500).json({ 
+            error: 'Database error', 
+            details: err.message 
+        });
     }
 });
 
