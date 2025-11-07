@@ -126,9 +126,8 @@ export default function ActuatorMinigame() {
         // Home에서 Info로 넘어갈 때 참가자 수 증가
         try {
             await participantCounter.incrementParticipant();
-            console.log('Participant count incremented');
         } catch (error) {
-            console.error('Failed to increment participant count:', error);
+            // Silent failure
         }
         
         setScreen('info');
@@ -249,11 +248,8 @@ export default function ActuatorMinigame() {
                     }),
                 });
                 if (!userResponse.ok) {
-                    const errorData = await userResponse.json().catch(() => ({}));
-                    console.error('User save failed:', userResponse.status, errorData);
                     throw new Error(`Failed to save user: ${userResponse.status}`);
                 }
-                console.log('✅ User saved successfully');
             } catch (err) {
                 console.error('Critical: User save failed:', err);
                 throw err; // 사용자 저장 실패는 게임을 진행할 수 없음
@@ -281,12 +277,8 @@ export default function ActuatorMinigame() {
                     }),
                 });
                 if (!gameResultResponse.ok) {
-                    const errorData = await gameResultResponse.json().catch(() => ({}));
-                    console.error('Game result save failed:', gameResultResponse.status, errorData);
                     throw new Error(`Failed to save game result: ${gameResultResponse.status}`);
                 }
-                const gameResultData = await gameResultResponse.json();
-                console.log('✅ Game result saved:', gameResultData);
             } catch (err) {
                 console.error('Game result save error:', err);
                 throw err;

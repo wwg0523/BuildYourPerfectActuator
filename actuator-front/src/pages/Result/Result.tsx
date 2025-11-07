@@ -14,7 +14,6 @@ interface ResultProps {
 
 const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePlayAgain, setScreen, handleDeleteUserData, userInfo }) => {
     const [emailSending, setEmailSending] = useState(false);
-    const [emailSent, setEmailSent] = useState(false);
     
     const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
     const totalTime = gameSession.endTime
@@ -35,24 +34,13 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     // Retrieve grade information based on score
     const gradeInfo = leaderboardEntry ? getRankInfo(leaderboardEntry.finalScore) : null;
 
-    // Send result email after entering Result screen
+    // Send result email after entering Result screen (silently, no UI feedback)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        if (userInfo && leaderboardEntry && !emailSent) {
+        if (userInfo && leaderboardEntry) {
             sendResultEmail();
         }
     }, [leaderboardEntry]);
-
-    // Hide email completion message after 3 seconds
-    useEffect(() => {
-        if (emailSent) {
-            const timer = setTimeout(() => {
-                setEmailSent(false);
-            }, 3000); // 3초 후 사라짐
-            
-            return () => clearTimeout(timer);
-        }
-    }, [emailSent]);
 
     const sendResultEmail = async () => {
         if (!userInfo || !leaderboardEntry) return;
@@ -74,13 +62,12 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
             });
 
             if (response.ok) {
-                console.log('✅ Email sent successfully from Result page');
-                setEmailSent(true);
+                // Email sent silently, no UI feedback
             } else {
-                console.warn('Failed to send email:', response.statusText);
+                // Silent failure
             }
         } catch (error) {
-            console.error('Error sending email:', error);
+            // Silent failure
         } finally {
             setEmailSending(false);
         }
@@ -248,18 +235,6 @@ YOUR RESULTS:
                                     <div className="grade-description">{gradeInfo.description}</div>
                                 </div>
                             </div>
-                        </div>
-                    )}
-
-                    {/* Email Status */}
-                    {emailSending && (
-                        <div className="email-status sending">
-                            📧 Sending your results email...
-                        </div>
-                    )}
-                    {emailSent && (
-                        <div className="email-status sent">
-                            ✅ Email sent successfully!
                         </div>
                     )}
                 </div>
