@@ -26,9 +26,24 @@ FROM nginx:alpine
 
 WORKDIR /app
 
-# Nginx 설정 복사
+# 빌드된 파일 복사
 COPY --from=builder /app/build ./build
+
+# public 폴더의 정적 파일들도 복사 (videos, images, 기타 assets)
+COPY --from=builder /app/public ./build/public
+
+# 모든 정적 파일의 권한 설정 (Nginx가 읽을 수 있도록)
+# 디렉토리: 755 (rwxr-xr-x), 파일: 644 (rw-r--r--)
+RUN find /app/build -type d -exec chmod 755 {} \; && \
+    find /app/build -type f -exec chmod 644 {} \; && \
+    find /app/build -name "*.mp4" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" | xargs chmod 644 2>/dev/null || true
+
+# Nginx 설정 복사
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Nginx 프로세스 권한 확인
+RUN chmod 755 /app/build && \
+    ls -la /app/build/
 
 EXPOSE 5005
 
