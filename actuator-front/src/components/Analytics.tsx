@@ -33,17 +33,39 @@ const Analytics: React.FC = () => {
 
     const fetchAnalytics = useCallback(async () => {
         try {
+            console.log('🔐 Fetching analytics with password:', password.substring(0, 3) + '***');
             const response = await fetch(`/api/analytics`, {
                 headers: { Authorization: password },
             });
+            
+            console.log('📊 Response status:', response.status);
+            console.log('📊 Content-Type:', response.headers.get('content-type'));
+            
             if (!response.ok) {
-                throw new Error(response.status === 401 ? 'Invalid password' : 'Failed to fetch analytics data');
+                // Try to parse error response as JSON
+                try {
+                    const errorData = await response.json();
+                    throw new Error(response.status === 401 ? 'Invalid password' : (errorData.error || `Failed to fetch analytics data (${response.status})`));
+                } catch (parseErr) {
+                    // If JSON parsing fails, throw status-based error
+                    throw new Error(response.status === 401 ? 'Invalid password' : `Failed to fetch analytics data (${response.status})`);
+                }
             }
+            
+            // Check content type to ensure we get JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const responseText = await response.text();
+                console.error('❌ Non-JSON response:', responseText.substring(0, 200));
+                throw new Error('Server returned non-JSON response. Check backend /api/analytics endpoint.');
+            }
+            
             const data = await response.json();
+            console.log('✅ Analytics data received:', data);
             setAnalyticsData(data);
             setError('');
         } catch (err: any) {
-            console.error(err);
+            console.error('❌ Analytics fetch error:', err);
             setError(err.message || 'Failed to load analytics. Please check your password.');
         }
     }, [password]);

@@ -574,7 +574,7 @@ export default function ActuatorMinigame() {
             const modal = document.getElementById('warning-modal');
             if (modal) modal.remove();
         };
-    }, [screen, resetIdleTimer]);
+    }, [screen]);
 
     // Delete confirmation modal (used by Result and Leaderboard components)
     const renderDeleteConfirmModal = () => {
