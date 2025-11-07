@@ -5,7 +5,6 @@ dist
 .git
 .gitignore
 .env.example
-.env.production
 README.md
 .DS_Store
 *.md
