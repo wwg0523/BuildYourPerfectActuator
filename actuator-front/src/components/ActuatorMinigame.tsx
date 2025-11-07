@@ -10,6 +10,16 @@ import Leaderboard from '../pages/Leaderboard/Leaderboard';
 import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter } from '../lib/utils';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
+
+// UUID v4 생성 함수
+const generateUUID = (): string => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+};
+
 export default function ActuatorMinigame() {
     const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -146,10 +156,10 @@ export default function ActuatorMinigame() {
                 })
             );
 
-            // Generate userId first
+            // Generate userId first (proper UUID v4 format)
             let currentUserId = userId;
             if (!currentUserId) {
-                currentUserId = CryptoJS.lib.WordArray.random(16).toString();
+                currentUserId = generateUUID();
                 setUserId(currentUserId);
             }
 
@@ -196,7 +206,7 @@ export default function ActuatorMinigame() {
             // UUID 생성 (아직 생성되지 않았으면)
             let currentUserId = userId;
             if (!currentUserId) {
-                currentUserId = CryptoJS.lib.WordArray.random(16).toString();
+                currentUserId = generateUUID();
                 setUserId(currentUserId);
             }
 
