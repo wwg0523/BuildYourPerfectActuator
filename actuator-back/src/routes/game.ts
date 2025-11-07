@@ -45,11 +45,15 @@ router.post('/submit', async (req, res) => {
     const finalScore = Number(req.body.finalScore ?? score);
 
     try {
+        console.log(`📊 Game submission: userId=${userId}, answers=${answers?.length}, score=${score}`);
+        
         // user_id가 game_users에 존재하는지 확인
         const userCheck = await pool.query('SELECT id FROM game_users WHERE id = $1', [userId]);
         if (userCheck.rowCount === 0) {
+            console.error(`❌ User not found: ${userId}`);
             return res.status(400).json({ error: 'Invalid user_id: User does not exist' });
         }
+        console.log(`✅ User verified: ${userId}`);
 
         // game_results 테이블에 게임 결과 저장
         await pool.query(
@@ -68,6 +72,7 @@ router.post('/submit', async (req, res) => {
                 finalScore,
             ]
         );
+        console.log(`✅ Game result saved: id=${id}, score=${score}, finalScore=${finalScore}`);
 
         // 개별 답변을 user_answers 테이블에 저장
         if (Array.isArray(answers) && answers.length > 0) {
@@ -89,6 +94,7 @@ router.post('/submit', async (req, res) => {
                     ]
                 );
             }
+            console.log(`✅ Saved ${answers.length} user answers for game result ${id}`);
         }
 
         res.status(201).json({ message: 'Game result saved successfully', id, score, finalScore });
@@ -137,6 +143,7 @@ router.get('/submit', async (req, res) => {
 // GET /api/game/leaderboard: daily_leaderboard VIEW를 기반으로 리더보드 조회 (오늘의 순위)
 router.get('/leaderboard', async (req, res) => {
     try {
+        // 먼저 VIEW에서 데이터 조회
         const query = `
             SELECT 
                 id,
@@ -149,9 +156,51 @@ router.get('/leaderboard', async (req, res) => {
                 played_at,
                 rank
             FROM daily_leaderboard
+            ORDER BY rank ASC
             LIMIT 10
         `;
         const result = await pool.query(query);
+        console.log(`✅ Leaderboard query returned ${result.rows.length} rows`);
+
+        // 데이터가 없으면 더 넓은 범위의 쿼리 시도
+        if (result.rows.length === 0) {
+            console.warn('⚠️ No leaderboard data for today. Trying fallback query...');
+            const fallbackQuery = `
+                SELECT 
+                    gr.id,
+                    gr.user_id,
+                    CASE 
+                        WHEN LENGTH(gu.name) > 2 THEN SUBSTRING(gu.name FROM 1 FOR 1) || '***' || SUBSTRING(gu.name FROM LENGTH(gu.name) FOR 1)
+                        ELSE gu.name
+                    END AS player_name,
+                    gu.company,
+                    COALESCE(SUM(ua.points_earned), 0) as score,
+                    gr.completion_time,
+                    COALESCE(SUM(ua.points_earned), 0) as final_score,
+                    gr.created_at AS played_at,
+                    ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(ua.points_earned), 0) DESC, gr.completion_time ASC, gr.created_at ASC) AS rank
+                FROM game_results gr
+                JOIN game_users gu ON gr.user_id = gu.id
+                LEFT JOIN user_answers ua ON gr.id = ua.game_result_id
+                WHERE DATE(gr.created_at AT TIME ZONE 'UTC') = CURRENT_DATE AT TIME ZONE 'UTC'
+                GROUP BY gr.id, gr.user_id, gu.name, gu.company, gr.completion_time, gr.created_at
+                ORDER BY score DESC, gr.completion_time ASC, gr.created_at ASC
+                LIMIT 10
+            `;
+            const fallbackResult = await pool.query(fallbackQuery);
+            console.log(`✅ Fallback query returned ${fallbackResult.rows.length} rows`);
+            
+            const parsed = fallbackResult.rows.map((row) => ({
+                rank: Number(row.rank),
+                playerName: row.player_name,
+                company: row.company,
+                score: Number(row.score ?? 0),
+                completionTime: Number(row.completion_time ?? 0),
+                finalScore: Number(row.final_score ?? 0),
+                playedAt: row.played_at ? new Date(row.played_at) : new Date(),
+            }));
+            return res.status(200).json(parsed);
+        }
 
         const parsed = result.rows.map((row) => ({
             rank: Number(row.rank),
@@ -164,8 +213,8 @@ router.get('/leaderboard', async (req, res) => {
         }));
         res.status(200).json(parsed);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Database error' });
+        console.error('❌ Leaderboard error:', err);
+        res.status(500).json({ error: 'Database error', details: (err as any).message });
     }
 });
 
