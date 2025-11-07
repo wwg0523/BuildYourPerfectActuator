@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
 import Home from '../pages/Home/Home';
@@ -510,7 +510,7 @@ export default function ActuatorMinigame() {
         }));
     }, []);
 
-    const resetIdleTimer = () => {
+    const resetIdleTimer = useCallback(() => {
         clearAllTimers();
         hideWarningMessage();
 
@@ -527,7 +527,7 @@ export default function ActuatorMinigame() {
         }, timeoutDuration);
 
         setIdleDetector(prev => ({ ...prev, warningTimeout: warningTimeoutRef.current, currentTimeout: currentTimeoutRef.current }));
-    };
+    }, []);
 
     const hideWarningMessage = (): void => {
         const modal = document.getElementById('warning-modal');

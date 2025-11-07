@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { GameSession, LeaderboardEntry, getRankInfo } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Result.scss';
