@@ -527,7 +527,7 @@ export default function ActuatorMinigame() {
         }, timeoutDuration);
 
         setIdleDetector(prev => ({ ...prev, warningTimeout: warningTimeoutRef.current, currentTimeout: currentTimeoutRef.current }));
-    }, []);
+    }, [createWarningMessage, handleBack]);
 
     const hideWarningMessage = (): void => {
         const modal = document.getElementById('warning-modal');
