@@ -1,4 +1,5 @@
-﻿import React, { useRef, useEffect } from 'react';
+﻿/* eslint-disable unicode-bom */
+import React, { useRef, useEffect } from 'react';
 import './Home.scss';
 
 interface HomeProps {

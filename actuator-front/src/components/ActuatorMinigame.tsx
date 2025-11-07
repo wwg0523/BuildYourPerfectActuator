@@ -553,7 +553,6 @@ export default function ActuatorMinigame() {
 
         resetIdleTimer();
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         return () => {
             events.forEach(event => {
                 document.removeEventListener(event, resetIdleTimer);
@@ -561,7 +560,7 @@ export default function ActuatorMinigame() {
             clearAllTimers();
             hideWarningMessage();
         };
-    }, [screen]);
+    }, [screen, resetIdleTimer]);
 
     // Delete confirmation modal (used by Result and Leaderboard components)
     const renderDeleteConfirmModal = () => {

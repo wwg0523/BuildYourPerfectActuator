@@ -13,14 +13,7 @@ interface ResultProps {
 }
 
 const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePlayAgain, setScreen, handleDeleteUserData, userInfo }) => {
-    const [emailSending, setEmailSending] = useState(false);
-    
     const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
-    const totalTime = gameSession.endTime
-        ? Math.floor((gameSession.endTime.getTime() - gameSession.startTime.getTime()) / 1000)
-        : 0;
-    const minutes = Math.floor(totalTime / 60);
-    const seconds = totalTime % 60;
 
     const getRankEmoji = (rank?: number) => {
         if (!rank) return '🎮';
@@ -35,17 +28,16 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     const gradeInfo = leaderboardEntry ? getRankInfo(leaderboardEntry.finalScore) : null;
 
     // Send result email after entering Result screen (silently, no UI feedback)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (userInfo && leaderboardEntry) {
             sendResultEmail();
         }
-    }, [leaderboardEntry]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [leaderboardEntry, userInfo]);
 
     const sendResultEmail = async () => {
         if (!userInfo || !leaderboardEntry) return;
 
-        setEmailSending(true);
         try {
             const emailTemplate = generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
             
@@ -68,8 +60,6 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
             }
         } catch (error) {
             // Silent failure
-        } finally {
-            setEmailSending(false);
         }
     };
 

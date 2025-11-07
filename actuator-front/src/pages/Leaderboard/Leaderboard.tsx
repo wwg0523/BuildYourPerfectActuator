@@ -30,10 +30,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         return `#${rank}`;
     };
 
-    const isMobileView = (): boolean => {
-        return typeof window !== 'undefined' && window.innerWidth <= 640;
-    };
-
     return (
         <div className="page-leaderboard">
             {/* Header with HOME, Title, and STATS */}
