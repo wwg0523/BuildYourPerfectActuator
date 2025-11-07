@@ -325,7 +325,6 @@
   gap: clamp(12px, 3vw, 20px);
   justify-content: center;
   padding: clamp(10px, 2vh, 20px);
-  width: 100%;
 
   @media (max-width: 640px) {
     flex-direction: column;
@@ -334,7 +333,6 @@
 
 .carousel-navigation .button {
   flex: 1;
-  width: 100%;
   padding: clamp(12px, 2.5vw, 16px) clamp(20px, 3vw, 30px);
   border: none;
   border-radius: clamp(8px, 1.5vw, 12px);
@@ -347,7 +345,6 @@
 
   @media (max-width: 640px) {
     min-height: 48px;
-    width: 100%;
   }
 }
 
@@ -373,7 +370,6 @@
   background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-  width: 100%;
   flex: 1;
 
   &:hover:not(:disabled) {
@@ -416,9 +412,5 @@
 
   .tech-highlights {
     grid-template-columns: 1fr;
-  }
-
-  .button {
-    min-width: 100%;
   }
 }

@@ -225,15 +225,15 @@ export class GameEngine {
             return questionNum <= 10;
         });
         
-        // 문제 1-3: 4지선다 (일상 제품 속 액추에이터 찾기)
-        const multipleChoiceQuestions = availableQuestions.filter(q => q.type === 'multiple-choice' && q.category === 'daily-life');
+        // 문제 1-3: 4지선다 (일상 제품 속 액추에이터 찾기) - 랜덤 선택
+        const multipleChoiceQuestions = availableQuestions.filter(q => q.type === 'multiple-choice');
         const selectedMultipleChoice = this.shuffleArray(multipleChoiceQuestions).slice(0, 3);
         
-        // 문제 4-5: OX 퀴즈 (액추에이터 사양 변경 효과)
-        const trueFalseQuestions = availableQuestions.filter(q => q.type === 'true-false' && q.category === 'specification');
+        // 문제 4-5: OX 퀴즈 (액추에이터 사양 변경 효과) - 랜덤 선택
+        const trueFalseQuestions = availableQuestions.filter(q => q.type === 'true-false');
         const selectedTrueFalse = this.shuffleArray(trueFalseQuestions).slice(0, 2);
         
-        // 최종 게임 문제 구성
+        // 최종 게임 문제 구성: 4지선다 3개 + OX 2개 = 총 5개
         const questions = [...selectedMultipleChoice, ...selectedTrueFalse];
 
         return {
