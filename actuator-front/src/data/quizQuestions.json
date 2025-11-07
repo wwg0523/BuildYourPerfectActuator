@@ -6,7 +6,7 @@
       "category": "daily-life",
       "difficulty": "easy",
       "question": "Which of the following is an automotive component that uses an actuator?",
-      "applicationName": "Side Mirror Adjustment",
+      "applicationName": "Mirror",
       "options": [
         "A) Side mirror angle adjustment",
         "B) Radio volume control",
@@ -35,7 +35,7 @@
       "category": "daily-life",
       "difficulty": "easy",
       "question": "Which core component does a robot vacuum use to change direction?",
-      "applicationName": "Robot Vacuum Wheel Drive",
+      "applicationName": "Vacuum",
       "options": [
         "A) Camera",
         "B) Wheel drive motor actuator",
@@ -64,7 +64,7 @@
       "category": "daily-life",
       "difficulty": "medium",
       "question": "What is used to adjust the height and angle of a hospital bed?",
-      "applicationName": "Hospital Bed Height Control",
+      "applicationName": "Hospital Bed",
       "options": [
         "A) Manual crank",
         "B) Hydraulic cylinder",
@@ -94,7 +94,7 @@
       "category": "daily-life",
       "difficulty": "easy",
       "question": "Which component enables automatic height adjustment in office desks?",
-      "applicationName": "Electric Standing Desk",
+      "applicationName": "Desk",
       "options": [
         "A) Hydraulic cylinder",
         "B) Spring",
@@ -123,7 +123,7 @@
       "category": "daily-life",
       "difficulty": "medium",
       "question": "What is used to raise and lower a projector screen automatically in a home theater?",
-      "applicationName": "Motorized Projector Screen",
+      "applicationName": "Projector",
       "options": [
         "A) Tubular motor actuator",
         "B) Manual pulley",
@@ -152,7 +152,7 @@
       "category": "daily-life",
       "difficulty": "medium",
       "question": "Which sensor-actuator system is used in a washing machine for load-dependent operation?",
-      "applicationName": "Intelligent Washing Machine",
+      "applicationName": "Washer",
       "options": [
         "A) Temperature sensor only",
         "B) Motor actuator for drum rotation",
@@ -181,7 +181,7 @@
       "category": "daily-life",
       "difficulty": "medium",
       "question": "What powers the movement in an electric wheelchair?",
-      "applicationName": "Electric Wheelchair Mobility",
+      "applicationName": "Wheelchair",
       "options": [
         "A) Battery power alone",
         "B) Wheel drive DC motor actuators",
@@ -210,7 +210,7 @@
       "category": "daily-life",
       "difficulty": "medium",
       "question": "Which products use motor actuators in a smart home system? (Select all that apply)",
-      "applicationName": "Smart Home Integration",
+      "applicationName": "SmartHome",
       "options": [
         "A) Automatic curtain system, Smart door lock",
         "B) Automatic curtain system, Smart door lock, Robot vacuum brush motor",
@@ -240,7 +240,7 @@
       "category": "daily-life",
       "difficulty": "hard",
       "question": "Which motor actuator systems are essential in electric vehicles?",
-      "applicationName": "EV Powertrain System",
+      "applicationName": "EV",
       "options": [
         "A) Inverter, Power steering, Regenerative braking motor",
         "B) Power steering, Regenerative braking motor, Active suspension",
@@ -270,7 +270,7 @@
       "category": "specification",
       "difficulty": "hard",
       "question": "Which combination represents the correct actuators in a 6-axis industrial robot?",
-      "applicationName": "Industrial Robot Actuators",
+      "applicationName": "Robot",
       "options": [
         "A) Servo motors + Harmonic drive reducer, Encoder (position sensor)",
         "B) Servo motors + Harmonic drive reducer, Pneumatic gripper",
