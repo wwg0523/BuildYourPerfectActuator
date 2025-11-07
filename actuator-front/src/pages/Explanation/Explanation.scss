@@ -348,19 +348,19 @@
 
 .improvements-list {
   margin: 0;
-  padding-left: 0;
-  list-style-position: inside;
+  padding-left: clamp(1.5rem, 5vw, 2.5rem);
+  list-style-position: outside;
   list-style: disc;
   
   li {
-    margin: 8px 0 8px 0;
+    margin: 8px 0 8px clamp(0.5rem, 2vw, 1rem);
     font-size: 14px;
     color: #555;
     line-height: 1.6;
     
     @media (max-width: 640px) {
       font-size: 13px;
-      margin: 6px 0 6px 0;
+      margin: 6px 0 6px 0.5rem;
     }
   }
 }
@@ -392,19 +392,19 @@
 
 .examples-list {
   margin: 0;
-  padding-left: 0;
-  list-style-position: inside;
+  padding-left: clamp(1.5rem, 5vw, 2.5rem);
+  list-style-position: outside;
   list-style: disc;
   
   li {
-    margin: 8px 0 8px 0;
+    margin: 8px 0 8px clamp(0.5rem, 2vw, 1rem);
     font-size: 14px;
     color: #555;
     line-height: 1.6;
     
     @media (max-width: 640px) {
       font-size: 13px;
-      margin: 6px 0 6px 0;
+      margin: 6px 0 6px 0.5rem;
     }
   }
 }
