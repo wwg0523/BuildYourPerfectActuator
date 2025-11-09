@@ -40,6 +40,10 @@
     padding: 1rem;
     font-size: 1.05rem;
     margin-top: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
   }
 }
 
@@ -51,6 +55,12 @@
   text-align: left;
   width: 100%;
   display: block;
+
+  @media (min-width: 1024px) {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* Terms and conditions container */
