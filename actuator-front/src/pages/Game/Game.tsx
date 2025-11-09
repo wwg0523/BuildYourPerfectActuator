@@ -160,12 +160,12 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
 
                 {/* Content Section */}
                 <div className="game-content">
-                    <h3>{currentQuestion.question}</h3>
+                    <h3>Q{gameSession.currentQuestionIndex + 1}) {currentQuestion.question}</h3>
                     
                     {/* Product Image */}
                     <div className="product-image-container">
                         <img 
-                            src={`/assets/questions/${currentQuestion.id}-${currentQuestion.applicationName.toLowerCase().replace(/\s+/g, '-')}.png`}
+                            src={`/images/questions/${currentQuestion.id}-${currentQuestion.applicationName.toLowerCase().replace(/\s+/g, '-')}.png`}
                             alt={currentQuestion.applicationName}
                             className="product-image"
                             onError={(e) => {

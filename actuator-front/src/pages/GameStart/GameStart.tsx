@@ -28,7 +28,7 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             content: (
                 <div className="slide-content slide-with-image">
                     <div className="slide-image-container">
-                        <img src="/assets/carousel/slide1.png" alt="Actuator Demo" className="slide-image" />
+                        <img src="/images/carousel/slide1.png" alt="Actuator Demo" className="slide-image" />
                     </div>
                     <p className="slide-description">
                         An actuator is a device that converts energy into motion, 
@@ -44,7 +44,7 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             content: (
                 <div className="slide-content slide-with-image">
                     <div className="slide-image-container">
-                        <img src="/assets/carousel/slide2.png" alt="Future Technology" className="slide-image" />
+                        <img src="/images/carousel/slide2.png" alt="Future Technology" className="slide-image" />
                     </div>
                     <p className="slide-description">
                         From robots to smart homes, actuators are the hidden engines 
@@ -233,11 +233,6 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                     >
                         Start Game →
                     </button>
-                </div>
-
-                {/* Progress Info */}
-                <div className="progress-info">
-                    <span>{currentSlide + 1} of {slides.length}</span>
                 </div>
             </div>
         </div>
