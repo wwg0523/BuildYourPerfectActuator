@@ -55,3 +55,5 @@ RUN chmod +x /docker-entrypoint.sh
 EXPOSE 5005
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
