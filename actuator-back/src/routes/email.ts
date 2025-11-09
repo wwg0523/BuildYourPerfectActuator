@@ -11,15 +11,24 @@ interface EmailResult {
     emailId?: string;
 }
 
-// Gmail SMTP 설정
+// Mailplug SMTP 설정 (POP3/SMTP)
+// ⚠️ 환경변수는 필수입니다. .env 파일에서 설정하세요.
+if (!process.env.SMTP_HOST || !process.env.SMTP_PORT || !process.env.APP_EMAIL || !process.env.APP_PASS) {
+    console.error('❌ Missing required email environment variables:');
+    console.error('   - SMTP_HOST');
+    console.error('   - SMTP_PORT');
+    console.error('   - APP_EMAIL');
+    console.error('   - APP_PASS');
+    process.exit(1);
+}
+
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT, 10),
+    secure: false, // SSL 비활성화
     auth: {
-        user: process.env.APP_EMAIL || 'whwlsgh0523@gmail.com',
-        pass: process.env.APP_PASS || 'invb xoqc sqtx qeyw',
+        user: process.env.APP_EMAIL,
+        pass: process.env.APP_PASS,
     },
 });
 
@@ -54,7 +63,7 @@ router.post('/send-email', async (req, res) => {
             console.log(`Subject: ${subject}`);
 
             const info = await transporter.sendMail({
-                from: `"Actuator Challenge" <${process.env.APP_EMAIL || 'whwlsgh0523@gmail.com'}>`,
+                from: `"Actuator Challenge" <${process.env.APP_EMAIL}>`,
                 to: recipientEmail,
                 subject: subject,
                 html: htmlContent,

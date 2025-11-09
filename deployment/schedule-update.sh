@@ -100,7 +100,7 @@ log ".sh 파일 권한 복구 완료 (755로 설정됨)"
 
 # Docker 컨테이너 정지
 log "Docker 컨테이너 정지 중..."
-/usr/local/bin/docker-compose -f docker-compose.prod.yaml down
+/usr/local/bin/docker-compose -f docker-compose.yaml down
 
 log "이미지 삭제 중..."
 docker rmi actuator-back:latest 2>/dev/null || true
@@ -111,18 +111,18 @@ log "Docker 빌드 캐시 제거 중..."
 docker image prune -f 2>/dev/null || true
 
 log "Docker 이미지 재빌드 및 실행 중..."
-/usr/local/bin/docker-compose -f docker-compose.prod.yaml build --no-cache
-/usr/local/bin/docker-compose -f docker-compose.prod.yaml up -d
+/usr/local/bin/docker-compose -f docker-compose.yaml build --no-cache
+/usr/local/bin/docker-compose -f docker-compose.yaml up -d
 
 # 컨테이너 상태 확인
 log "컨테이너 상태 확인 중..."
 sleep 5
 
-if /usr/local/bin/docker-compose -f docker-compose.prod.yaml ps | grep -q "Up"; then
+if /usr/local/bin/docker-compose -f docker-compose.yaml ps | grep -q "Up"; then
     log "✓ 컨테이너가 정상적으로 실행 중입니다"
 else
     log "✗ 컨테이너 실행 중 문제가 발생했습니다"
-    /usr/local/bin/docker-compose -f docker-compose.prod.yaml logs >> "${LOG_FILE}" 2>&1
+    /usr/local/bin/docker-compose -f docker-compose.yaml logs >> "${LOG_FILE}" 2>&1
     exit 1
 fi
 

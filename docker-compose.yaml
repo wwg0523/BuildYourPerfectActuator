@@ -1,34 +1,50 @@
-# ⚠️ 주의: 일반적으로는 이 파일을 사용하지 마세요
-# 개발 환경: docker-compose -f docker-compose.dev.yaml up
-# 배포 환경: docker-compose -f docker-compose.prod.yaml up
-
 services:
   frontend:
     build:
       context: ./actuator-front
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_ENCRYPTION_KEY: ${REACT_APP_ENCRYPTION_KEY}
+        NODE_ENV: production
+    image: actuator-front:latest
     container_name: actuator-front
     ports:
       - "5005:5005"
+    environment:
+      FRONTEND_PORT: 5005
+      BACKEND_HOST: actuator-back
+      BACKEND_PORT: 4004
+    depends_on:
+      - backend
     networks:
       - actuator-network
+    restart: unless-stopped
 
   backend:
     build:
       context: ./actuator-back
+    image: actuator-back:latest
     container_name: actuator-back
     ports:
       - "4004:4004"
+    depends_on:
+      - actuator-db
     environment:
+      PORT: 4004
       DB_HOST: actuator-db
       DB_PORT: 5433
-      DB_USER: postgres
-      DB_PASSWORD: 1209
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: actuator_game
-      APP_EMAIL: whwlsgh0523@gmail.com
-      APP_PASS: invb xoqc sqtx qeyw
-      ANALYTICS_PASSWORD: admin123
+      SMTP_HOST: ${SMTP_HOST:-smtp.mailplug.co.kr}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      APP_EMAIL: ${APP_EMAIL}
+      APP_PASS: ${APP_PASS}
+      ANALYTICS_PASSWORD: ${ANALYTICS_PASSWORD}
+      NODE_ENV: production
     networks:
       - actuator-network
+    restart: unless-stopped
 
   actuator-db:
     image: postgres:16.10
@@ -37,13 +53,15 @@ services:
       - "5433:5433"
     command: ["postgres", "-c", "port=5433"]
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1209
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: actuator_game
     volumes:
       - /volume1/actuator-minigame/actuator-db-data:/var/lib/postgresql/data
+      - ./actuator-back/sql/schema.sql:/docker-entrypoint-initdb.d/01-init.sql
     networks:
       - actuator-network
+    restart: unless-stopped
 
 networks:
   actuator-network:

@@ -46,7 +46,7 @@ try {
     
     # Docker 컨테이너 정지
     Log-Message "Docker 컨테이너 정지 중..."
-    & docker-compose -f docker-compose.prod.yaml down
+    & docker-compose -f docker-compose.yaml down
     
     Log-Message "이미지 삭제 중..."
     & docker rmi actuator-back:latest 2>$null
@@ -54,20 +54,20 @@ try {
     
     # Docker 재빌드 및 시작
     Log-Message "Docker 이미지 재빌드 및 실행 중..."
-    & docker-compose -f docker-compose.prod.yaml up -d
+    & docker-compose -f docker-compose.yaml up -d
     
     # 컨테이너 상태 확인
     Log-Message "컨테이너 상태 확인 중..."
     Start-Sleep -Seconds 5
     
-    $ContainerStatus = & docker-compose -f docker-compose.prod.yaml ps
+    $ContainerStatus = & docker-compose -f docker-compose.yaml ps
     
     if ($ContainerStatus -match "Up") {
         Log-Message "✓ 컨테이너가 정상적으로 실행 중입니다"
     }
     else {
         Log-Message "✗ 컨테이너 실행 중 문제가 발생했습니다"
-        & docker-compose -f docker-compose.prod.yaml logs | Tee-Object -FilePath $LogFile -Append
+        & docker-compose -f docker-compose.yaml logs | Tee-Object -FilePath $LogFile -Append
         exit 1
     }
     

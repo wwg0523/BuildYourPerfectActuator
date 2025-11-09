@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 //import helmet from 'helmet';
-import sanitizeHtml from 'sanitize-html';
 import gameRouter from './routes/game.js';
 import userRouter from './routes/user.js';
 import deleteUserDataRoutes from './routes/delete-user-data.js';
@@ -9,7 +8,6 @@ import analyticsRouter from './routes/analytics.js';
 import emailRouter from './routes/email.js';
 import counterRouter from './routes/counter.js';
 
-import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 // .env 파일 로드 (Container Manager에서 생성된 .env 사용)
@@ -54,50 +52,17 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/counter', counterRouter);
 app.use('/api', emailRouter);
 
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: process.env.APP_EMAIL,
-        pass: process.env.APP_PASS
+// 환경변수 검증
+if (process.env.NODE_ENV === 'production') {
+    const requiredEnvVars = ['SMTP_HOST', 'SMTP_PORT', 'APP_EMAIL', 'APP_PASS'];
+    const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+    
+    if (missingVars.length > 0) {
+        console.error('❌ Missing required environment variables in production:');
+        missingVars.forEach(v => console.error(`   - ${v}`));
+        process.exit(1);
     }
-});
-
-app.post('/api/send-email', async (req, res) => {
-    const { to, subject, body } = req.body;
-
-    if (!to || !subject || !body) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // Basic validation for 'to' (very small check)
-    const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-    if (!emailRegex.test(String(to))) {
-        return res.status(400).json({ error: 'Invalid recipient email address' });
-    }
-
-    // Sanitize the subject and body to reduce XSS risk. Allow only a safe subset of tags/attributes.
-    const cleanSubject = String(subject).slice(0, 200);
-    const cleanBody = sanitizeHtml(String(body), {
-        allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p', 'ul', 'ol', 'li', 'br' ],
-        allowedAttributes: {
-            a: [ 'href', 'rel', 'target' ]
-        },
-        allowedSchemes: [ 'http', 'https', 'mailto' ]
-    });
-
-    try {
-        await transporter.sendMail({
-            from: process.env.APP_EMAIL,
-            to,
-            subject: cleanSubject,
-            html: cleanBody
-        });
-        res.json({ success: true });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to send email' });
-    }
-});
+}
 
 // Global error handler - ensure all responses are JSON
 app.use((err: any, req: any, res: any, next: any) => {

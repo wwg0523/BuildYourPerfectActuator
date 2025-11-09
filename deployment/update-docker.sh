@@ -44,7 +44,7 @@ log ".sh 파일 권한 복구 완료 (755로 설정됨)"
 
 # Docker 컨테이너 정지
 log "Docker 컨테이너 정지 중..."
-docker-compose -f docker-compose.prod.yaml down
+docker-compose -f docker-compose.yaml down
 
 log "이미지 및 컨테이너 완전 정리 중..."
 # 이미지 강제 삭제
@@ -56,20 +56,20 @@ docker image prune -f 2>/dev/null || true
 
 log "Docker 빌드 캐시 제거 중..."
 # 노드 모듈 캐시도 제거하기 위해 --no-cache 옵션 사용
-docker-compose -f docker-compose.prod.yaml build --no-cache
+docker-compose -f docker-compose.yaml build --no-cache
 
 log "Docker 이미지 재빌드 완료, 컨테이너 시작 중..."
-docker-compose -f docker-compose.prod.yaml up -d
+docker-compose -f docker-compose.yaml up -d
 
 # 컨테이너 상태 확인
 log "컨테이너 상태 확인 중..."
 sleep 5
 
-if docker-compose -f docker-compose.prod.yaml ps | grep -q "Up"; then
+if docker-compose -f docker-compose.yaml ps | grep -q "Up"; then
     log "✓ 컨테이너가 정상적으로 실행 중입니다"
 else
     log "✗ 컨테이너 실행 중 문제가 발생했습니다"
-    docker-compose -f docker-compose.prod.yaml logs
+    docker-compose -f docker-compose.yaml logs
     exit 1
 fi
 

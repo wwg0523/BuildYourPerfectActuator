@@ -45,7 +45,7 @@ cd "${PROJECT_DIR}"
 
 # 1. Docker 컨테이너 상태 확인
 log "\n${YELLOW}[1/6] Docker 컨테이너 상태 확인${NC}"
-docker-compose -f docker-compose.prod.yaml ps
+docker-compose -f docker-compose.yaml ps
 test_result "Docker 컨테이너" $?
 
 # 2. 각 컨테이너의 로그 확인
@@ -53,17 +53,17 @@ log "\n${YELLOW}[2/6] 컨테이너 로그 확인${NC}"
 
 # Frontend 확인
 log "\n${YELLOW}Frontend 로그:${NC}"
-docker-compose -f docker-compose.prod.yaml logs --tail=20 frontend | head -20
+docker-compose -f docker-compose.yaml logs --tail=20 frontend | head -20
 test_result "Frontend 로그" $?
 
 # Backend 확인
 log "\n${YELLOW}Backend 로그:${NC}"
-docker-compose -f docker-compose.prod.yaml logs --tail=20 backend | head -20
+docker-compose -f docker-compose.yaml logs --tail=20 backend | head -20
 test_result "Backend 로그" $?
 
 # Database 확인
 log "\n${YELLOW}Database 로그:${NC}"
-docker-compose -f docker-compose.prod.yaml logs --tail=20 actuator-db | head -20
+docker-compose -f docker-compose.yaml logs --tail=20 actuator-db | head -20
 test_result "Database 로그" $?
 
 # 3. 헬스 체크 - Frontend
@@ -89,7 +89,7 @@ fi
 
 # 5. Database 연결 확인
 log "\n${YELLOW}[5/6] Database 연결 확인${NC}"
-if docker-compose -f docker-compose.prod.yaml exec -T actuator-db pg_isready -U postgres > /dev/null 2>&1; then
+if docker-compose -f docker-compose.yaml exec -T actuator-db pg_isready -U postgres > /dev/null 2>&1; then
     test_result "Database 연결" 0
 else
     log "Database에 연결할 수 없습니다"

@@ -107,7 +107,7 @@ validate() {
 # 6. Docker 로그
 docker_logs() {
     echo -e "${YELLOW}Docker 로그를 표시합니다 (최근 50줄). Ctrl+C로 종료하세요.${NC}"
-    docker-compose -f "${PROJECT_DIR}/docker-compose.prod.yaml" logs -f --tail=50
+    docker-compose -f "${PROJECT_DIR}/docker-compose.yaml" logs -f --tail=50
 }
 
 # 7. Webhook 로그
@@ -169,17 +169,17 @@ setup_cron() {
 # 10. 컨테이너 재시작
 restart_containers() {
     echo -e "${YELLOW}컨테이너를 재시작합니다...${NC}"
-    docker-compose -f "${PROJECT_DIR}/docker-compose.prod.yaml" restart
+    docker-compose -f "${PROJECT_DIR}/docker-compose.yaml" restart
     echo -e "${GREEN}컨테이너 재시작 완료${NC}"
 }
 
 # 11. 컨테이너 강제 재빌드
 rebuild_containers() {
     echo -e "${YELLOW}컨테이너를 강제 재빌드합니다...${NC}"
-    docker-compose -f "${PROJECT_DIR}/docker-compose.prod.yaml" down
+    docker-compose -f "${PROJECT_DIR}/docker-compose.yaml" down
     docker rmi actuator-back:latest 2>/dev/null || true
     docker rmi actuator-front:latest 2>/dev/null || true
-    docker-compose -f "${PROJECT_DIR}/docker-compose.prod.yaml" up -d --build
+    docker-compose -f "${PROJECT_DIR}/docker-compose.yaml" up -d --build
     echo -e "${GREEN}컨테이너 재빌드 완료${NC}"
 }
 

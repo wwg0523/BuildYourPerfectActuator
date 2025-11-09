@@ -3,7 +3,7 @@ services:
     build:
       context: ./actuator-front
       dockerfile: Dockerfile.dev
-    container_name: actuator-front
+    container_name: actuator-front-dev
     ports:
       - "5006:5006"
     networks:
@@ -16,43 +16,56 @@ services:
       - ./actuator-front/tsconfig.json:/app/tsconfig.json
 
     environment:
+      - PORT=5006
       - WATCHPACK_POLLING=true
       - FAST_REFRESH=true
+      - REACT_APP_ENCRYPTION_KEY=${REACT_APP_ENCRYPTION_KEY}
     command: npm run dev
 
   backend:
     build:
       context: ./actuator-back
-    container_name: actuator-back
+    container_name: actuator-back-dev
     ports:
       - "4005:4005"
     environment:
       PORT: 4005
       DB_HOST: actuator-db
       DB_PORT: 5434
-      DB_USER: postgres
-      DB_PASSWORD: 1209
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-dev_password}
       DB_NAME: actuator_game
-      APP_EMAIL: whwlsgh0523@gmail.com
-      APP_PASS: invb xoqc sqtx qeyw
-      ANALYTICS_PASSWORD: admin123
+      SMTP_HOST: ${SMTP_HOST:-smtp.mailplug.co.kr}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      APP_EMAIL: ${APP_EMAIL:-dev@example.com}
+      APP_PASS: ${APP_PASS:-dev_email_password}
+      ANALYTICS_PASSWORD: ${ANALYTICS_PASSWORD:-dev_analytics}
+      NODE_ENV: development
     networks:
       - actuator-network
+    depends_on:
+      - actuator-db
 
   actuator-db:
     image: postgres:16.10
-    container_name: actuator-db
+    container_name: actuator-db-dev
     ports:
       - "5434:5434"
+    command: ["postgres", "-c", "port=5434"]
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1209
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dev_password}
       POSTGRES_DB: actuator_game
     volumes:
-      - /volume1/actuator-minigame/actuator-db-data:/var/lib/postgresql/data
+      - actuator-db-dev-data:/var/lib/postgresql/data
+      - ./actuator-back/sql/schema.sql:/docker-entrypoint-initdb.d/01-init.sql
     networks:
       - actuator-network
 
 networks:
   actuator-network:
     driver: bridge
+
+volumes:
+  actuator-db-dev-data:
+    driver: local

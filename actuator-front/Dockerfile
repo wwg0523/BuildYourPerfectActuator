@@ -14,14 +14,18 @@ RUN npm ci --omit=dev && \
 COPY public/ ./public/
 COPY src/ ./src/
 COPY tsconfig.json ./
-COPY .env.production ./
+
+# 빌드 인자 및 환경변수 정의
+ARG REACT_APP_ENCRYPTION_KEY=your-32byte-secret-key
+ARG NODE_ENV=production
 
 # 프로덕션 빌드 최적화
 # GENERATE_SOURCEMAP=false: 소스맵 제외 (빌드 시간 50% 단축)
 # CI=false: 경고를 오류로 처리하지 않음 (빌드 속도 향상)
 ENV GENERATE_SOURCEMAP=false \
     CI=false \
-    REACT_APP_ENCRYPTION_KEY=your-32byte-secret-key
+    REACT_APP_ENCRYPTION_KEY=${REACT_APP_ENCRYPTION_KEY} \
+    NODE_ENV=${NODE_ENV}
 
 RUN npm run build
 
@@ -44,6 +48,10 @@ RUN find /app/build -type d -exec chmod 755 {} \; && \
 # Nginx 설정 복사
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# 엔트리포인트 스크립트 복사 (환경변수 치환용)
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 5005
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
