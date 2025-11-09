@@ -187,7 +187,6 @@ YOUR RESULTS:
                         <div className="score-main-display">
                             <div className="score-value">
                                 {leaderboardEntry?.finalScore || 0}
-                                <span className="score-max">/100</span>
                             </div>
                             <p className="score-label">Your Score</p>
                         </div>
