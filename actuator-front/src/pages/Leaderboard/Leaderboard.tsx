@@ -58,7 +58,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                 ) : (
                     <div className="leaderboard-list">
                         {leaderboardData.map((entry, index) => (
-                            <div key={`${entry.rank}-${entry.playedAt.getTime()}`} className="leaderboard-item">
+                            <div key={`${entry.rank}-${entry.playedAt instanceof Date ? entry.playedAt.getTime() : new Date(entry.playedAt).getTime()}`} className="leaderboard-item">
                                 <div className="rank-and-badge">
                                     <div className="rank-badge">{getRankBadge(entry.rank)}</div>
                                 </div>
@@ -71,7 +71,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                                 <div className="player-stats">
                                     <div className="stat">
                                         <span className="stat-label">Score</span>
-                                        <span className="stat-value">{entry.score}/100</span>
+                                        <span className="stat-value">{entry.score}/5</span>
                                     </div>
                                     <div className="stat">
                                         <span className="stat-label">Time</span>
