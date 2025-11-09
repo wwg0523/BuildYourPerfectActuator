@@ -13,15 +13,60 @@ import {
     Pie,
     Cell,
     Legend,
+    LineChart,
+    Line,
 } from 'recharts';
 
-interface GameAnalytics {
+interface SummaryData {
     totalParticipants: number;
+    totalCompleted: number;
     completionRate: number;
     averageCompletionTime: number;
-    topCompanyParticipants: string[] | null;
-    popularComponentCombinations: string[][] | null;
-    successRateByExperience: { [key: string]: number } | null;
+    averageScore: number;
+}
+
+interface QuestionPerformance {
+    questionId: string;
+    applicationName: string;
+    difficulty: string;
+    maxPoints: number;
+    totalAttempts: number;
+    correctAttempts: number;
+    successRate: number;
+    avgPointsEarned: number;
+}
+
+interface DifficultyAnalysis {
+    difficulty: string;
+    questionCount: number;
+    totalAttempts: number;
+    correctAttempts: number;
+    successRate: number;
+    avgPointsEarned: number;
+}
+
+interface LeadQuality {
+    company: string;
+    participantCount: number;
+    avgScore: number;
+    avgCompletionTime: number;
+    completedCount: number;
+    completionRate: number;
+}
+
+interface DailyTrend {
+    date: string;
+    participants: number;
+    completions: number;
+    avgScore: number;
+}
+
+interface GameAnalytics {
+    summary: SummaryData;
+    questionPerformance: QuestionPerformance[];
+    difficultyAnalysis: DifficultyAnalysis[];
+    leadQuality: LeadQuality[];
+    dailyTrend: DailyTrend[];
 }
 
 const Analytics: React.FC = () => {
@@ -29,7 +74,7 @@ const Analytics: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [activeTab, setActiveTab] = useState<'chart' | 'table'>('chart');
+    const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'companies' | 'trends'>('overview');
 
     const fetchAnalytics = useCallback(async () => {
         try {
@@ -69,49 +114,6 @@ const Analytics: React.FC = () => {
             setError(err.message || 'Failed to load analytics. Please check your password.');
         }
     }, [password]);
-
-    const componentFrequency = React.useMemo(() => {
-        const freq: { [k: string]: number } = {};
-
-        const extractName = (item: any) => {
-            if (item == null) return '';
-            if (typeof item === 'string' || typeof item === 'number') return String(item);
-            if (typeof item === 'object') {
-                // try common fields
-                if (typeof item.name === 'string') return item.name;
-                if (typeof item.component === 'string') return item.component;
-                // fallback to JSON if it has identifiable keys
-                try {
-                    return JSON.stringify(item);
-                } catch {
-                    return String(item);
-                }
-            }
-            return String(item);
-        };
-
-        if (Array.isArray(analyticsData?.popularComponentCombinations)) {
-            analyticsData!.popularComponentCombinations.forEach((combo) => {
-                if (Array.isArray(combo)) {
-                    combo.forEach((c) => {
-                        const name = extractName(c);
-                        if (!name) return;
-                        freq[name] = (freq[name] || 0) + 1;
-                    });
-                } else {
-                    const name = extractName(combo as any);
-                    if (!name) return;
-                    freq[name] = (freq[name] || 0) + 1;
-                }
-            });
-        }
-        return Object.entries(freq).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-    }, [analyticsData]);
-
-    const successRateData = React.useMemo(() => {
-        if (!analyticsData?.successRateByExperience) return [] as { name: string; value: number }[];
-        return Object.entries(analyticsData.successRateByExperience).map(([k, v]) => ({ name: k, value: Number(v) }));
-    }, [analyticsData]);
 
     const handleLogin = () => {
         fetchAnalytics();
@@ -155,172 +157,247 @@ const Analytics: React.FC = () => {
                                 {/* Tab Navigation */}
                                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #eee', justifyContent: 'center', flexWrap: 'wrap' }}>
                                     <button
-                                        onClick={() => setActiveTab('chart')}
+                                        onClick={() => setActiveTab('overview')}
                                         style={{
                                             padding: '10px 20px',
                                             border: 'none',
-                                            background: activeTab === 'chart' ? '#007bff' : '#f0f0f0',
-                                            color: activeTab === 'chart' ? '#fff' : '#333',
+                                            background: activeTab === 'overview' ? '#007bff' : '#f0f0f0',
+                                            color: activeTab === 'overview' ? '#fff' : '#333',
                                             cursor: 'pointer',
                                             fontWeight: 'bold',
                                             borderRadius: '4px 4px 0 0',
                                         }}
                                     >
-                                        📊 Charts
+                                        📊 Overview
                                     </button>
                                     <button
-                                        onClick={() => setActiveTab('table')}
+                                        onClick={() => setActiveTab('questions')}
                                         style={{
                                             padding: '10px 20px',
                                             border: 'none',
-                                            background: activeTab === 'table' ? '#007bff' : '#f0f0f0',
-                                            color: activeTab === 'table' ? '#fff' : '#333',
+                                            background: activeTab === 'questions' ? '#007bff' : '#f0f0f0',
+                                            color: activeTab === 'questions' ? '#fff' : '#333',
                                             cursor: 'pointer',
                                             fontWeight: 'bold',
                                             borderRadius: '4px 4px 0 0',
                                         }}
                                     >
-                                        📋 Raw Data
+                                        ❓ Questions
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('companies')}
+                                        style={{
+                                            padding: '10px 20px',
+                                            border: 'none',
+                                            background: activeTab === 'companies' ? '#007bff' : '#f0f0f0',
+                                            color: activeTab === 'companies' ? '#fff' : '#333',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            borderRadius: '4px 4px 0 0',
+                                        }}
+                                    >
+                                        🏢 Companies
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveTab('trends')}
+                                        style={{
+                                            padding: '10px 20px',
+                                            border: 'none',
+                                            background: activeTab === 'trends' ? '#007bff' : '#f0f0f0',
+                                            color: activeTab === 'trends' ? '#fff' : '#333',
+                                            cursor: 'pointer',
+                                            fontWeight: 'bold',
+                                            borderRadius: '4px 4px 0 0',
+                                        }}
+                                    >
+                                        � Trends
                                     </button>
                                 </div>
 
-                                {/* Chart Tab */}
-                                {activeTab === 'chart' && (
+                                {/* Overview Tab */}
+                                {activeTab === 'overview' && (
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-                                        <div style={{ textAlign: 'center', width: '100%' }}>
-                                            <p><strong>Total Participants:</strong> {analyticsData.totalParticipants}</p>
-                                            <p><strong>Completion Rate:</strong> {analyticsData.completionRate}%</p>
-                                            <p><strong>Average Completion Time:</strong> {analyticsData.averageCompletionTime} seconds</p>
-                                            <p><strong>Top Companies:</strong> {analyticsData.topCompanyParticipants?.join(', ') || 'None'}</p>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', width: '100%' }}>
+                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
+                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Total Participants</p>
+                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#007bff' }}>{analyticsData.summary.totalParticipants}</p>
+                                            </div>
+                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
+                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Completed</p>
+                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#28a745' }}>{analyticsData.summary.totalCompleted}</p>
+                                            </div>
+                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
+                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Completion Rate</p>
+                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#ffc107' }}>{analyticsData.summary.completionRate.toFixed(1)}%</p>
+                                            </div>
+                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
+                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Avg Time (sec)</p>
+                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#17a2b8' }}>{analyticsData.summary.averageCompletionTime.toFixed(1)}</p>
+                                            </div>
+                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
+                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Avg Score</p>
+                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#6f42c1' }}>{analyticsData.summary.averageScore.toFixed(2)}</p>
+                                            </div>
                                         </div>
-                                        <p style={{ textAlign: 'center', fontWeight: 'bold' }}>Popular Combinations (component frequency):</p>
-                                        <div style={{ width: '100%', maxWidth: '800px', height: 280 }}>
-                                            {componentFrequency.length > 0 ? (
+
+                                        {/* Difficulty Distribution */}
+                                        <div style={{ width: '100%', marginTop: '20px' }}>
+                                            <h3 style={{ textAlign: 'center' }}>Difficulty Level Performance</h3>
+                                            <div style={{ width: '100%', maxWidth: '800px', height: 300, margin: '0 auto' }}>
                                                 <ResponsiveContainer>
-                                                    <BarChart data={componentFrequency.slice(0, 20)} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                                                    <BarChart data={analyticsData.difficultyAnalysis}>
                                                         <CartesianGrid strokeDasharray="3 3" />
-                                                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                                        <XAxis dataKey="difficulty" />
                                                         <YAxis />
                                                         <Tooltip />
                                                         <Legend />
-                                                        <Bar dataKey="value" fill="#8884d8" />
+                                                        <Bar dataKey="successRate" fill="#8884d8" name="Success Rate (%)" />
                                                     </BarChart>
                                                 </ResponsiveContainer>
-                                            ) : (
-                                                <p style={{ textAlign: 'center' }}>No combinations available</p>
-                                            )}
-                                        </div>
-                                        <p style={{ textAlign: 'center', fontWeight: 'bold' }}>Success Rate by Attempt Count:</p>
-                                        <div style={{ width: '100%', maxWidth: '600px', height: 240 }}>
-                                            {successRateData.length > 0 ? (
-                                                <ResponsiveContainer>
-                                                    <PieChart>
-                                                        <Pie data={successRateData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                                                            {successRateData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28', '#FF8042'][index % 4]} />
-                                                            ))}
-                                                        </Pie>
-                                                        <Tooltip />
-                                                        <Legend />
-                                                    </PieChart>
-                                                </ResponsiveContainer>
-                                            ) : (
-                                                <p style={{ textAlign: 'center' }}>No success rate data available</p>
-                                            )}
-                                        </div>
-                                        <div style={{ textAlign: 'center' }}>
-                                            <p style={{ fontWeight: 'bold' }}>Success Rate by Attempt Count:</p>
-                                            <ul style={{ display: 'inline-block', textAlign: 'left' }}>
-                                                {analyticsData.successRateByExperience
-                                                    ? Object.entries(analyticsData.successRateByExperience).map(([exp, rate]) => (
-                                                          <li key={exp}>{exp}: {rate}%</li>
-                                                      ))
-                                                    : <li>No data available</li>}
-                                            </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* Table Tab */}
-                                {activeTab === 'table' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '900px' }}>
-                                            <table style={{
-                                                width: '100%',
-                                                borderCollapse: 'collapse',
-                                                marginBottom: '20px',
+                                {/* Questions Tab */}
+                                {activeTab === 'questions' && (
+                                    <div style={{ overflowX: 'auto', width: '100%' }}>
+                                        <table style={{
+                                            width: '100%',
+                                            borderCollapse: 'collapse',
+                                            marginBottom: '20px',
+                                            fontSize: '0.9em'
                                         }}>
                                             <thead>
                                                 <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
-                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Column Name</th>
-                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold' }}>Value</th>
+                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>App</th>
+                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Difficulty</th>
+                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Attempts</th>
+                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Correct</th>
+                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Success Rate</th>
+                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>Avg Points</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr style={{ borderBottom: '1px solid #eee' }}>
-                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>totalParticipants</td>
-                                                    <td style={{ padding: '12px' }}>{analyticsData.totalParticipants}</td>
-                                                </tr>
-                                                <tr style={{ borderBottom: '1px solid #eee' }}>
-                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>completionRate</td>
-                                                    <td style={{ padding: '12px' }}>{analyticsData.completionRate}%</td>
-                                                </tr>
-                                                <tr style={{ borderBottom: '1px solid #eee' }}>
-                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>averageCompletionTime</td>
-                                                    <td style={{ padding: '12px' }}>{analyticsData.averageCompletionTime} seconds</td>
-                                                </tr>
-                                                <tr style={{ borderBottom: '1px solid #eee' }}>
-                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500' }}>topCompanyParticipants</td>
-                                                    <td style={{ padding: '12px' }}>
-                                                        {Array.isArray(analyticsData.topCompanyParticipants)
-                                                            ? analyticsData.topCompanyParticipants.filter(c => c).join(', ')
-                                                            : 'None'}
-                                                    </td>
-                                                </tr>
-                                                <tr style={{ borderBottom: '1px solid #eee' }}>
-                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500', verticalAlign: 'top' }}>popularComponentCombinations</td>
-                                                    <td style={{ padding: '12px' }}>
-                                                        {Array.isArray(analyticsData.popularComponentCombinations) && analyticsData.popularComponentCombinations.length > 0 ? (
-                                                            <ul style={{ margin: 0, paddingLeft: '20px' }}>
-                                                                {analyticsData.popularComponentCombinations.map((combo, idx) => (
-                                                                    <li key={idx}>
-                                                                        {Array.isArray(combo)
-                                                                            ? `[${combo.join(', ')}]`
-                                                                            : JSON.stringify(combo)}
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        ) : (
-                                                            'None'
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: '500', verticalAlign: 'top' }}>successRateByExperience</td>
-                                                    <td style={{ padding: '12px' }}>
-                                                        {analyticsData.successRateByExperience ? (
-                                                            <ul style={{ margin: 0, paddingLeft: '20px' }}>
-                                                                {Object.entries(analyticsData.successRateByExperience).map(([key, value]) => (
-                                                                    <li key={key}>{key}: {value}%</li>
-                                                                ))}
-                                                            </ul>
-                                                        ) : (
-                                                            'None'
-                                                        )}
-                                                    </td>
-                                                </tr>
+                                                {analyticsData.questionPerformance.map((q, idx) => (
+                                                    <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                                                        <td style={{ padding: '12px', borderRight: '1px solid #eee' }}>{q.applicationName}</td>
+                                                        <td style={{ padding: '12px', borderRight: '1px solid #eee' }}>{q.difficulty}</td>
+                                                        <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{q.totalAttempts}</td>
+                                                        <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{q.correctAttempts}</td>
+                                                        <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee', fontWeight: 'bold', color: q.successRate > 50 ? '#28a745' : '#dc3545' }}>{q.successRate.toFixed(1)}%</td>
+                                                        <td style={{ padding: '12px', textAlign: 'center' }}>{q.avgPointsEarned.toFixed(2)}</td>
+                                                    </tr>
+                                                ))}
                                             </tbody>
                                         </table>
+                                    </div>
+                                )}
+
+                                {/* Companies Tab */}
+                                {activeTab === 'companies' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                                        <div style={{ width: '100%', maxWidth: '900px', height: 300, margin: '0 auto' }}>
+                                            <h3 style={{ textAlign: 'center' }}>Participants by Company</h3>
+                                            <ResponsiveContainer>
+                                                <BarChart data={analyticsData.leadQuality}>
+                                                    <CartesianGrid strokeDasharray="3 3" />
+                                                    <XAxis dataKey="company" angle={-45} textAnchor="end" height={100} />
+                                                    <YAxis />
+                                                    <Tooltip />
+                                                    <Legend />
+                                                    <Bar dataKey="participantCount" fill="#8884d8" name="Total Participants" />
+                                                    <Bar dataKey="completedCount" fill="#82ca9d" name="Completed" />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div style={{ overflowX: 'auto', width: '100%' }}>
+                                            <table style={{
+                                                width: '100%',
+                                                borderCollapse: 'collapse',
+                                                fontSize: '0.9em'
+                                            }}>
+                                                <thead>
+                                                    <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
+                                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Company</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Participants</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Completed</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Completion Rate</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Avg Score</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>Avg Time (sec)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {analyticsData.leadQuality.map((company, idx) => (
+                                                        <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                                                            <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: 'bold' }}>{company.company}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{company.participantCount}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{company.completedCount}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee', color: company.completionRate > 50 ? '#28a745' : '#ffc107' }}>{company.completionRate.toFixed(1)}%</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{company.avgScore.toFixed(2)}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center' }}>{company.avgCompletionTime.toFixed(1)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Trends Tab */}
+                                {activeTab === 'trends' && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
+                                        <div style={{ width: '100%', maxWidth: '1000px', height: 300 }}>
+                                            <h3 style={{ textAlign: 'center' }}>Daily Participation Trend</h3>
+                                            <ResponsiveContainer>
+                                                <LineChart data={analyticsData.dailyTrend}>
+                                                    <CartesianGrid strokeDasharray="3 3" />
+                                                    <XAxis dataKey="date" />
+                                                    <YAxis />
+                                                    <Tooltip />
+                                                    <Legend />
+                                                    <Line type="monotone" dataKey="participants" stroke="#8884d8" name="Participants" />
+                                                    <Line type="monotone" dataKey="completions" stroke="#82ca9d" name="Completions" />
+                                                </LineChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div style={{ overflowX: 'auto', width: '100%' }}>
+                                            <table style={{
+                                                width: '100%',
+                                                borderCollapse: 'collapse',
+                                                fontSize: '0.9em',
+                                                maxWidth: '600px',
+                                                margin: '0 auto'
+                                            }}>
+                                                <thead>
+                                                    <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
+                                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Date</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Participants</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Completions</th>
+                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>Avg Score</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {analyticsData.dailyTrend.map((day, idx) => (
+                                                        <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
+                                                            <td style={{ padding: '12px', borderRight: '1px solid #eee' }}>{day.date}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{day.participants}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{day.completions}</td>
+                                                            <td style={{ padding: '12px', textAlign: 'center' }}>{day.avgScore.toFixed(2)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 )}
 
                                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '20px', flexWrap: 'wrap' }}>
                                     <button className="button outline" onClick={fetchAnalytics}>
-                                        REFRESH
+                                        🔄 REFRESH
                                     </button>
                                     <button className="button" onClick={() => (window.location.href = '/')}>
-                                        BACK TO GAME
+                                        🏠 BACK TO GAME
                                     </button>
                                 </div>
                             </motion.div>

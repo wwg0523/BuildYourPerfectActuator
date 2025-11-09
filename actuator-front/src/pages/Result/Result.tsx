@@ -194,7 +194,7 @@ YOUR RESULTS:
                         {/* Stats Grid */}
                         <div className="stats-grid">
                             <div className="stat-item">
-                                <div className="stat-number">{correctAnswers}/5</div>
+                                <div className="stat-number">{leaderboardEntry?.score || 0}/5</div>
                                 <div className="stat-text">Correct Answers</div>
                             </div>
                         </div>

@@ -178,26 +178,6 @@ export class GameEngine {
         robotic_vacuum_mobility: 'Robotic Vacuum Mobility',
     };
 
-    // 애플리케이션 이미지 매핑 (SVG 기반)
-    private applicationImages: Record<string, string> = {
-        robot_arm_joint: '/images/robot-arm.svg',
-        automotive_steering: '/images/automotive-steering.svg',
-        industrial_automation: '/images/industrial-automation.svg',
-        precision_robotics: '/images/precision-robotics.svg',
-        automated_conveyor: '/images/automated-conveyor.svg',
-        medical_robot_arm: '/images/medical-robot-arm.svg',
-        cnc_machine: '/images/cnc-machine.svg',
-        drone_actuator: '/images/drone-actuator.svg',
-        precision_manipulator: '/images/precision-manipulator.svg',
-        autonomous_vehicle_suspension: '/images/autonomous-vehicle-suspension.svg',
-        factory_conveyor_system: '/images/factory-conveyor-system.svg',
-        medical_scanner_rotation: '/images/medical-scanner-rotation.svg',
-        drone_camera_gimbal: '/images/drone-camera-gimbal.svg',
-        wind_turbine_blade_adjuster: '/images/wind-turbine-blade-adjuster.svg',
-        cnc_milling_spindle: '/images/cnc-milling-spindle.svg',
-        robotic_vacuum_mobility: '/images/robotic-vacuum-mobility.svg',
-    };
-
     private shuffleArray<T>(array: T[]): T[] {
         const shuffled = [...array];
         for (let i = shuffled.length - 1; i > 0; i--) {
