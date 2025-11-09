@@ -42,9 +42,9 @@
 /* Carousel Wrapper */
 .carousel-wrapper {
   position: relative;
-  min-height: auto;
-  max-height: none;
-  height: auto;
+  min-height: clamp(300px, 60vh, 450px);
+  max-height: clamp(350px, 70vh, 550px);
+  height: 100%;
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: clamp(16px, 3vw, 24px);
@@ -128,11 +128,30 @@
 .slide-body {
   width: 100%;
   max-width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
   color: #333;
   font-size: clamp(13px, 1.8vw, 16px);
   line-height: 1.6;
   text-align: center;
-  overflow: hidden;
+  padding-right: 6px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
 }
 
 
@@ -152,8 +171,8 @@
 
 .slide-image-container {
   width: 100%;
-  max-width: clamp(250px, 80vw, 400px);
-  height: clamp(200px, 50vw, 350px);
+  max-width: clamp(200px, 70vw, 320px);
+  height: clamp(150px, 40vw, 240px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -385,23 +404,29 @@
   }
 }
 
-/* Progress Info */
-.progress-info {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: clamp(12px, 1.5vw, 14px);
-  margin-top: clamp(5px, 1vh, 10px);
-  letter-spacing: 0.5px;
-}
-
 /* Responsive Adjustments */
 @media (max-height: 700px) {
   .carousel-wrapper {
-    min-height: 350px;
+    min-height: clamp(250px, 55vh, 400px);
+    max-height: clamp(300px, 65vh, 450px);
   }
 
   .gamestart-container {
     gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-wrapper {
+    min-height: clamp(280px, 55vh, 380px);
+    max-height: clamp(320px, 65vh, 420px);
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-wrapper {
+    min-height: clamp(250px, 50vh, 320px);
+    max-height: clamp(280px, 60vh, 350px);
   }
 }
 
