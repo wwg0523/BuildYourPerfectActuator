@@ -27,10 +27,11 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     // Retrieve grade information based on score
     const gradeInfo = leaderboardEntry ? getRankInfo(leaderboardEntry.finalScore) : null;
 
-    // Send result email after entering Result screen (silently, no UI feedback)
+    // ⚠️ Send result email after entering Result screen (주석처리됨 - 메일 시스템 비활성화)
     useEffect(() => {
         if (userInfo && leaderboardEntry) {
-            sendResultEmail();
+            // sendResultEmail(); // 메일 시스템 일시 비활성화
+            console.warn('⚠️ [DISABLED] Email sending is temporarily disabled');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [leaderboardEntry, userInfo]);
@@ -38,6 +39,11 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     const sendResultEmail = async () => {
         if (!userInfo || !leaderboardEntry) return;
 
+        // ⚠️ 메일 시스템 일시 비활성화
+        console.warn('⚠️ [DISABLED] Email sending is temporarily disabled');
+        return;
+
+        /* ======== 원본 이메일 발송 코드 (비활성화) ========
         try {
             const emailTemplate = generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
             
@@ -61,6 +67,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         } catch (error) {
             // Silent failure
         }
+        ======== 원본 이메일 발송 코드 (비활성화) ======== */
     };
 
     const generateResultEmailTemplate = (userInfo: any, gameSession: GameSession, leaderboardEntry: LeaderboardEntry) => {

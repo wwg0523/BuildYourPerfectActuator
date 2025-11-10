@@ -16,9 +16,10 @@ interface Slide {
 
 const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [dragStart, setDragStart] = useState(0);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [direction, setDirection] = useState(0);
     const dragRef = useRef<HTMLDivElement>(null);
+    const [isVerticalScroll, setIsVerticalScroll] = useState(false);
 
     const slides: Slide[] = [
         {
@@ -132,19 +133,26 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
 
     // 마우스 드래그 핸들러
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-        setDragStart(e.clientX);
+        setDragStart({ x: e.clientX, y: e.clientY });
+        setIsVerticalScroll(false);
     };
 
     const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-        const dragEnd = e.clientX;
-        const diff = dragStart - dragEnd;
+        const dragEnd = { x: e.clientX, y: e.clientY };
+        const diffX = dragStart.x - dragEnd.x;
+        const diffY = Math.abs(dragStart.y - dragEnd.y);
 
-        if (Math.abs(diff) > 50) { // 최소 50px 드래그
-            if (diff > 0) {
-                // 왼쪽으로 드래그 → 다음 슬라이드
+        // 수직 드래그가 더 크면 스크롤로 간주 (가로 슬라이드 방지)
+        if (diffY > 30) {
+            setIsVerticalScroll(true);
+            return;
+        }
+
+        // 가로 드래그만 처리 (최소 50px)
+        if (Math.abs(diffX) > 50) {
+            if (diffX > 0) {
                 handleNext();
             } else {
-                // 오른쪽으로 드래그 → 이전 슬라이드
                 handlePrevious();
             }
         }
@@ -152,19 +160,26 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
 
     // 터치 드래그 핸들러
     const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-        setDragStart(e.touches[0].clientX);
+        setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+        setIsVerticalScroll(false);
     };
 
     const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-        const dragEnd = e.changedTouches[0].clientX;
-        const diff = dragStart - dragEnd;
+        const dragEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+        const diffX = dragStart.x - dragEnd.x;
+        const diffY = Math.abs(dragStart.y - dragEnd.y);
 
-        if (Math.abs(diff) > 50) { // 최소 50px 드래그
-            if (diff > 0) {
-                // 왼쪽으로 드래그 → 다음
+        // 수직 드래그가 더 크면 스크롤로 간주
+        if (diffY > 30) {
+            setIsVerticalScroll(true);
+            return;
+        }
+
+        // 가로 드래그만 처리 (최소 50px)
+        if (Math.abs(diffX) > 50) {
+            if (diffX > 0) {
                 handleNext();
             } else {
-                // 오른쪽으로 드래그 → 이전
                 handlePrevious();
             }
         }

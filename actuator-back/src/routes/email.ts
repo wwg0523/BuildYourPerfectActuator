@@ -35,7 +35,7 @@ const transporter = emailEnabled ? nodemailer.createTransport({
     socketTimeout: 5000,
 }) : null;
 
-// POST /api/send-email: 이메일 발송
+// POST /api/send-email: 이메일 발송 (주석처리됨 - 메일 시스템 비활성화)
 router.post('/send-email', async (req, res) => {
     const { userId, recipientEmail, subject, htmlContent, textContent } = req.body;
 
@@ -45,6 +45,15 @@ router.post('/send-email', async (req, res) => {
 
     const emailId = uuidv4();
 
+    // ⚠️ 메일 시스템 일시 비활성화 - 추후 재활성화 필요
+    console.warn(`⚠️ [DISABLED] Email not sent to ${recipientEmail} (Email system is temporarily disabled)`);
+    return res.status(200).json({
+        success: false,
+        message: 'Email service is temporarily disabled',
+        emailId,
+    });
+
+    /* ======== 원본 이메일 발송 코드 (비활성화) ========
     // 이메일 서비스가 비활성화되면 즉시 성공 반환
     if (!emailEnabled) {
         console.warn(`⚠️ Email service disabled. Skipping email to ${recipientEmail}`);
@@ -123,6 +132,7 @@ router.post('/send-email', async (req, res) => {
             error: mailError.message,
         });
     }
+    ======== 원본 이메일 발송 코드 (비활성화) ======== */
 });
 
 // GET /api/email-logs/:userId: 특정 사용자의 이메일 발송 로그 조회
