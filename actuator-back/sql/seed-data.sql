@@ -3,7 +3,7 @@
 -- Execute after schema.sql
 
 -- Insert 15 quiz questions
-INSERT INTO quiz_questions_cache (id, type, category, difficulty, question, application_name, options, correct_answer, explanation, points, time_limit)
+INSERT INTO quiz_questions_cache (id, type, category, difficulty, question, application_name, options, correct_answer, explanation, points)
 VALUES
 -- Q1: Multiple-choice Easy
 ('q1', 'multiple-choice', 'daily-life', 'easy', 
@@ -16,7 +16,7 @@ VALUES
    "improvements": ["Improved precision → More accurate angle adjustment", "Enhanced response speed → Faster adjustment time", "Increased torque → Smooth operation even for large mirrors"],
    "realWorldExamples": ["Premium vehicles: Memory function for automatic adjustment per driver", "Electric vehicles: Low-power actuators for better battery efficiency"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q2: Multiple-choice Easy
 ('q2', 'multiple-choice', 'daily-life', 'easy',
@@ -29,7 +29,7 @@ VALUES
    "improvements": ["Increased torque → Easy movement over high-resistance floors like carpets", "Precise control → Accurate navigation in narrow spaces", "Low-noise design → Quiet cleaning operation"],
    "realWorldExamples": ["Budget models: Simple 2-wheel drive for basic navigation", "Premium models: 4-wheel independent drive for complex path planning"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q3: Multiple-choice Medium
 ('q3', 'multiple-choice', 'daily-life', 'medium',
@@ -42,7 +42,7 @@ VALUES
    "improvements": ["Increased load capacity → Safely supports heavier patients", "Reduced noise → Minimizes patient sleep disturbance", "Speed control → Smooth movement for patient safety", "Enhanced durability → Long-lasting even with frequent use"],
    "realWorldExamples": ["Standard hospital beds: 3-5 linear actuators for multi-position adjustment", "ICU beds: Advanced sensors with safety override features"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q4: Multiple-choice Easy
 ('q4', 'multiple-choice', 'daily-life', 'easy',
@@ -55,7 +55,7 @@ VALUES
    "improvements": ["Smooth motion → Comfortable height adjustment", "Load capacity → Supports heavy equipment and materials", "Quiet operation → Non-disruptive in office environment"],
    "realWorldExamples": ["Basic models: Single motor actuator for synchronized rise", "Premium models: Dual motor for independent control and level correction"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q5: Multiple-choice Medium
 ('q5', 'multiple-choice', 'daily-life', 'medium',
@@ -68,7 +68,7 @@ VALUES
    "improvements": ["Silent operation → No noise during movie viewing", "Smooth speed → Gradual screen deployment", "Integrated design → Compact mounting inside screen tube"],
    "realWorldExamples": ["Basic theater: Simple on/off motor control", "Advanced systems: Variable speed with position memory"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q6: Multiple-choice Medium
 ('q6', 'multiple-choice', 'daily-life', 'medium',
@@ -81,7 +81,7 @@ VALUES
    "improvements": ["Energy efficiency → Reduced power consumption for smaller loads", "Water savings → Proportional water usage based on load", "Fabric protection → Variable speed prevents damage"],
    "realWorldExamples": ["Budget models: Fixed speed operation", "Smart models: AI-powered load detection and cycle optimization"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q7: Multiple-choice Medium
 ('q7', 'multiple-choice', 'daily-life', 'medium',
@@ -94,7 +94,7 @@ VALUES
    "improvements": ["Extended range → Improved battery efficiency", "Smooth control → Better maneuverability in tight spaces", "Safety features → Automatic speed reduction on slopes"],
    "realWorldExamples": ["Manual control: Joystick-based movement", "Advanced models: Head control, voice commands, autonomous navigation"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q8: Multiple-choice Medium
 ('q8', 'multiple-choice', 'daily-life', 'medium',
@@ -107,7 +107,7 @@ VALUES
    "improvements": ["Enhanced integration → Unified smartphone control", "Improved automation → Routine tasks execute automatically", "Energy efficiency → Coordinated device operation reduces power consumption"],
    "realWorldExamples": ["Samsung SmartThings: Integrated control of curtains, locks, and vacuum", "Philips Hue: LED drivers (actuators) for brightness and color adjustment", "Nest Thermostat: Learns patterns and controls HVAC actuators automatically"]
  }'::jsonb,
- 20, 35),
+ 20),
 
 -- Q9: Multiple-choice Hard
 ('q9', 'multiple-choice', 'daily-life', 'hard',
@@ -120,7 +120,7 @@ VALUES
    "improvements": ["EPS precision → Variable assist based on speed (light at low speed, heavy at high speed)", "Regenerative efficiency → Recovers up to 30% of kinetic energy as electricity", "Suspension responsiveness → Real-time damping adjustment (0.001 second reaction time)"],
    "realWorldExamples": ["Tesla Model S: Dual motor AWD with air suspension", "Hyundai Ioniq 5: Regenerative braking paddles with integrated EPS control", "Audi e-tron: Predictive active suspension with torque vectoring"]
  }'::jsonb,
- 20, 35),
+ 20),
 
 -- Q10: Multiple-choice Hard
 ('q10', 'multiple-choice', 'specification', 'hard',
@@ -133,7 +133,7 @@ VALUES
    "improvements": ["Servo precision → ±0.02mm repeatability through high-resolution encoders", "Harmonic drive → Backlash under 1 arcminute for smooth operation", "Gripper response → 0.01 second pick-and-place cycle for assembly tasks"],
    "realWorldExamples": ["Welding robots: High-power servo (5-10kW) + rigid harmonic drives", "Assembly robots: Lightweight harmonic drives (1-3kW) for precision", "Handling robots: High-speed pneumatic grippers with vision system integration"]
  }'::jsonb,
- 20, 35),
+ 20),
 
 -- Q11: True-False Easy
 ('q11', 'true-false', 'specification', 'easy',
@@ -146,7 +146,7 @@ VALUES
    "improvements": ["Real-world examples show compact actuators (5-10 Nm) for standard vehicles and high-torque actuators (15-20 Nm) for SUVs/large vehicles"],
    "realWorldExamples": ["Standard passenger car: Small actuator (5-10 Nm)", "SUV/large vehicle: High-torque actuator (15-20 Nm)", "Armored vehicle: Ultra-high-torque actuator (30+ Nm)", "Winter benefit: Frozen windows can still operate reliably", "Safety enhancement: Rapid response when obstacle detected"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q12: True-False Easy
 ('q12', 'true-false', 'specification', 'easy',
@@ -159,7 +159,7 @@ VALUES
    "improvements": ["Reduced defect rate → Lower production costs", "Faster work speed → Reduced rework time", "Access to new applications requiring tight tolerances"],
    "realWorldExamples": ["Electronics assembly (0.1mm precision): Smartphone component assembly", "Semiconductor manufacturing (0.01mm = 10μm precision): Wafer handling and chip bonding", "Medical devices (0.01mm+ precision): Surgical robots and dispensing systems"]
  }'::jsonb,
- 20, 30),
+ 20),
 
 -- Q13: True-False Medium
 ('q13', 'true-false', 'specification', 'medium',
@@ -172,7 +172,7 @@ VALUES
    "improvements": ["Efficiency gains → 7% improvement yields 8-10% range increase", "Regenerative braking → 20% → 35% recovery increases city range 15-20%", "Lightweight construction → 20% weight reduction improves acceleration without range loss"],
    "realWorldExamples": ["Xiaomi Mi Scooter Pro 2: Efficiency improvements achieved 45km range", "Segway Ninebot Max: Regenerative braking + large battery = 65km capability", "Ather S1: Motor efficiency optimization without power increase"]
  }'::jsonb,
- 20, 35),
+ 20),
 
 -- Q14: True-False Medium
 ('q14', 'true-false', 'specification', 'medium',
@@ -185,7 +185,7 @@ VALUES
    "improvements": ["Adaptive speed control → 3-5 speed levels based on rainfall intensity", "Brushless motor → 3x longer lifespan with self-diagnostic capability", "Blade optimization → Graphite coating reduces friction and noise", "Temperature compensation → Prevents freezing without excess power"],
    "realWorldExamples": ["Mercedes-Benz: AI analyzes raindrops to optimize wiping pattern", "Tesla: Electronic wipers with variable speed + pressure control", "BMW: Temperature-compensated control with frost detection mode", "Data: Standard speed (60/min) lifespan 1M cycles vs 2x speed (120/min) lifespan 40-50K cycles"]
  }'::jsonb,
- 20, 40),
+ 20),
 
 -- Q15: True-False Hard
 ('q15', 'true-false', 'specification', 'hard',
@@ -198,7 +198,7 @@ VALUES
    "improvements": ["Sleep quality → Uninterrupted patient recovery", "Stress reduction → Lower cortisol levels during hospitalization", "Better healing → Quality sleep accelerates recovery process"],
    "realWorldExamples": ["Low-noise medical actuators: 25-30dB (comparable to whisper)", "Silent actuators: Under 20dB (barely perceptible)", "Standard industrial actuators: 50-60dB (comparison: normal conversation)"]
  }'::jsonb,
- 20, 35);
+ 20);
 
 -- Verify data insertion
 SELECT COUNT(*) as total_questions FROM quiz_questions_cache;

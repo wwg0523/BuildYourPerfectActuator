@@ -186,7 +186,13 @@ export default function ActuatorMinigame() {
     };
 
     const handleSubmit = async () => {
+        if (isSubmitted) {
+            console.log('Already submitted. To prevent duplicates.');
+            return;
+        }
         if (!gameSession) return;
+
+        setIsSubmitted(true);  // 제출 시작
 
         let userForGame: UserInfo | null = null;
         let correctAnswers = 0;
@@ -261,13 +267,7 @@ export default function ActuatorMinigame() {
                 const userData = await userResponse.json();
                 console.log(`✅ User saved successfully:`, userData);
                 console.log(`👤 ===== USER SAVE SUCCESS =====\n`);
-            } catch (err) {
-                console.error('❌ Critical: User save failed:', err);
-                throw err; // 사용자 저장 실패는 게임을 진행할 수 없음
-            }
 
-            // 게임 결과 저장
-            try {
                 console.log(`\n📊 ===== GAME RESULT SAVE START =====`);
                 console.log(`📊 Sending game result data:`, {
                     userId: currentUserId,
@@ -303,8 +303,8 @@ export default function ActuatorMinigame() {
                 console.log(`✅ Game result saved successfully:`, resultData);
                 console.log(`📊 ===== GAME RESULT SAVE SUCCESS =====\n`);
             } catch (err) {
-                console.error('❌ Game result save error:', err);
-                throw err;
+                console.error('❌ Critical: User save failed:', err);
+                throw err; // 사용자 저장 실패는 게임을 진행할 수 없음
             }
 
             // 순위 조회 및 이메일 발송
@@ -343,6 +343,8 @@ export default function ActuatorMinigame() {
                 });
             }
             setScreen('result');
+        } finally {
+            setIsSubmitted(false);  // 제출 완료 (성공/실패 상관없이)
         }
     };
 
