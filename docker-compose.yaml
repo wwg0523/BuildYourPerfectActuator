@@ -36,6 +36,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: actuator_game
+      SERVER_HOST: actuator-back
       SMTP_HOST: ${SMTP_HOST:-smtp.mailplug.co.kr}
       SMTP_PORT: ${SMTP_PORT:-465}
       APP_EMAIL: ${APP_EMAIL}

@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-//import helmet from 'helmet';
 import gameRouter from './routes/game.js';
 import userRouter from './routes/user.js';
 import deleteUserDataRoutes from './routes/delete-user-data.js';
@@ -16,34 +15,8 @@ console.log(`✅ Environment loaded: NODE_ENV=${process.env.NODE_ENV}, DB_HOST=$
 
 const app = express();
 
-// // Security: set HTTP headers
-// app.use(helmet());
-
-// // CORS: restrict origins via env in production, allow localhost in dev
-// const corsOptions = process.env.NODE_ENV === 'production' ? {
-//     origin: process.env.FRONTEND_URL || undefined,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type', 'Authorization']
-// } : {};
-// app.use(cors(corsOptions));
-
 app.use(cors({ origin: '*' }));
 app.use(express.json());
-
-// // Enforce HTTPS in production (works behind proxies/load balancers that set X-Forwarded-Proto)
-// if (process.env.NODE_ENV === 'production') {
-//     app.enable('trust proxy');
-//     app.use((req, res, next) => {
-//         const proto = (req.headers['x-forwarded-proto'] as string) || (req.protocol || '');
-//         if (proto && proto.indexOf('https') === -1 && !req.secure) {
-//             const host = req.headers.host;
-//             if (host) {
-//                 return res.redirect(301, `https://${host}${req.originalUrl}`);
-//             }
-//         }
-//         next();
-//     });
-// }
 
 app.use('/api/game', gameRouter);
 app.use('/api/user', userRouter);
@@ -80,5 +53,9 @@ app.use((req: any, res: any) => {
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4004;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    const environment = process.env.NODE_ENV === 'production' ? '🚀 Production' : '🔧 Development';
+    // Docker 내부: 백엔드는 actuator-back 컨테이너명으로 접근
+    // 배포 시: 프론트엔드는 EXTERNAL_SERVER_HOST(NAS 도메인)로 외부 접근
+    const internalHost = process.env.SERVER_HOST || 'actuator-back';
+    console.log(`${environment} server running on http://${internalHost}:${PORT}`);
 });

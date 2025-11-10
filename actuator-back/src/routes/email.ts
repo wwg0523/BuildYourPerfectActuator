@@ -57,7 +57,7 @@ router.post('/send-email', async (req, res) => {
             ]
         );
 
-        // Gmail SMTP로 이메일 발송
+        // Mailplug SMTP로 이메일 발송
         try {
             console.log(`📧 Sending email to: ${recipientEmail}`);
             console.log(`Subject: ${subject}`);
@@ -81,17 +81,17 @@ router.post('/send-email', async (req, res) => {
                 messageId: info.messageId,
             });
         } catch (mailError: any) {
-            console.error('❌ Gmail SMTP Error:', mailError);
+            console.error('❌ Mailplug SMTP Error:', mailError);
             
             // 발송 실패 로그 업데이트
             await pool.query(
                 `UPDATE email_logs SET success = $1, error_message = $2 WHERE id = $3`,
-                [false, `Gmail Error: ${mailError.message}`, emailId]
+                [false, `Mailplug Error: ${mailError.message}`, emailId]
             );
             
             return res.status(500).json({
                 success: false,
-                error: 'Failed to send email via Gmail',
+                error: 'Failed to send email via Mailplug',
                 details: mailError.message,
             });
         }
