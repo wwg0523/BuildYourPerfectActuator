@@ -20,6 +20,18 @@
   min-height: auto;
   overflow: visible;
   width: 100%;
+  
+  @media (min-width: 1024px) {
+    max-width: 100%;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    max-width: 100%;
+  }
+  
+  @media (max-width: 640px) {
+    max-width: 100%;
+  }
 }
 
 /* Game Header - TOP */
@@ -795,6 +807,7 @@
 
   @media (max-width: 640px) {
     padding: 20px 12px;
+    min-height: 100px;
     gap: 10px;
   }
 

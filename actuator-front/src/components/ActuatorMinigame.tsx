@@ -628,8 +628,8 @@ export default function ActuatorMinigame() {
     };
 
     return (
-        <div className="app-container">
-            <div className="card">
+            <div className="app-container">
+            <div className={screen === 'info' ? 'info-card' : 'card'}>
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'info' && (
                     <Info

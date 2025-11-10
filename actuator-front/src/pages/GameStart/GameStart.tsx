@@ -83,15 +83,6 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                         into a draw, and high scorers on the Leaderboard will receive a special 
                         prize at the CES booth!
                     </p>
-                    <div className="incentive-box">
-                        <p className="incentive-title">Why Participate?</p>
-                        <ul className="incentive-list">
-                            <li>🎯 Test your knowledge</li>
-                            <li>🏅 Climb the leaderboard</li>
-                            <li>🎉 Win exciting prizes</li>
-                            <li>🌟 Show your expertise</li>
-                        </ul>
-                    </div>
                     <p className="call-to-action">
                         Test your knowledge now and grab your chance to win!
                     </p>
@@ -131,6 +122,31 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
         }
     };
 
+    // 드래그 감지 공통 로직
+    const detectDragDirection = (startPos: { x: number; y: number }, endPos: { x: number; y: number }) => {
+        const diffX = startPos.x - endPos.x;
+        const diffY = Math.abs(startPos.y - endPos.y);
+        const MIN_SWIPE = 30; // 최소 스와이프 거리
+        const VERTICAL_THRESHOLD = 1.5; // 수직이 가로의 1.5배 이상이면 스크롤로 간주
+
+        // 이동 거리가 거의 없으면 클릭으로 간주
+        if (Math.abs(diffX) < MIN_SWIPE && diffY < MIN_SWIPE) {
+            return null;
+        }
+
+        // 수직 이동이 가로 이동의 1.5배 이상이면 스크롤 동작으로 간주
+        if (diffY > Math.abs(diffX) * VERTICAL_THRESHOLD) {
+            return 'vertical';
+        }
+
+        // 가로 이동만 처리
+        if (Math.abs(diffX) > MIN_SWIPE) {
+            return diffX > 0 ? 'next' : 'previous';
+        }
+
+        return null;
+    };
+
     // 마우스 드래그 핸들러
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         setDragStart({ x: e.clientX, y: e.clientY });
@@ -139,22 +155,14 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
 
     const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
         const dragEnd = { x: e.clientX, y: e.clientY };
-        const diffX = dragStart.x - dragEnd.x;
-        const diffY = Math.abs(dragStart.y - dragEnd.y);
+        const direction = detectDragDirection(dragStart, dragEnd);
 
-        // 수직 드래그가 더 크면 스크롤로 간주 (가로 슬라이드 방지)
-        if (diffY > 30) {
+        if (direction === 'next') {
+            handleNext();
+        } else if (direction === 'previous') {
+            handlePrevious();
+        } else if (direction === 'vertical') {
             setIsVerticalScroll(true);
-            return;
-        }
-
-        // 가로 드래그만 처리 (최소 50px)
-        if (Math.abs(diffX) > 50) {
-            if (diffX > 0) {
-                handleNext();
-            } else {
-                handlePrevious();
-            }
         }
     };
 
@@ -166,22 +174,14 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
 
     const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
         const dragEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-        const diffX = dragStart.x - dragEnd.x;
-        const diffY = Math.abs(dragStart.y - dragEnd.y);
+        const direction = detectDragDirection(dragStart, dragEnd);
 
-        // 수직 드래그가 더 크면 스크롤로 간주
-        if (diffY > 30) {
+        if (direction === 'next') {
+            handleNext();
+        } else if (direction === 'previous') {
+            handlePrevious();
+        } else if (direction === 'vertical') {
             setIsVerticalScroll(true);
-            return;
-        }
-
-        // 가로 드래그만 처리 (최소 50px)
-        if (Math.abs(diffX) > 50) {
-            if (diffX > 0) {
-                handleNext();
-            } else {
-                handlePrevious();
-            }
         }
     };
 
@@ -221,7 +221,7 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                             }}
                             className="carousel-slide"
                         >
-                            <div className="slide-icon">{slides[currentSlide].icon}</div>
+                            {/* <div className="slide-icon">{slides[currentSlide].icon}</div> */}
                             <h2 className="slide-headline">{slides[currentSlide].headline}</h2>
                             <div className="slide-body">{slides[currentSlide].content}</div>
                         </motion.div>

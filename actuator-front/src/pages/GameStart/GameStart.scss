@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: clamp(20px, 5vw, 40px);
+  padding: clamp(20px, 5vw, 40px) clamp(20px, 5vw, 40px) clamp(10px, 2vw, 20px) clamp(20px, 5vw, 40px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
@@ -13,16 +13,18 @@
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 5vw, 30px);
+  max-height: calc(100vh - clamp(40px, 10vw, 80px));
+  overflow: hidden;
 }
 
 /* Header Section */
 .gamestart-header {
   text-align: center;
   color: black;
-  margin-bottom: clamp(10px, 2vh, 20px);
+  margin-bottom: clamp(5px, 1vh, 10px);
 
   h1 {
-    margin: 0 0 clamp(10px, 1vh, 15px) 0;
+    margin: 0 0 clamp(5px, 0.5vh, 8px) 0;
     font-size: clamp(28px, 5vw, 42px);
     font-weight: 700;
     letter-spacing: -0.5px;
@@ -41,13 +43,13 @@
 /* Carousel Wrapper */
 .carousel-wrapper {
   position: relative;
-  min-height: clamp(300px, 60vh, 450px);
-  max-height: clamp(350px, 70vh, 550px);
+  min-height: clamp(300px, 55vh, 400px);
+  max-height: clamp(300px, 55vh, 400px);
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: clamp(16px, 3vw, 24px);
   padding: clamp(30px, 5vw, 50px);
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
@@ -60,9 +62,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
 
-  &:active {
-    cursor: grabbing;
-  }
+  /* 스크롤바 숨기기 (Firefox) */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -73,12 +75,18 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
+    background: transparent;
+  }
 
-    &:hover {
-      background: rgba(0, 0, 0, 0.25);
-    }
+  &:active {
+    cursor: grabbing;
+  }
+
+  /* 데스크톱에서는 높이 제한 없음 */
+  @media (min-width: 1024px) {
+    min-height: auto;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -96,7 +104,6 @@
   -moz-user-select: none;
   -ms-user-select: none;
   pointer-events: none;
-  padding-right: 8px;
 
   img {
     user-select: none;
@@ -143,16 +150,16 @@
 .slide-body {
   width: 100%;
   max-width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
+  overflow-y: scroll;
   color: #333;
   font-size: clamp(13px, 1.8vw, 16px);
   line-height: 1.6;
   text-align: center;
   padding-right: 6px;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
-    width: 4px;
+    display: none;
   }
 
   &::-webkit-scrollbar-track {
@@ -358,7 +365,7 @@
   display: flex;
   gap: clamp(12px, 3vw, 20px);
   justify-content: center;
-  padding: clamp(10px, 2vh, 20px);
+  padding: clamp(5px, 1vh, 10px);
 
   @media (max-width: 640px) {
     flex-direction: column;

@@ -1,74 +1,154 @@
 /* Page-specific styles for Info.tsx (terms and inputs) */
-.page-info {
+.info-card {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 20px;
-  
-  @media (min-width: 641px) {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 30px 20px;
-  }
+  max-width: clamp(350px, 90vw, 800px);
+  margin: 0 auto;
   
   @media (min-width: 1024px) {
-    max-width: 700px;
-    padding: 40px 30px;
+    max-width: 800px;
+    padding: 30px 20px;
+    width: 900px;
+    padding: 3rem;
   }
 }
 
 /* Title styling */
-.page-info h2 {
+.info-card h2 {
   width: 100%;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   margin-bottom: 1.5rem;
+  margin-top: 0;
   font-weight: 600;
   
-  @media (min-width: 641px) {
-    font-size: 1.6rem;
-    margin-bottom: 2rem;
-  }
-  
   @media (min-width: 1024px) {
-    font-size: 1.8rem;
+    font-size: 2rem;
     margin-bottom: 2.5rem;
+    font-weight: 700;
   }
 }
 
 /* Input form */
-.page-info > input {
+.info-card > input {
   width: 100%;
-  border: 2px solid #d1d5db;
+  border: 1px solid #d1d5db;
   border-radius: 0.75rem;
   box-sizing: border-box;
   font-family: inherit;
   padding: 0.85rem;
   font-size: 1rem;
   margin-top: 1rem;
-  transition: border-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
   
-  @media (min-width: 641px) {
+  @media (min-width: 1024px) {
     padding: 1rem;
     font-size: 1.05rem;
     margin-top: 1.2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+}
+
+/* Error message styling */
+.info-card > p.error {
+  margin: 0.2rem 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: #dc2626;
+  text-align: left;
+  width: 100%;
+  display: block;
+
+  @media (min-width: 1024px) {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Terms and conditions container */
+.info-card .terms-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 0.6rem;
+  margin: 1.8rem 0;
+
+  input[type="checkbox"] {
+    flex-shrink: 0;
+  }
+
+  label {
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  
+  @media (min-width: 1024px) {
+    margin: 2rem 0;
+    gap: 0.8rem;
     
+    label {
+      font-size: 1rem;
+    }
+  }
+}
+
+/* Button container */
+.info-card > div:last-child {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.8rem;
+  margin-top: 1.8rem;
+  flex-direction: row;
+
+  .button {
+    flex: 1;
+    padding: 0.85rem 1.5rem;
+    margin: 0;
+    font-size: 1rem;
+  }
+  
+  @media (min-width: 1024px) {
+    gap: 1.2rem;
+    margin-top: 2.2rem;
+    
+    .button {
+      padding: 1rem 2rem;
+      font-size: 1.05rem;
+    }
+  }
+}
+
+/* ==================== 태블릿 (641px - 1023px) ==================== */
+@media (max-width: 1023px) {
+  .info-card {
+    max-width: clamp(350px, 90vw, 800px);
+  }
+
+  .info-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .info-card > input {
+    padding: 0.75rem;
+    font-size: 1rem;
+    margin-top: 0.8rem;
+
     /* Name, Company: 2분할 */
     &:nth-of-type(2) {
-      width: calc(50% - 0.5rem);
+      width: calc(50% - 0.4rem);
       display: inline-block;
-      margin-right: 1rem;
+      margin-right: 0.8rem;
       vertical-align: top;
     }
 
     &:nth-of-type(3) {
-      width: calc(50% - 0.5rem);
+      width: calc(50% - 0.4rem);
       display: inline-block;
       vertical-align: top;
     }
@@ -80,40 +160,21 @@
       display: block;
     }
   }
-  
-  @media (min-width: 1024px) {
-    padding: 1rem 1.2rem;
-    font-size: 1.1rem;
-    margin-top: 1.5rem;
-  }
-}
 
-/* Error message styling */
-.page-info > p.error {
-  margin: 0.2rem 0 0.8rem 0;
-  font-size: 0.8rem;
-  color: #dc2626;
-  text-align: left;
-  width: 100%;
-  display: block;
-  min-height: 1.2rem;
+  .info-card > p.error {
+    margin: 0.2rem 0 0.5rem 0;
+    font-size: 0.8rem;
 
-  @media (min-width: 641px) {
-    font-size: 0.85rem;
-    margin: 0.3rem 0 0.6rem 0;
-    
     /* Name, Company 에러: 2분할 */
     &:nth-of-type(3) {
-      width: calc(50% - 0.5rem);
+      width: calc(50% - 0.4rem);
       display: inline-block;
-      margin-right: 1rem;
-      vertical-align: top;
+      margin-right: 0.8rem;
     }
 
     &:nth-of-type(4) {
-      width: calc(50% - 0.5rem);
+      width: calc(50% - 0.4rem);
       display: inline-block;
-      vertical-align: top;
     }
 
     /* Email, Phone 에러: 전체 너비 */
@@ -123,122 +184,107 @@
       display: block;
     }
   }
-  
-  @media (min-width: 1024px) {
-    font-size: 0.9rem;
+
+  .info-card .terms-container {
+    margin: 1.5rem 0;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.9rem;
+    }
+  }
+
+  .info-card > div:last-child {
+    margin-top: 1.5rem;
+
+    .button {
+      padding: 0.75rem 1.2rem;
+      font-size: 0.95rem;
+    }
   }
 }
 
-/* Terms and conditions container */
-.page-info .terms-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  width: 100%;
-  gap: 0.8rem;
-  margin: 2rem 0;
-
-  input[type="checkbox"] {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    cursor: pointer;
+/* ==================== 모바일 (640px 이하) ==================== */
+@media (max-width: 640px) {
+  .info-card {
+    max-width: 100%;
   }
 
-  label {
-    text-align: left;
+  .info-card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-card > input {
+    padding: 0.7rem;
     font-size: 0.95rem;
-    line-height: 1.5;
-    cursor: pointer;
-  }
-  
-  @media (min-width: 641px) {
-    margin: 2.2rem 0;
-    gap: 1rem;
-    
-    input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
+    margin-top: 0.6rem;
+
+    /* Name, Company: 2분할 */
+    &:nth-of-type(2) {
+      width: calc(50% - 0.3rem);
+      display: inline-block;
+      margin-right: 0.6rem;
+      vertical-align: top;
     }
-    
+
+    &:nth-of-type(3) {
+      width: calc(50% - 0.3rem);
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    /* Email, Phone: 전체 너비 */
+    &:nth-of-type(4),
+    &:nth-of-type(5) {
+      width: 100%;
+      display: block;
+    }
+  }
+
+  .info-card > p.error {
+    margin: 0.1rem 0 0.4rem 0;
+    font-size: 0.7rem;
+
+    /* Name, Company 에러: 2분할 */
+    &:nth-of-type(3) {
+      width: calc(50% - 0.3rem);
+      display: inline-block;
+      margin-right: 0.6rem;
+    }
+
+    &:nth-of-type(4) {
+      width: calc(50% - 0.3rem);
+      display: inline-block;
+    }
+
+    /* Email, Phone 에러: 전체 너비 */
+    &:nth-of-type(5),
+    &:nth-of-type(6) {
+      width: 100%;
+      display: block;
+    }
+  }
+
+  .info-card .terms-container {
+    margin: 1rem 0 0.8rem 0;
+    gap: 0.5rem;
+
     label {
-      font-size: 1rem;
+      font-size: 0.85rem;
     }
   }
-  
-  @media (min-width: 1024px) {
-    margin: 2.5rem 0;
-    
-    input[type="checkbox"] {
-      width: 24px;
-      height: 24px;
-    }
-    
-    label {
-      font-size: 1.05rem;
-    }
-  }
-}
 
-/* Button container */
-.page-info > div:last-child {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  gap: 0.8rem;
-  margin-top: 2rem;
-  flex-direction: row;
+  .info-card > div:last-child {
+    margin-top: 1rem;
+    gap: 0.6rem;
+    display: flex;
+    flex-direction: row;
 
-  .button {
-    flex: 1;
-    padding: 0.85rem 1.5rem;
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &.outline {
-      background: white;
-      color: #667eea;
-      border: 2px solid #667eea;
-
-      &:hover {
-        background: rgba(102, 126, 234, 0.05);
-      }
-    }
-
-    &:not(.outline) {
-      background: #667eea;
-      color: white;
-
-      &:hover {
-        background: #5568d3;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      }
-    }
-  }
-  
-  @media (min-width: 641px) {
-    gap: 1.2rem;
-    margin-top: 2.5rem;
-    
     .button {
-      padding: 1rem 2rem;
-      font-size: 1.05rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    gap: 1.5rem;
-    margin-top: 3rem;
-    
-    .button {
-      padding: 1.1rem 2.2rem;
-      font-size: 1.1rem;
+      flex: 1;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.85rem;
     }
   }
 }
