@@ -27,14 +27,8 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '✨ The Secret Behind All Movement',
             icon: '🔧',
             content: (
-                <div className="slide-content slide-with-image">
-                    <div className="slide-image-container">
-                        <img src="/images/carousel/slide1.png" alt="Actuator Demo" className="slide-image" />
-                    </div>
-                    <p className="slide-description">
-                        An actuator is a device that converts energy into motion, 
-                        hidden in everyday items around you!
-                    </p>
+                <div className="slide-content slide-with-fullimage">
+                    <img src="/images/carousel/slide1.png" alt="Actuator Demo" className="slide-fullimage" />
                 </div>
             ),
         },
@@ -43,14 +37,8 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '🚀 The Core Component of Future Tech!',
             icon: '🤖',
             content: (
-                <div className="slide-content slide-with-image">
-                    <div className="slide-image-container">
-                        <img src="/images/carousel/slide2.png" alt="Future Technology" className="slide-image" />
-                    </div>
-                    <p className="slide-description">
-                        From robots to smart homes, actuators are the hidden engines 
-                        powering the future of technology!
-                    </p>
+                <div className="slide-content slide-with-fullimage">
+                    <img src="/images/carousel/slide2.png" alt="Future Technology" className="slide-fullimage" />
                 </div>
             ),
         },
@@ -219,10 +207,10 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                                 x: { type: 'spring', stiffness: 300, damping: 30 },
                                 opacity: { duration: 0.5 },
                             }}
-                            className="carousel-slide"
+                            className={`carousel-slide carousel-slide-${slides[currentSlide].id}`}
                         >
                             {/* <div className="slide-icon">{slides[currentSlide].icon}</div> */}
-                            <h2 className="slide-headline">{slides[currentSlide].headline}</h2>
+                            {slides[currentSlide].id > 2 && <h2 className="slide-headline">{slides[currentSlide].headline}</h2>}
                             <div className="slide-body">{slides[currentSlide].content}</div>
                         </motion.div>
                     </AnimatePresence>
