@@ -403,112 +403,112 @@ export class LeaderboardManager {
         const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.score}/5`;
 
         const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                 color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-        .header h1 { margin: 0; font-size: 2em; }
-        .content { background: #f9f9f9; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
-        .result-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px;
-                      box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .score-display { font-size: 2.5em; font-weight: bold; color: #4CAF50; text-align: center; margin: 20px 0; }
-        .rank-badge { background: #FFD700; color: #333; padding: 8px 16px; border-radius: 20px;
-                     font-weight: bold; display: inline-block; margin: 10px 0; }
-        .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .stats-label { font-weight: bold; color: #666; }
-        .stats-value { color: #333; }
-        .product-section { background: #e3f2fd; padding: 20px; margin: 20px 0; border-left: 4px solid #2196F3; }
-        .footer { background: #333; color: white; padding: 20px; text-align: center;
-                 border-radius: 0 0 10px 10px; font-size: 0.9em; }
-        .btn { background: #007bff; color: white; padding: 12px 24px; text-decoration: none;
-              border-radius: 5px; display: inline-block; margin: 10px 5px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏆 Actuator Challenge Results</h1>
-            <p>Thank you for participating in our interactive game!</p>
-        </div>
-        <div class="content">
-            <div class="result-card">
-                <h2>Hello ${userInfo.name},</h2>
-                <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
-                <div class="score-display">${leaderboardEntry.score}/5</div>
-                <p style="text-align: center; color: #666;">Correct Answers</p>
-                <div style="text-align: center;">
-                    <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
-                </div>
-                
-                <h3>📊 Performance Summary</h3>
-                <div class="stats-row">
-                    <span class="stats-label">Total Score:</span>
-                    <span class="stats-value">${leaderboardEntry.finalScore} points</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Completion Time:</span>
-                    <span class="stats-value">${timeStr}</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Daily Rank:</span>
-                    <span class="stats-value">#${leaderboardEntry.rank}</span>
-                </div>
-            </div>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                    .header h1 { margin: 0; font-size: 2em; }
+                    .content { background: #f9f9f9; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+                    .result-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .score-display { font-size: 2.5em; font-weight: bold; color: #4CAF50; text-align: center; margin: 20px 0; }
+                    .rank-badge { background: #FFD700; color: #333; padding: 8px 16px; border-radius: 20px;
+                                font-weight: bold; display: inline-block; margin: 10px 0; }
+                    .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+                    .stats-label { font-weight: bold; color: #666; }
+                    .stats-value { color: #333; }
+                    .product-section { background: #e3f2fd; padding: 20px; margin: 20px 0; border-left: 4px solid #2196F3; }
+                    .footer { background: #333; color: white; padding: 20px; text-align: center;
+                            border-radius: 0 0 10px 10px; font-size: 0.9em; }
+                    .btn { background: #007bff; color: white; padding: 12px 24px; text-decoration: none;
+                        border-radius: 5px; display: inline-block; margin: 10px 5px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🏆 Actuator Challenge Results</h1>
+                        <p>Thank you for participating in our interactive game!</p>
+                    </div>
+                    <div class="content">
+                        <div class="result-card">
+                            <h2>Hello ${userInfo.name},</h2>
+                            <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
+                            <div class="score-display">${leaderboardEntry.score}/5</div>
+                            <p style="text-align: center; color: #666;">Correct Answers</p>
+                            <div style="text-align: center;">
+                                <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
+                            </div>
+                            
+                            <h3>📊 Performance Summary</h3>
+                            <div class="stats-row">
+                                <span class="stats-label">Total Score:</span>
+                                <span class="stats-value">${leaderboardEntry.finalScore} points</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Completion Time:</span>
+                                <span class="stats-value">${timeStr}</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Daily Rank:</span>
+                                <span class="stats-value">#${leaderboardEntry.rank}</span>
+                            </div>
+                        </div>
 
-            <div class="result-card">
-                <h3>📚 Learn More About Actuator Technology</h3>
-                <p>Want to deepen your knowledge? Check out these resources:</p>
-                <ul>
-                    <li><a href="https://www.example.com/actuator-basics" style="color: #007bff;">Actuator Fundamentals Guide</a></li>
-                    <li><a href="https://www.example.com/webinars" style="color: #007bff;">Upcoming Technical Webinars</a></li>
-                    <li><a href="https://www.example.com/case-studies" style="color: #007bff;">Real-World Application Case Studies</a></li>
-                </ul>
-            </div>
+                        <div class="result-card">
+                            <h3>📚 Learn More About Actuator Technology</h3>
+                            <p>Want to deepen your knowledge? Check out these resources:</p>
+                            <ul>
+                                <li><a href="https://www.example.com/actuator-basics" style="color: #007bff;">Actuator Fundamentals Guide</a></li>
+                                <li><a href="https://www.example.com/webinars" style="color: #007bff;">Upcoming Technical Webinars</a></li>
+                                <li><a href="https://www.example.com/case-studies" style="color: #007bff;">Real-World Application Case Studies</a></li>
+                            </ul>
+                        </div>
 
-            <div class="result-card">
-                <h3>🤝 Connect With Our Experts</h3>
-                <p>Have specific questions about actuator selection for your application?</p>
-                <p>Our technical team is ready to help:</p>
-                <ul style="list-style: none; padding: 0;">
-                    <li>📧 <strong>Email:</strong> <a href="mailto:technical@example.com" style="color: #007bff;">technical@example.com</a></li>
-                    <li>📱 <strong>Phone:</strong> +1-800-ACTUATOR</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer">
-            <p><strong>Actuator Challenge - Precision Motion Solutions</strong></p>
-            <p style="font-size: 12px; margin-top: 20px;">
-                You received this email because you participated in our interactive game.
-            </p>
-        </div>
-    </div>
-</body>
-</html>
-        `;
+                        <div class="result-card">
+                            <h3>🤝 Connect With Our Experts</h3>
+                            <p>Have specific questions about actuator selection for your application?</p>
+                            <p>Our technical team is ready to help:</p>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>📧 <strong>Email:</strong> <a href="mailto:technical@example.com" style="color: #007bff;">technical@example.com</a></li>
+                                <li>📱 <strong>Phone:</strong> +1-800-ACTUATOR</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p><strong>Actuator Challenge - Precision Motion Solutions</strong></p>
+                        <p style="font-size: 12px; margin-top: 20px;">
+                            You received this email because you participated in our interactive game.
+                        </p>
+                    </div>
+                </div>
+            </body>
+            </html>
+                    `;
 
         const textContent = `
-Actuator Challenge Results
+            Actuator Challenge Results
 
-Hello ${userInfo.name},
+            Hello ${userInfo.name},
 
-Thank you for participating in our interactive game!
+            Thank you for participating in our interactive game!
 
-YOUR RESULTS:
-- Score: ${leaderboardEntry.score}/5 correct answers
-- Daily Rank: #${leaderboardEntry.rank}
-- Completion Time: ${timeStr}
-- Final Score: ${leaderboardEntry.finalScore} points
+            YOUR RESULTS:
+            - Score: ${leaderboardEntry.score}/5 correct answers
+            - Daily Rank: #${leaderboardEntry.rank}
+            - Completion Time: ${timeStr}
+            - Final Score: ${leaderboardEntry.finalScore} points
 
-Learn more at https://www.example.com
+            Learn more at https://www.example.com
 
-Best regards,
-Actuator Challenge Team
-        `;
+            Best regards,
+            Actuator Challenge Team
+                    `;
 
         return { subject, htmlContent, textContent };
     }

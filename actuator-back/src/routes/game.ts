@@ -6,36 +6,21 @@ const router = Router();
 
 // POST /api/game/submit: 게임 결과 저장 및 개별 답변 기록
 router.post('/submit', async (req, res) => {
-    const { userId, selectedComponents, compatibleApplications, successRate, completionTime, answers, totalQuestions, score } = req.body;
+    const { userId, completionTime, answers, score } = req.body;
 
     console.log(`\n📊 ===== GAME SUBMISSION START =====`);
     console.log(`📊 Received data:`, {
         userId,
-        selectedComponents,
-        compatibleApplications,
-        successRate,
         completionTime,
-        totalQuestions,
         score,
         answersCount: answers?.length,
     });
 
     // 입력 검증
-    if (!userId || successRate == null || completionTime == null) {
+    if (!userId || completionTime == null) {
         console.error(`❌ Validation failed: Missing required fields`);
-        return res.status(400).json({ error: 'Missing required fields: userId, successRate, completionTime' });
+        return res.status(400).json({ error: 'Missing required fields: userId, completionTime' });
     }
-
-    // success_rate는 numeric(3,2)로, 0.00 ~ 1.00 사이 값이어야 함
-    if (typeof successRate !== 'number' || successRate < 0 || successRate > 1) {
-        console.error(`❌ Validation failed: successRate out of range (${successRate})`);
-        return res.status(400).json({ error: 'successRate must be a number between 0 and 1' });
-    }
-
-    // JSONB로 저장하기 위해 배열을 JSON 문자열로 변환
-    // selectedComponents와 compatibleApplications는 빈 배열일 수 있음 (Quiz 게임)
-    const selectedComponentsJson = JSON.stringify(selectedComponents || []);
-    const compatibleApplicationsJson = JSON.stringify(compatibleApplications || []);
 
     // UUID 생성
     const id = uuidv4();
@@ -49,22 +34,18 @@ router.post('/submit', async (req, res) => {
         completionMs = completionMs * 1000;
     }
 
-    const totalQuestionsCount = Number(totalQuestions ?? 5);
     // 포인트 기반 점수 계산: answers 배열에서 각 정답의 points_earned 합산
     // 최대 점수: 5개 문제 × 20포인트 = 100포인트
     let totalPoints = 0;
     if (Array.isArray(answers) && answers.length > 0) {
         totalPoints = answers.reduce((sum: number, ans: any) => sum + (Number(ans.pointsEarned) || 0), 0);
     }
-    const finalScore_calculated = totalPoints > 0 ? totalPoints : Number(score ?? 0);
-    const finalScore = Number(req.body.finalScore ?? finalScore_calculated);
+    const finalScore = totalPoints > 0 ? totalPoints : Number(score ?? 0);
 
     console.log(`📊 Calculated values:`, {
         gameResultId: id,
         completionMs,
-        totalQuestionsCount,
         totalPointsFromAnswers: totalPoints,
-        scoreUsed: finalScore_calculated,
         finalScore,
     });
 
@@ -80,26 +61,21 @@ router.post('/submit', async (req, res) => {
         // game_results 테이블에 게임 결과 저장
         await pool.query(
             `INSERT INTO game_results (
-                id, user_id, selected_components, compatible_applications, success_rate, completion_time,
-                score, final_score
-            ) VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6, $7, $8)`,
+                id, user_id, completion_time, score, final_score
+            ) VALUES ($1, $2, $3, $4, $5)`,
             [
                 id,
                 userId,
-                selectedComponentsJson,
-                compatibleApplicationsJson,
-                successRate,
                 completionMs,
-                finalScore_calculated,
+                score,
                 finalScore,
             ]
         );
         console.log(`✅ Game result saved to DB:`, {
             id,
             user_id: userId,
-            score: finalScore_calculated,
+            score,
             final_score: finalScore,
-            success_rate: successRate,
             completion_time: completionMs,
         });
 
@@ -129,7 +105,7 @@ router.post('/submit', async (req, res) => {
         }
 
         console.log(`📊 ===== GAME SUBMISSION SUCCESS =====\n`);
-        res.status(201).json({ message: 'Game result saved successfully', id, score: finalScore_calculated, finalScore });
+        res.status(201).json({ message: 'Game result saved successfully', id, score, finalScore });
     } catch (err: any) {
         console.error(`❌ ===== GAME SUBMISSION ERROR =====`, err);
         if (err.code === '22P02') {

@@ -75,91 +75,91 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.finalScore}/100`;
 
         const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-        .header h1 { margin: 0; font-size: 2em; }
-        .content { background: #f9f9f9; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
-        .result-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .score-display { font-size: 2.5em; font-weight: bold; color: #4CAF50; text-align: center; margin: 20px 0; }
-        .grade-badge { background: #f093fb; color: white; padding: 12px 16px; border-radius: 8px; font-weight: bold; display: inline-block; margin: 10px 0; font-size: 1.2em; }
-        .rank-badge { background: #FFD700; color: #333; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin: 10px 0; }
-        .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .stats-label { font-weight: bold; color: #666; }
-        .stats-value { color: #333; }
-        .footer { background: #333; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 0.9em; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏆 Actuator Challenge Results</h1>
-            <p>Thank you for participating!</p>
-        </div>
-        <div class="content">
-            <div class="result-card">
-                <h2>Hello ${userInfo.name},</h2>
-                <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
-                <div class="score-display">${leaderboardEntry.finalScore}/100</div>
-                <p style="text-align: center; color: #666;">Correct Answers</p>
-                <div style="text-align: center;">
-                    <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+                    .header h1 { margin: 0; font-size: 2em; }
+                    .content { background: #f9f9f9; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+                    .result-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                    .score-display { font-size: 2.5em; font-weight: bold; color: #4CAF50; text-align: center; margin: 20px 0; }
+                    .grade-badge { background: #f093fb; color: white; padding: 12px 16px; border-radius: 8px; font-weight: bold; display: inline-block; margin: 10px 0; font-size: 1.2em; }
+                    .rank-badge { background: #FFD700; color: #333; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin: 10px 0; }
+                    .stats-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+                    .stats-label { font-weight: bold; color: #666; }
+                    .stats-value { color: #333; }
+                    .footer { background: #333; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 0.9em; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>🏆 Actuator Challenge Results</h1>
+                        <p>Thank you for participating!</p>
+                    </div>
+                    <div class="content">
+                        <div class="result-card">
+                            <h2>Hello ${userInfo.name},</h2>
+                            <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
+                            <div class="score-display">${leaderboardEntry.finalScore}/100</div>
+                            <p style="text-align: center; color: #666;">Correct Answers</p>
+                            <div style="text-align: center;">
+                                <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span class="grade-badge">${gradeInfo.badge} Grade: ${gradeInfo.rank}</span>
+                            </div>
+                            
+                            <h3>📊 Performance Summary</h3>
+                            <div class="stats-row">
+                                <span class="stats-label">Total Score:</span>
+                                <span class="stats-value">${leaderboardEntry.finalScore} points</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Correct Answers:</span>
+                                <span class="stats-value">${leaderboardEntry.score}/5</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Grade:</span>
+                                <span class="stats-value">${gradeInfo.rank} - ${gradeInfo.title}</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Completion Time:</span>
+                                <span class="stats-value">${timeStr}</span>
+                            </div>
+                            <div class="stats-row">
+                                <span class="stats-label">Daily Rank:</span>
+                                <span class="stats-value">#${leaderboardEntry.rank}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p><strong>Actuator Challenge</strong></p>
+                        <p style="font-size: 12px; margin-top: 20px;">You received this email because you participated in our interactive game.</p>
+                    </div>
                 </div>
-                <div style="text-align: center;">
-                    <span class="grade-badge">${gradeInfo.badge} Grade: ${gradeInfo.rank}</span>
-                </div>
-                
-                <h3>📊 Performance Summary</h3>
-                <div class="stats-row">
-                    <span class="stats-label">Total Score:</span>
-                    <span class="stats-value">${leaderboardEntry.finalScore} points</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Correct Answers:</span>
-                    <span class="stats-value">${leaderboardEntry.score}/5</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Grade:</span>
-                    <span class="stats-value">${gradeInfo.rank} - ${gradeInfo.title}</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Completion Time:</span>
-                    <span class="stats-value">${timeStr}</span>
-                </div>
-                <div class="stats-row">
-                    <span class="stats-label">Daily Rank:</span>
-                    <span class="stats-value">#${leaderboardEntry.rank}</span>
-                </div>
-            </div>
-        </div>
-        <div class="footer">
-            <p><strong>Actuator Challenge</strong></p>
-            <p style="font-size: 12px; margin-top: 20px;">You received this email because you participated in our interactive game.</p>
-        </div>
-    </div>
-</body>
-</html>
-        `;
+            </body>
+            </html>
+                    `;
 
         const textContent = `
-Actuator Challenge Results
+            Actuator Challenge Results
 
-Hello ${userInfo.name},
+            Hello ${userInfo.name},
 
-YOUR RESULTS:
-- Score: ${leaderboardEntry.finalScore}/100 points
-- Correct Answers: ${leaderboardEntry.score}/5
-- Daily Rank: #${leaderboardEntry.rank}
-- Completion Time: ${timeStr}
-- Final Score: ${leaderboardEntry.finalScore} points
-- Grade: ${gradeInfo.rank} - ${gradeInfo.title}
-- Grade Description: ${gradeInfo.description}
-        `;
+            YOUR RESULTS:
+            - Score: ${leaderboardEntry.finalScore}/100 points
+            - Correct Answers: ${leaderboardEntry.score}/5
+            - Daily Rank: #${leaderboardEntry.rank}
+            - Completion Time: ${timeStr}
+            - Final Score: ${leaderboardEntry.finalScore} points
+            - Grade: ${gradeInfo.rank} - ${gradeInfo.title}
+            - Grade Description: ${gradeInfo.description}
+                    `;
 
         return { subject, htmlContent, textContent };
     };

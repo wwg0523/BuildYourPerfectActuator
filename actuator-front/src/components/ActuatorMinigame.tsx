@@ -271,12 +271,8 @@ export default function ActuatorMinigame() {
                 console.log(`\n📊 ===== GAME RESULT SAVE START =====`);
                 console.log(`📊 Sending game result data:`, {
                     userId: currentUserId,
-                    selectedComponents: [],
-                    compatibleApplications: [],
-                    successRate: gameSession.questions.length > 0 ? correctAnswers / gameSession.questions.length : 0,
                     completionTime: completionTime,
                     score: correctAnswers,
-                    totalQuestions: gameSession.questions.length,
                     answersCount: gameSession.answers.length,
                 });
                 console.log(`📊 Answers detail:`, gameSession.answers.map((a, i) => ({
@@ -290,12 +286,8 @@ export default function ActuatorMinigame() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         userId: currentUserId,
-                        selectedComponents: [], // Quiz 게임이므로 빈 배열
-                        compatibleApplications: [], // Quiz 게임이므로 빈 배열
-                        successRate: gameSession.questions.length > 0 ? correctAnswers / gameSession.questions.length : 0,
                         completionTime: completionTime,
                         score: correctAnswers,
-                        totalQuestions: gameSession.questions.length,
                         answers: gameSession.answers.map((answer, idx) => ({
                             questionId: answer.questionId,
                             selectedComponents: answer.selectedComponents || [],

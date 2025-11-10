@@ -2,25 +2,12 @@
 -- Database schema for quiz-based actuator learning game
 -- Supports user management, game results tracking, analytics, and leaderboard
 
--- Drop all views first (due to dependencies)
-DROP VIEW IF EXISTS question_performance CASCADE;
-DROP VIEW IF EXISTS game_analytics CASCADE;
-DROP VIEW IF EXISTS daily_leaderboard CASCADE;
-
--- Drop all tables (CASCADE to remove dependencies)
-DROP TABLE IF EXISTS user_answers CASCADE;
-DROP TABLE IF EXISTS api_counter_logs CASCADE;
-DROP TABLE IF EXISTS email_logs CASCADE;
-DROP TABLE IF EXISTS quiz_questions_cache CASCADE;
-DROP TABLE IF EXISTS game_results CASCADE;
-DROP TABLE IF EXISTS game_users CASCADE;
-
 -- ============================================
--- Create Tables
+-- Create Tables (If Not Exists)
 -- ============================================
 
 -- Users table: Store player information
-CREATE TABLE game_users (
+CREATE TABLE IF NOT EXISTS game_users (
   id UUID PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   company VARCHAR(200),
@@ -30,12 +17,11 @@ CREATE TABLE game_users (
 );
 
 -- Game results table: Store overall game session results
-CREATE TABLE game_results (
+-- score: 정답 개수 (0-5)
+-- final_score: 포인트 기반 점수 (0-100)
+CREATE TABLE IF NOT EXISTS game_results (
   id UUID PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES game_users(id) ON DELETE CASCADE,
-  selected_components JSONB NOT NULL,
-  compatible_applications JSONB NOT NULL,
-  success_rate NUMERIC(3,2) NOT NULL,
   completion_time BIGINT NOT NULL,
   score INT,
   final_score INT,
@@ -44,7 +30,7 @@ CREATE TABLE game_results (
 
 -- Quiz questions cache: Store all 15 quiz questions with metadata
 -- Used for quick access without loading from frontend JSON
-CREATE TABLE quiz_questions_cache (
+CREATE TABLE IF NOT EXISTS quiz_questions_cache (
   id VARCHAR(10) PRIMARY KEY,
   type VARCHAR(20) NOT NULL,
   category VARCHAR(50) NOT NULL,
@@ -60,7 +46,7 @@ CREATE TABLE quiz_questions_cache (
 );
 
 -- User answers: Track individual question responses for detailed analytics
-CREATE TABLE user_answers (
+CREATE TABLE IF NOT EXISTS user_answers (
   id UUID PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES game_users(id) ON DELETE CASCADE,
   game_result_id UUID NOT NULL REFERENCES game_results(id) ON DELETE CASCADE,
@@ -72,7 +58,7 @@ CREATE TABLE user_answers (
 );
 
 -- Email logs: Track all email sending attempts
-CREATE TABLE email_logs (
+CREATE TABLE IF NOT EXISTS email_logs (
   id UUID PRIMARY KEY,
   user_id UUID REFERENCES game_users(id) ON DELETE CASCADE,
   email_type VARCHAR(50) NOT NULL,
@@ -83,7 +69,7 @@ CREATE TABLE email_logs (
 );
 
 -- API counter logs: Track external API integration for score submission
-CREATE TABLE api_counter_logs (
+CREATE TABLE IF NOT EXISTS api_counter_logs (
   id UUID PRIMARY KEY,
   api_endpoint VARCHAR(255),
   action VARCHAR(50),
@@ -93,35 +79,40 @@ CREATE TABLE api_counter_logs (
 );
 
 -- ============================================
--- Create Indexes for Performance
+-- Create Indexes for Performance (If Not Exists)
 -- ============================================
 
 -- Game results indexes
-CREATE INDEX idx_game_results_created_at ON game_results(created_at DESC);
-CREATE INDEX idx_game_results_final_score ON game_results(final_score DESC);
-CREATE INDEX idx_game_results_user_id ON game_results(user_id);
+CREATE INDEX IF NOT EXISTS idx_game_results_created_at ON game_results(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_game_results_final_score ON game_results(final_score DESC);
+CREATE INDEX IF NOT EXISTS idx_game_results_user_id ON game_results(user_id);
 
 -- Quiz questions indexes
-CREATE INDEX idx_quiz_difficulty ON quiz_questions_cache(difficulty);
-CREATE INDEX idx_quiz_type ON quiz_questions_cache(type);
+CREATE INDEX IF NOT EXISTS idx_quiz_difficulty ON quiz_questions_cache(difficulty);
+CREATE INDEX IF NOT EXISTS idx_quiz_type ON quiz_questions_cache(type);
 
 -- User answers indexes
-CREATE INDEX idx_user_answers_user_id ON user_answers(user_id);
-CREATE INDEX idx_user_answers_game_result_id ON user_answers(game_result_id);
-CREATE INDEX idx_user_answers_question_id ON user_answers(question_id);
+CREATE INDEX IF NOT EXISTS idx_user_answers_user_id ON user_answers(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_answers_game_result_id ON user_answers(game_result_id);
+CREATE INDEX IF NOT EXISTS idx_user_answers_question_id ON user_answers(question_id);
 
 -- Email logs indexes
-CREATE INDEX idx_email_logs_user_id ON email_logs(user_id);
-CREATE INDEX idx_email_logs_sent_at ON email_logs(sent_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_logs_user_id ON email_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_email_logs_sent_at ON email_logs(sent_at DESC);
 
 -- API counter logs indexes
-CREATE INDEX idx_api_counter_logs_created_at ON api_counter_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_api_counter_logs_created_at ON api_counter_logs(created_at DESC);
 
 -- ============================================
--- Create Views
+-- Create or Replace Views
 -- ============================================
 
--- Daily leaderboard: Today's top scores ranked by total points earned and completion time
+-- Drop views if they exist (for safe recreation)
+DROP VIEW IF EXISTS question_performance CASCADE;
+DROP VIEW IF EXISTS game_analytics CASCADE;
+DROP VIEW IF EXISTS daily_leaderboard CASCADE;
+
+-- Daily leaderboard: Today's top scores ranked by final_score and completion time
 CREATE VIEW daily_leaderboard AS
 SELECT
   gr.id,
@@ -131,31 +122,29 @@ SELECT
     ELSE gu.name
   END AS player_name,
   gu.company,
-  COALESCE(SUM(ua.points_earned), 0) as score,
+  gr.score,
   gr.completion_time,
-  COALESCE(SUM(ua.points_earned), 0) as final_score,
+  gr.final_score,
   gr.created_at AS played_at,
-  ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(ua.points_earned), 0) DESC, gr.completion_time ASC, gr.created_at ASC) AS rank
+  ROW_NUMBER() OVER (ORDER BY gr.final_score DESC, gr.completion_time ASC, gr.created_at ASC) AS rank
 FROM game_results gr
 JOIN game_users gu ON gr.user_id = gu.id
-LEFT JOIN user_answers ua ON gr.id = ua.game_result_id
 WHERE DATE(gr.created_at AT TIME ZONE 'UTC') = CURRENT_DATE AT TIME ZONE 'UTC'
-GROUP BY gr.id, gr.user_id, gu.name, gu.company, gr.completion_time, gr.created_at
-ORDER BY score DESC, gr.completion_time ASC, gr.created_at ASC;
+ORDER BY gr.final_score DESC, gr.completion_time ASC, gr.created_at ASC;
 
 -- Game analytics: Overall game statistics
 CREATE VIEW game_analytics AS
 SELECT 
     COUNT(DISTINCT gr.user_id) as total_participants,
-    ROUND(COUNT(CASE WHEN gr.success_rate > 0.75 THEN 1 END)::numeric / NULLIF(COUNT(*), 0) * 100, 2) as completion_rate,
     ROUND(AVG(gr.completion_time)::numeric / 1000, 2) as average_completion_time,
-    array_agg(DISTINCT gu.company) as top_company_participants,
-    array_agg(DISTINCT gr.compatible_applications) as popular_component_combinations,
-    jsonb_build_object('total', COUNT(*)::text) as success_rate_by_experience
-FROM game_results gr
-JOIN game_users gu ON gr.user_id = gu.id;
+    ROUND(AVG(gr.score)::numeric, 2) as avg_correct_answers,
+    ROUND(AVG(gr.final_score)::numeric, 2) as avg_final_score,
+    MAX(gr.final_score) as max_score,
+    MIN(gr.final_score) as min_score,
+    COUNT(*) as total_games_played
+FROM game_results gr;
 
--- Question performance: Success rates by question and difficulty
+-- Question performance: Success rates by question
 CREATE VIEW question_performance AS
 SELECT 
     qq.id as question_id,
@@ -166,5 +155,5 @@ SELECT
     ROUND(100.0 * SUM(CASE WHEN ua.is_correct THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0), 2) as success_rate,
     ROUND(AVG(COALESCE(ua.points_earned, 0))::numeric, 0) as avg_points_earned
 FROM user_answers ua
-JOIN quiz_questions_cache qq ON ua.question_id = qq.id
+RIGHT JOIN quiz_questions_cache qq ON ua.question_id = qq.id
 GROUP BY qq.id, qq.difficulty, qq.application_name;
