@@ -374,11 +374,17 @@ export default function ActuatorMinigame() {
             const response = await fetch(`/api/game/leaderboard`, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch leaderboard data');
             const data = await response.json();
+            console.log('📊 Raw leaderboard data from backend:', data);
 
             // backend already returns normalized data, just map it to LeaderboardEntry
             const normalized: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => {
                 // completionTime은 이미 백엔드에서 ms 단위로 반환됨
                 let completionTimeMs = Number(row.completionTime ?? 0);
+                console.log(`Row ${idx}:`, {
+                    raw: row,
+                    completionTimeMs,
+                    formattedTime: `${Math.floor(completionTimeMs / 1000 / 60)}:${String(Math.floor((completionTimeMs / 1000) % 60)).padStart(2, '0')}`
+                });
                 
                 return {
                     rank: row.rank ?? idx + 1,
@@ -391,6 +397,7 @@ export default function ActuatorMinigame() {
                 };
             });
 
+            console.log('✅ Normalized leaderboard:', normalized);
             setLeaderboardData(normalized);
         } catch (error) {
             console.error('Error fetching leaderboard:', error);

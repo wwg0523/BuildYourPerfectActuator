@@ -169,6 +169,12 @@ router.get('/leaderboard', async (req, res) => {
         `;
         const result = await pool.query(query);
         console.log(`✅ Leaderboard query returned ${result.rows.length} rows`);
+        
+        // 각 행의 completion_time 타입 확인
+        if (result.rows.length > 0) {
+            console.log('📊 Raw DB rows (first row):', result.rows[0]);
+            console.log('   completion_time type:', typeof result.rows[0].completion_time, 'value:', result.rows[0].completion_time);
+        }
 
         // 데이터가 없으면 더 넓은 범위의 쿼리 시도
         if (result.rows.length === 0) {
@@ -207,6 +213,7 @@ router.get('/leaderboard', async (req, res) => {
                 finalScore: Number(row.final_score ?? 0),
                 playedAt: row.played_at ? new Date(row.played_at) : new Date(),
             }));
+            console.log('✅ Parsed fallback response (first row):', parsed[0]);
             return res.status(200).json(parsed);
         }
 
@@ -219,6 +226,7 @@ router.get('/leaderboard', async (req, res) => {
             finalScore: Number(row.final_score ?? 0),
             playedAt: row.played_at ? new Date(row.played_at) : new Date(),
         }));
+        console.log('✅ Parsed VIEW response (first row):', parsed[0]);
         res.status(200).json(parsed);
     } catch (err) {
         console.error('❌ Leaderboard error:', err);

@@ -16,10 +16,25 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         fetchLeaderboard();
     }, [fetchLeaderboard]);
 
-    const formatTime = (ms: number): string => {
-        const totalSeconds = Math.floor(ms / 1000);
+    const formatTime = (ms: number | null | undefined): string => {
+        // null/undefined 체크
+        if (ms === null || ms === undefined) {
+            return '--:--';
+        }
+        
+        // 숫자로 변환
+        const msNum = Number(ms);
+        
+        // NaN 체크
+        if (isNaN(msNum) || msNum < 0) {
+            console.warn('Invalid completion time:', ms);
+            return '--:--';
+        }
+        
+        const totalSeconds = Math.floor(msNum / 1000);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
+        
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
