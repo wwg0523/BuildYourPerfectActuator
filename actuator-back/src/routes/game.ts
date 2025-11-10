@@ -9,6 +9,7 @@ router.post('/submit', async (req, res) => {
     const { userId, completionTime, answers, score } = req.body;
 
     console.log(`\n📊 ===== GAME SUBMISSION START =====`);
+    console.log(`📊 Received body:`, req.body);
     console.log(`📊 Received data:`, {
         userId,
         completionTime,
@@ -19,7 +20,11 @@ router.post('/submit', async (req, res) => {
     // 입력 검증
     if (!userId || completionTime == null) {
         console.error(`❌ Validation failed: Missing required fields`);
-        return res.status(400).json({ error: 'Missing required fields: userId, completionTime' });
+        console.error(`   userId: ${userId}, completionTime: ${completionTime}`);
+        return res.status(400).json({ 
+            error: 'Missing required fields: userId, completionTime',
+            received: { userId, completionTime }
+        });
     }
 
     // UUID 생성

@@ -461,3 +461,83 @@
     grid-template-columns: 1fr;
   }
 }
+
+// ============================================================
+// Participant Count Badge Styles
+// ============================================================
+
+.participant-count-badge {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.count-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.count-label {
+    font-size: 32px;
+    color: #FFD700;
+    font-weight: bold;
+    
+    @media (max-width: 640px) {
+        font-size: 24px;
+    }
+}
+
+.status-indicator {
+    font-size: 32px;
+}
+
+.online { color: #00ff00; }
+.offline { color: #ff0000; }
+
+.count-display {
+    font-size: 120px;
+    font-weight: bold;
+    
+    @media (max-width: 1024px) {
+        font-size: 100px;
+    }
+    
+    @media (max-width: 768px) {
+        font-size: 80px;
+    }
+    
+    @media (max-width: 640px) {
+        font-size: 60px;
+    }
+}
+
+.count-number {
+    color: #FFD700;
+    display: block;
+    line-height: 1.2;
+}
+
+.count-suffix {
+    font-size: 32px;
+    color: #FFD700;
+    margin-top: 20px;
+    display: block;
+    font-weight: 600;
+    
+    @media (max-width: 640px) {
+        font-size: 24px;
+    }
+}

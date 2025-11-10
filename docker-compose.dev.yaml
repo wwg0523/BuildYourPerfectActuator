@@ -31,7 +31,7 @@ services:
     environment:
       PORT: 4005
       DB_HOST: actuator-db
-      DB_PORT: 5434
+      DB_PORT: 5433
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-dev_password}
       DB_NAME: actuator_game
@@ -51,8 +51,8 @@ services:
     image: postgres:16.10
     container_name: actuator-db-dev
     ports:
-      - "5434:5434"
-    command: ["postgres", "-c", "port=5434"]
+      - "5433:5433"
+    command: ["postgres", "-c", "port=5433"]
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-dev_password}

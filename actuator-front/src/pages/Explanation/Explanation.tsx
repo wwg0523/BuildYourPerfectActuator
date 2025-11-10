@@ -8,6 +8,7 @@ interface ExplanationProps {
     isCorrect: boolean;
     score: number;
     onNext: () => void;
+    buttonText?: string;
 }
 
 const Explanation: React.FC<ExplanationProps> = ({
@@ -16,6 +17,7 @@ const Explanation: React.FC<ExplanationProps> = ({
     isCorrect,
     score,
     onNext,
+    buttonText = 'Next Question →',
 }) => {
     return (
         <div className="page-explanation">
@@ -79,7 +81,7 @@ const Explanation: React.FC<ExplanationProps> = ({
                 {/* Footer Section */}
                 <div className="explanation-footer">
                     <button onClick={onNext} className="next-button">
-                        Next Question
+                        {buttonText}
                     </button>
                 </div>
             </div>

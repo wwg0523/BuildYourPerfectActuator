@@ -1,5 +1,10 @@
 import compatibilityMatrixJson from '../data/compatibilityMatrix.json';
 
+// API Base URL - 환경에 따라 달라짐
+export const API_BASE_URL = process.env.REACT_APP_API_URL || (
+    process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:4005/api'
+);
+
 export interface GameComponent {
     id: string;
     name: string;
@@ -83,7 +88,6 @@ export interface GameQuestion {
     correctAnswer: string; // Answer letter (A/B/C/D) or (O/X)
     explanation: Explanation; // Detailed explanation and examples
     points: number;
-    timeLimit: number;
 }
 
 export interface ScoreCalculation {
@@ -276,9 +280,9 @@ export const calculateScore = (
 
     const basePoints = 20;
     const difficultyMultiplier = {
-        easy: 1.0,
-        medium: 1.2,
-        hard: 1.5
+        easy: 1.0,      // 쉬움: 20점
+        medium: 1.5,    // 중간: 30점
+        hard: 2.0       // 어려움: 40점
     }[difficulty];
 
     const finalScore = Math.round(basePoints * difficultyMultiplier);
@@ -348,7 +352,7 @@ export class LeaderboardManager {
 
     private async calculateRank(entry: LeaderboardEntry): Promise<number> {
         try {
-            const response = await fetch(`/api/game/leaderboard`, {
+            const response = await fetch(`${API_BASE_URL}/game/leaderboard`, {
                 method: 'GET',
             });
             if (!response.ok) throw new Error('Failed to fetch leaderboard');
@@ -372,7 +376,7 @@ export class LeaderboardManager {
         try {
             const emailTemplate = this.generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
             
-            const response = await fetch(`/api/send-email`, {
+            const response = await fetch(`${API_BASE_URL}/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -520,7 +524,7 @@ export class ParticipantCounter {
 
     async getTotalParticipants(): Promise<number> {
         try {
-            const url = `/api/counter`;
+            const url = `${API_BASE_URL}/counter`;
             console.log('Fetching participant count from:', url);
             const response = await fetch(url, {
                 method: 'GET',
@@ -540,7 +544,7 @@ export class ParticipantCounter {
 
     async incrementParticipant(): Promise<void> {
         try {
-            const url = `/api/counter/increment`;
+            const url = `${API_BASE_URL}/counter/increment`;
             console.log('Incrementing participant count at:', url);
             const response = await fetch(url, {
                 method: 'POST',
@@ -579,7 +583,7 @@ export class ParticipantCounter {
 // Delete User Data Function
 export async function deleteUserData(userId: string): Promise<boolean> {
     try {
-        const response = await fetch(`/api/delete-user-data`, {
+        const response = await fetch(`${API_BASE_URL}/delete-user-data`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS user_answers (
   id UUID PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES game_users(id) ON DELETE CASCADE,
   game_result_id UUID NOT NULL REFERENCES game_results(id) ON DELETE CASCADE,
-  question_id VARCHAR(10) NOT NULL REFERENCES quiz_questions_cache(id),
+  question_id VARCHAR(10) NOT NULL REFERENCES quiz_questions_cache(id) ON DELETE SET NULL,
   selected_answer VARCHAR(10),
   is_correct BOOLEAN,
   points_earned INT,

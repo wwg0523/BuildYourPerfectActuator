@@ -4,7 +4,7 @@ import gameRouter from './routes/game.js';
 import userRouter from './routes/user.js';
 import deleteUserDataRoutes from './routes/delete-user-data.js';
 import analyticsRouter from './routes/analytics.js';
-// import emailRouter from './routes/email.js'; // ⚠️ 메일 시스템 비활성화
+import emailRouter from './routes/email.js';
 import counterRouter from './routes/counter.js';
 
 import dotenv from 'dotenv';
@@ -23,19 +23,19 @@ app.use('/api/user', userRouter);
 app.use('/api/delete-user-data', deleteUserDataRoutes);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/counter', counterRouter);
-// app.use('/api', emailRouter); // ⚠️ 메일 시스템 비활성화
+app.use('/api', emailRouter);
 
-// 환경변수 검증 (메일 환경변수 검증 비활성화)
-// if (process.env.NODE_ENV === 'production') {
-//     const requiredEnvVars = ['SMTP_HOST', 'SMTP_PORT', 'APP_EMAIL', 'APP_PASS'];
-//     const missingVars = requiredEnvVars.filter(v => !process.env[v]);
-//     
-//     if (missingVars.length > 0) {
-//         console.error('❌ Missing required environment variables in production:');
-//         missingVars.forEach(v => console.error(`   - ${v}`));
-//         process.exit(1);
-//     }
-// }
+// 환경변수 검증
+if (process.env.NODE_ENV === 'production') {
+    const requiredEnvVars = ['SMTP_HOST', 'SMTP_PORT', 'APP_EMAIL', 'APP_PASS'];
+    const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+    
+    if (missingVars.length > 0) {
+        console.error('❌ Missing required environment variables in production:');
+        missingVars.forEach(v => console.error(`   - ${v}`));
+        process.exit(1);
+    }
+}
 
 // Global error handler - ensure all responses are JSON
 app.use((err: any, req: any, res: any, next: any) => {

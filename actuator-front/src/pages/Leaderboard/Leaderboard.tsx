@@ -14,7 +14,7 @@ interface LeaderboardProps {
 const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderboard, handlePlayAgain, setScreen, handleDeleteUserData }) => {
     useEffect(() => {
         fetchLeaderboard();
-    }, [fetchLeaderboard]);
+    }, []);  // 리더보드 페이지에 처음 진입할 때 호출
 
     const formatTime = (ms: number | null | undefined): string => {
         // null/undefined 체크

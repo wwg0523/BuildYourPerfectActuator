@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/main.scss';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../lib/utils';
 import {
     BarChart,
     Bar,
@@ -79,7 +80,7 @@ const Analytics: React.FC = () => {
     const fetchAnalytics = useCallback(async () => {
         try {
             console.log('🔐 Fetching analytics with password:', password.substring(0, 3) + '***');
-            const response = await fetch(`/api/analytics`, {
+            const response = await fetch(`${API_BASE_URL}/analytics`, {
                 headers: { Authorization: password },
             });
             

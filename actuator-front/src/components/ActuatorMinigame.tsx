@@ -7,7 +7,7 @@ import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
-import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter } from '../lib/utils';
+import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter, calculateScore, API_BASE_URL } from '../lib/utils';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
 
@@ -185,12 +185,14 @@ export default function ActuatorMinigame() {
         setScreen('home');
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (finalGameSession?: GameSession) => {
         if (isSubmitted) {
-            console.log('Already submitted. To prevent duplicates.');
             return;
         }
-        if (!gameSession) return;
+        
+        // finalGameSession이 있으면 사용, 없으면 gameSession 사용
+        const sessionToSubmit = finalGameSession || gameSession;
+        if (!sessionToSubmit) return;
 
         setIsSubmitted(true);  // 제출 시작
 
@@ -226,11 +228,11 @@ export default function ActuatorMinigame() {
 
             // Calculate game completion time and score
             // Use completionTime from gameSession (accurate value calculated from timer)
-            completionTime = gameSession.completionTime || 0;
+            completionTime = sessionToSubmit.completionTime || 0;
             
             // If completionTime is 0, calculate from startTime and endTime
-            if (completionTime === 0 && gameSession.endTime) {
-                completionTime = gameSession.endTime.getTime() - gameSession.startTime.getTime();
+            if (completionTime === 0 && sessionToSubmit.endTime) {
+                completionTime = sessionToSubmit.endTime.getTime() - sessionToSubmit.startTime.getTime();
             }
             
             // 최종 검증: completionTime이 여전히 0이면 최소 1초 설정
@@ -238,7 +240,31 @@ export default function ActuatorMinigame() {
                 completionTime = 1000; // 최소 1초
             }
             
-            correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
+            correctAnswers = sessionToSubmit.answers.filter(a => a.isCorrect).length;
+            
+            // 최종 점수 계산: 각 답변의 난이도별 점수 합산
+            let finalScore = 0;
+            sessionToSubmit.answers.forEach((answer, idx) => {
+                if (answer.isCorrect && idx < sessionToSubmit.questions.length) {
+                    const question = sessionToSubmit.questions[idx];
+                    const difficulty = question.difficulty;
+                    const scoreCalc = calculateScore(true, difficulty);
+                    finalScore += scoreCalc.finalScore;
+                }
+            });
+            
+            console.log(`📊 Score Calculation:`, {
+                correctAnswers,
+                finalScore,
+                breakdown: sessionToSubmit.answers.map((answer, idx) => ({
+                    questionId: answer.questionId,
+                    isCorrect: answer.isCorrect,
+                    difficulty: sessionToSubmit.questions[idx]?.difficulty,
+                    pointsEarned: answer.isCorrect && idx < sessionToSubmit.questions.length
+                        ? calculateScore(true, sessionToSubmit.questions[idx].difficulty).finalScore
+                        : 0
+                }))
+            });
             
             // game_users 테이블에 사용자 저장 (필수!)
             try {
@@ -250,7 +276,7 @@ export default function ActuatorMinigame() {
                     email: userForGame.email,
                     phone: userForGame.phone,
                 });
-                const userResponse = await fetch(`/api/user`, {
+                const userResponse = await fetch(`${API_BASE_URL}/user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -262,7 +288,9 @@ export default function ActuatorMinigame() {
                     }),
                 });
                 if (!userResponse.ok) {
-                    throw new Error(`Failed to save user: ${userResponse.status}`);
+                    const errorText = await userResponse.text();
+                    console.error(`❌ User save failed: ${userResponse.status}`, errorText);
+                    throw new Error(`Failed to save user: ${userResponse.status} - ${errorText}`);
                 }
                 const userData = await userResponse.json();
                 console.log(`✅ User saved successfully:`, userData);
@@ -273,31 +301,35 @@ export default function ActuatorMinigame() {
                     userId: currentUserId,
                     completionTime: completionTime,
                     score: correctAnswers,
-                    answersCount: gameSession.answers.length,
+                    answersCount: sessionToSubmit.answers.length,
                 });
-                console.log(`📊 Answers detail:`, gameSession.answers.map((a, i) => ({
+                console.log(`📊 Answers detail:`, sessionToSubmit.answers.map((a, i) => ({
                     index: i,
                     questionId: a.questionId,
                     isCorrect: a.isCorrect,
-                    pointsEarned: a.isCorrect ? (gameSession.questions[i]?.points || 0) : 0,
+                    pointsEarned: a.isCorrect ? (sessionToSubmit.questions[i]?.points || 0) : 0,
                 })));
-                const gameResultResponse = await fetch(`/api/game/submit`, {
+                const submitData = {
+                    userId: currentUserId,
+                    completionTime: completionTime,
+                    score: correctAnswers,
+                    answers: sessionToSubmit.answers.map((answer, idx) => ({
+                        questionId: answer.questionId,
+                        selectedComponents: answer.selectedComponents || [],
+                        isCorrect: answer.isCorrect || false,
+                        pointsEarned: answer.isCorrect ? (sessionToSubmit.questions[idx]?.points || 0) : 0,
+                    }))
+                };
+                console.log(`📊 Full submit payload:`, JSON.stringify(submitData, null, 2));
+                const gameResultResponse = await fetch(`${API_BASE_URL}/game/submit`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        userId: currentUserId,
-                        completionTime: completionTime,
-                        score: correctAnswers,
-                        answers: gameSession.answers.map((answer, idx) => ({
-                            questionId: answer.questionId,
-                            selectedComponents: answer.selectedComponents || [],
-                            isCorrect: answer.isCorrect || false,
-                            pointsEarned: answer.isCorrect ? (gameSession.questions[idx]?.points || 0) : 0,
-                        }))
-                    }),
+                    body: JSON.stringify(submitData),
                 });
                 if (!gameResultResponse.ok) {
-                    throw new Error(`Failed to save game result: ${gameResultResponse.status}`);
+                    const errorText = await gameResultResponse.text();
+                    console.error(`❌ Game submit failed: ${gameResultResponse.status}`, errorText);
+                    throw new Error(`Failed to save game result: ${gameResultResponse.status} - ${errorText}`);
                 }
                 const resultData = await gameResultResponse.json();
                 console.log(`✅ Game result saved successfully:`, resultData);
@@ -309,7 +341,7 @@ export default function ActuatorMinigame() {
 
             // 순위 조회 및 이메일 발송
             try {
-                const entry = await leaderboardManager.submitScore(gameSession, userForGame);
+                const entry = await leaderboardManager.submitScore(sessionToSubmit, userForGame);
                 setLeaderboardEntry(entry);
             } catch (err) {
                 console.warn('Leaderboard submission warning (non-critical):', err);
@@ -321,7 +353,7 @@ export default function ActuatorMinigame() {
                         company: userForGame.company,
                         score: correctAnswers,
                         completionTime: completionTime,
-                        finalScore: correctAnswers * 100,
+                        finalScore: finalScore,
                         playedAt: new Date(),
                     });
                 }
@@ -331,17 +363,29 @@ export default function ActuatorMinigame() {
         } catch (error) {
             console.error('Error in game completion:', error);
             // 게임 결과 화면으로 이동 (데이터 저장 실패해도 결과 표시)
-            if (userForGame) {
-                setLeaderboardEntry({
-                    rank: 0,
-                    playerName: userForGame.name,
-                    company: userForGame.company,
-                    score: correctAnswers,
-                    completionTime: completionTime,
-                    finalScore: correctAnswers * 100,
-                    playedAt: new Date(),
-                });
-            }
+            let errorFinalScore = 0;
+            sessionToSubmit.answers.forEach((answer, idx) => {
+                if (answer.isCorrect && idx < sessionToSubmit.questions.length) {
+                    const question = sessionToSubmit.questions[idx];
+                    const difficulty = question.difficulty;
+                    const scoreCalc = calculateScore(true, difficulty);
+                    errorFinalScore += scoreCalc.finalScore;
+                }
+            });
+            
+            // userForGame이 null인 경우를 대비해 기본값 사용
+            const displayName = userForGame?.name || userInfo.name || 'Guest';
+            const displayCompany = userForGame?.company || userInfo.company || '';
+            
+            setLeaderboardEntry({
+                rank: 0,
+                playerName: displayName,
+                company: displayCompany,
+                score: correctAnswers,
+                completionTime: completionTime,
+                finalScore: errorFinalScore,
+                playedAt: new Date(),
+            });
             setScreen('result');
         } finally {
             setIsSubmitted(false);  // 제출 완료 (성공/실패 상관없이)
@@ -371,20 +415,14 @@ export default function ActuatorMinigame() {
 
     const fetchLeaderboard = async () => {
         try {
-            const response = await fetch(`/api/game/leaderboard`, { method: 'GET' });
+            const response = await fetch(`${API_BASE_URL}/game/leaderboard`, { method: 'GET' });
             if (!response.ok) throw new Error('Failed to fetch leaderboard data');
             const data = await response.json();
-            console.log('📊 Raw leaderboard data from backend:', data);
 
             // backend already returns normalized data, just map it to LeaderboardEntry
             const normalized: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => {
                 // completionTime은 이미 백엔드에서 ms 단위로 반환됨
                 let completionTimeMs = Number(row.completionTime ?? 0);
-                console.log(`Row ${idx}:`, {
-                    raw: row,
-                    completionTimeMs,
-                    formattedTime: `${Math.floor(completionTimeMs / 1000 / 60)}:${String(Math.floor((completionTimeMs / 1000) % 60)).padStart(2, '0')}`
-                });
                 
                 return {
                     rank: row.rank ?? idx + 1,
@@ -397,7 +435,6 @@ export default function ActuatorMinigame() {
                 };
             });
 
-            console.log('✅ Normalized leaderboard:', normalized);
             setLeaderboardData(normalized);
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
@@ -606,6 +643,13 @@ export default function ActuatorMinigame() {
             const modal = document.getElementById('warning-modal');
             if (modal) modal.remove();
         };
+    }, [screen]);
+
+    // 리더보드 화면으로 진입할 때마다 최신 데이터 갱신
+    useEffect(() => {
+        if (screen === 'leaderboard') {
+            fetchLeaderboard();
+        }
     }, [screen]);
 
     // Delete confirmation modal (used by Result and Leaderboard components)

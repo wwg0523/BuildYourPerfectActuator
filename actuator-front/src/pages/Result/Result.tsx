@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { GameSession, LeaderboardEntry, getRankInfo } from '../../lib/utils';
+import { GameSession, LeaderboardEntry, getRankInfo, API_BASE_URL } from '../../lib/utils';
 import '../../styles/main.scss';
 import './Result.scss';
 
@@ -47,7 +47,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         try {
             const emailTemplate = generateResultEmailTemplate(userInfo, gameSession, leaderboardEntry);
             
-            const response = await fetch(`/api/send-email`, {
+            const response = await fetch(`${API_BASE_URL}/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -7,7 +7,7 @@ import Explanation from '../Explanation/Explanation';
 interface GameProps {
     gameSession: GameSession;
     setGameSession: React.Dispatch<React.SetStateAction<GameSession | null>>;
-    handleSubmit: () => void;
+    handleSubmit: (finalSession: GameSession) => void;
     setScreen: (screen: 'home' | 'info' | 'game' | 'result' | 'leaderboard') => void;
 }
 
@@ -78,37 +78,56 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
             difficulty: currentQuestion.difficulty,
         };
 
-        setGameSession(prev => {
-            if (!prev) return prev;
-            return {
-                ...prev,
-                answers: [...prev.answers, answer],
-                currentQuestionIndex: prev.currentQuestionIndex + 1,
-            };
-        });
-
-        setExplanationState({
-            isOpen: false,
-            question: null,
-            selectedAnswer: null,
-            isCorrect: false,
-        });
-
-        if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
-            // 게임 종료 시점의 정확한 경과 시간 계산
+        // 현재 인덱스가 마지막 질문인지 먼저 확인
+        const isLastQuestion = gameSession.currentQuestionIndex + 1 >= gameSession.questions.length;
+        
+        if (isLastQuestion) {
+            // 마지막 질문일 때: 답변 추가 + endTime 설정을 한 번에
             const now = new Date();
             const actualElapsedMs = now.getTime() - gameSession.startTime.getTime();
+            const updatedAnswers = [...gameSession.answers, answer];
+            const totalCorrect = updatedAnswers.filter(a => a.isCorrect).length;
             
+            const finalSession: GameSession = {
+                ...gameSession,
+                answers: updatedAnswers,
+                currentQuestionIndex: gameSession.currentQuestionIndex + 1,
+                endTime: now,
+                totalScore: totalCorrect,
+                completionTime: actualElapsedMs,
+            };
+            
+            // 상태 업데이트
+            setGameSession(finalSession);
+            
+            setExplanationState({
+                isOpen: false,
+                question: null,
+                selectedAnswer: null,
+                isCorrect: false,
+            });
+            
+            // 최종 session을 전달하여 handleSubmit 호출
+            setTimeout(() => {
+                handleSubmit(finalSession);
+            }, 0);
+        } else {
+            // 마지막이 아닐 때: 일반적인 다음 질문 진행
             setGameSession(prev => {
                 if (!prev) return prev;
                 return {
                     ...prev,
-                    endTime: now,
-                    totalScore: [...prev.answers.slice(0, gameSession.currentQuestionIndex + 1), answer].filter(a => a.isCorrect).length,
-                    completionTime: actualElapsedMs,  // 정확한 전체 경과 시간 (ms)
+                    answers: [...prev.answers, answer],
+                    currentQuestionIndex: prev.currentQuestionIndex + 1,
                 };
             });
-            handleSubmit();
+
+            setExplanationState({
+                isOpen: false,
+                question: null,
+                selectedAnswer: null,
+                isCorrect: false,
+            });
         }
     };
 
@@ -119,17 +138,16 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
     // If explanation page is open, show the Explanation page instead
     if (explanationState.isOpen && explanationState.question) {
         const handleExplanationNext = () => {
-            if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
-                handleExplanationClose();
-                handleSubmit();
-            } else {
-                handleExplanationClose();
-            }
+            handleExplanationClose();
         };
 
         // 점수 계산
         const scoreDetails = calculateScore(explanationState.isCorrect, explanationState.question.difficulty);
         const displayScore = scoreDetails.finalScore;
+
+        // 마지막 질문 여부 확인
+        const isLastQuestion = gameSession.currentQuestionIndex + 1 >= gameSession.questions.length;
+        const buttonText = isLastQuestion ? 'View Results →' : 'Next Question →';
 
         return (
             <Explanation
@@ -138,6 +156,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                 isCorrect={explanationState.isCorrect}
                 score={displayScore}
                 onNext={handleExplanationNext}
+                buttonText={buttonText}
             />
         );
     }

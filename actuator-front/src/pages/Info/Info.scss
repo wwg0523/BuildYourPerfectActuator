@@ -1,292 +1,207 @@
-/* Page-specific styles for Info.tsx (terms and inputs) */
+/* Page-specific styles for Info.tsx - Similar to .card in main.scss */
 .info-card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: clamp(350px, 90vw, 800px);
-  margin: 0 auto;
-  
-  @media (min-width: 1024px) {
-    max-width: 800px;
-    padding: 30px 20px;
-    width: 900px;
-    padding: 3rem;
-  }
-}
+	background-color: #F6F9FC;
+	padding: 2rem;
+	border-radius: 1.5rem;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: clamp(350px, 90vw, 800px);
+	margin: 0 auto;
 
-/* Title styling */
-.info-card h2 {
-  width: 100%;
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  margin-top: 0;
-  font-weight: 600;
-  
-  @media (min-width: 1024px) {
-    font-size: 2rem;
-    margin-bottom: 2.5rem;
-    font-weight: 700;
-  }
-}
+	h1,
+	h2 {
+		margin-bottom: 1rem;
+		color: #1e40af;
+		text-align: center;
+	}
 
-/* Input form */
-.info-card > input {
-  width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 0.75rem;
-  box-sizing: border-box;
-  font-family: inherit;
-  padding: 0.85rem;
-  font-size: 1rem;
-  margin-top: 1rem;
-  
-  @media (min-width: 1024px) {
-    padding: 1rem;
-    font-size: 1.05rem;
-    margin-top: 1.2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-  }
-}
+	p {
+		margin-bottom: 1.5rem;
+		color: #374151;
+	}
 
-/* Error message styling */
-.info-card > p.error {
-  margin: 0.2rem 0 0.5rem 0;
-  font-size: 0.8rem;
-  color: #dc2626;
-  text-align: left;
-  width: 100%;
-  display: block;
+	.error {
+		color: #dc2626;
+		font-size: 0.875rem;
+		margin: 0.2rem 0;
+		text-align: left;
+	}
 
-  @media (min-width: 1024px) {
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
+	input {
+		width: 100%;
+		border: 1px solid #d1d5db;
+		border-radius: 0.75rem;
+		box-sizing: border-box;
+		font-family: inherit;
+		padding: 0.85rem;
+		font-size: 1rem;
+		margin-top: 1rem;
 
-/* Terms and conditions container */
-.info-card .terms-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  gap: 0.6rem;
-  margin: 1.8rem 0;
+		&:focus {
+			outline: none;
+			border-color: #3b82f6;
+			box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+		}
+	}
 
-  input[type="checkbox"] {
-    flex-shrink: 0;
-  }
+	.terms-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		gap: 0.6rem;
+		margin: 1.8rem 0;
 
-  label {
-    text-align: center;
-    font-size: 0.95rem;
-  }
-  
-  @media (min-width: 1024px) {
-    margin: 2rem 0;
-    gap: 0.8rem;
-    
-    label {
-      font-size: 1rem;
-    }
-  }
-}
+		input[type="checkbox"] {
+			width: 1.2rem;
+			height: 1.2rem;
+			cursor: pointer;
+			accent-color: #4f46e5;
+			border-radius: 0.25rem;
+		}
 
-/* Button container */
-.info-card > div:last-child {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  gap: 0.8rem;
-  margin-top: 1.8rem;
-  flex-direction: row;
+		label {
+			font-size: 0.95rem;
+			color: #374151;
+			cursor: pointer;
 
-  .button {
-    flex: 1;
-    padding: 0.85rem 1.5rem;
-    margin: 0;
-    font-size: 1rem;
-  }
-  
-  @media (min-width: 1024px) {
-    gap: 1.2rem;
-    margin-top: 2.2rem;
-    
-    .button {
-      padding: 1rem 2rem;
-      font-size: 1.05rem;
-    }
-  }
+			a {
+				color: #4f46e5;
+				text-decoration: none;
+				font-weight: 600;
+
+				&:hover {
+					text-decoration: underline;
+					color: #2563eb;
+				}
+			}
+		}
+	}
+
+	>div:last-child {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		gap: 0.8rem;
+		margin-top: 1.8rem;
+		flex-direction: row;
+
+		.button {
+			flex: 1;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		max-width: 800px;
+		padding: 3rem;
+
+		h2 {
+			font-size: 1.5rem;
+			margin-bottom: 2.5rem;
+			font-weight: 700;
+		}
+
+		input {
+			padding: 1rem;
+			font-size: 1.05rem;
+			margin-top: 1.2rem;
+		}
+
+		.terms-container {
+			margin: 2rem 0;
+			gap: 0.8rem;
+
+			label {
+				font-size: 1rem;
+			}
+		}
+
+		>div:last-child {
+			gap: 1.2rem;
+			margin-top: 2.2rem;
+		}
+	}
 }
 
 /* ==================== 태블릿 (641px - 1023px) ==================== */
 @media (max-width: 1023px) {
-  .info-card {
-    max-width: clamp(350px, 90vw, 800px);
-  }
+	.info-card {
+		h2 {
+			font-size: 1.3rem;
+			margin-bottom: 1.2rem;
+		}
 
-  .info-card h2 {
-    font-size: 1.3rem;
-    margin-bottom: 1.2rem;
-  }
+		input {
+			padding: 0.75rem;
+			font-size: 1rem;
+			margin-top: 0.8rem;
+		}
 
-  .info-card > input {
-    padding: 0.75rem;
-    font-size: 1rem;
-    margin-top: 0.8rem;
+		>p.error {
+			font-size: 0.8rem;
+		}
 
-    /* Name, Company: 2분할 */
-    &:nth-of-type(2) {
-      width: calc(50% - 0.4rem);
-      display: inline-block;
-      margin-right: 0.8rem;
-      vertical-align: top;
-    }
+		.terms-container {
+			margin: 1.5rem 0;
+			gap: 0.5rem;
 
-    &:nth-of-type(3) {
-      width: calc(50% - 0.4rem);
-      display: inline-block;
-      vertical-align: top;
-    }
+			label {
+				font-size: 0.9rem;
+			}
+		}
 
-    /* Email, Phone: 전체 너비 */
-    &:nth-of-type(4),
-    &:nth-of-type(5) {
-      width: 100%;
-      display: block;
-    }
-  }
+		>div:last-child {
+			margin-top: 1.5rem;
 
-  .info-card > p.error {
-    margin: 0.2rem 0 0.5rem 0;
-    font-size: 0.8rem;
-
-    /* Name, Company 에러: 2분할 */
-    &:nth-of-type(3) {
-      width: calc(50% - 0.4rem);
-      display: inline-block;
-      margin-right: 0.8rem;
-    }
-
-    &:nth-of-type(4) {
-      width: calc(50% - 0.4rem);
-      display: inline-block;
-    }
-
-    /* Email, Phone 에러: 전체 너비 */
-    &:nth-of-type(5),
-    &:nth-of-type(6) {
-      width: 100%;
-      display: block;
-    }
-  }
-
-  .info-card .terms-container {
-    margin: 1.5rem 0;
-    gap: 0.5rem;
-
-    label {
-      font-size: 0.9rem;
-    }
-  }
-
-  .info-card > div:last-child {
-    margin-top: 1.5rem;
-
-    .button {
-      padding: 0.75rem 1.2rem;
-      font-size: 0.95rem;
-    }
-  }
+			.button {
+				padding: 0.75rem 1.2rem;
+				font-size: 0.95rem;
+			}
+		}
+	}
 }
 
 /* ==================== 모바일 (640px 이하) ==================== */
 @media (max-width: 640px) {
-  .info-card {
-    max-width: 100%;
-  }
+	.info-card {
+		padding: 1.5rem;
 
-  .info-card h2 {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
+		h2 {
+			font-size: 1.1rem;
+			margin-bottom: 1rem;
+		}
 
-  .info-card > input {
-    padding: 0.7rem;
-    font-size: 0.95rem;
-    margin-top: 0.6rem;
+		input {
+			padding: 0.7rem;
+			font-size: 0.95rem;
+			margin-top: 0.6rem;
+		}
 
-    /* Name, Company: 2분할 */
-    &:nth-of-type(2) {
-      width: calc(50% - 0.3rem);
-      display: inline-block;
-      margin-right: 0.6rem;
-      vertical-align: top;
-    }
+		>p.error {
+			margin: 0.1rem 0 0.4rem 0;
+			font-size: 0.7rem;
+		}
 
-    &:nth-of-type(3) {
-      width: calc(50% - 0.3rem);
-      display: inline-block;
-      vertical-align: top;
-    }
+		.terms-container {
+			margin: 1rem 0 0.8rem 0;
+			gap: 0.5rem;
 
-    /* Email, Phone: 전체 너비 */
-    &:nth-of-type(4),
-    &:nth-of-type(5) {
-      width: 100%;
-      display: block;
-    }
-  }
+			label {
+				font-size: 0.85rem;
+			}
+		}
 
-  .info-card > p.error {
-    margin: 0.1rem 0 0.4rem 0;
-    font-size: 0.7rem;
+		>div:last-child {
+			margin-top: 1rem;
+			gap: 0.6rem;
 
-    /* Name, Company 에러: 2분할 */
-    &:nth-of-type(3) {
-      width: calc(50% - 0.3rem);
-      display: inline-block;
-      margin-right: 0.6rem;
-    }
-
-    &:nth-of-type(4) {
-      width: calc(50% - 0.3rem);
-      display: inline-block;
-    }
-
-    /* Email, Phone 에러: 전체 너비 */
-    &:nth-of-type(5),
-    &:nth-of-type(6) {
-      width: 100%;
-      display: block;
-    }
-  }
-
-  .info-card .terms-container {
-    margin: 1rem 0 0.8rem 0;
-    gap: 0.5rem;
-
-    label {
-      font-size: 0.85rem;
-    }
-  }
-
-  .info-card > div:last-child {
-    margin-top: 1rem;
-    gap: 0.6rem;
-    display: flex;
-    flex-direction: row;
-
-    .button {
-      flex: 1;
-      padding: 0.65rem 0.8rem;
-      font-size: 0.85rem;
-    }
-  }
+			.button {
+				padding: 0.65rem 0.8rem;
+				font-size: 0.85rem;
+			}
+		}
+	}
 }
-
-
