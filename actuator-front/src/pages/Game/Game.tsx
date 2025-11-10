@@ -95,13 +95,17 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         });
 
         if (gameSession.currentQuestionIndex + 1 >= gameSession.questions.length) {
+            // 게임 종료 시점의 정확한 경과 시간 계산
+            const now = new Date();
+            const actualElapsedMs = now.getTime() - gameSession.startTime.getTime();
+            
             setGameSession(prev => {
                 if (!prev) return prev;
                 return {
                     ...prev,
-                    endTime: new Date(),
+                    endTime: now,
                     totalScore: [...prev.answers.slice(0, gameSession.currentQuestionIndex + 1), answer].filter(a => a.isCorrect).length,
-                    completionTime: elapsedTime * 1000,
+                    completionTime: actualElapsedMs,  // 정확한 전체 경과 시간 (ms)
                 };
             });
             handleSubmit();
