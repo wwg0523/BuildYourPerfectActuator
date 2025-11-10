@@ -12,25 +12,28 @@ interface EmailResult {
 }
 
 // Mailplug SMTP 설정 (POP3/SMTP)
-// ⚠️ 환경변수는 필수입니다. .env 파일에서 설정하세요.
-if (!process.env.SMTP_HOST || !process.env.SMTP_PORT || !process.env.APP_EMAIL || !process.env.APP_PASS) {
-    console.error('❌ Missing required email environment variables:');
-    console.error('   - SMTP_HOST');
-    console.error('   - SMTP_PORT');
-    console.error('   - APP_EMAIL');
-    console.error('   - APP_PASS');
-    process.exit(1);
+// 환경변수가 없으면 이메일 발송 비활성화
+const emailEnabled = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.APP_EMAIL && process.env.APP_PASS);
+
+if (!emailEnabled) {
+    console.warn('⚠️ Email service disabled: Missing SMTP configuration');
+    console.warn('   - SMTP_HOST');
+    console.warn('   - SMTP_PORT');
+    console.warn('   - APP_EMAIL');
+    console.warn('   - APP_PASS');
 }
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT, 10),
+const transporter = emailEnabled ? nodemailer.createTransport({
+    host: process.env.SMTP_HOST!,
+    port: parseInt(process.env.SMTP_PORT!, 10),
     secure: false, // SSL 비활성화
     auth: {
-        user: process.env.APP_EMAIL,
-        pass: process.env.APP_PASS,
+        user: process.env.APP_EMAIL!,
+        pass: process.env.APP_PASS!,
     },
-});
+    connectionTimeout: 5000,
+    socketTimeout: 5000,
+}) : null;
 
 // POST /api/send-email: 이메일 발송
 router.post('/send-email', async (req, res) => {
@@ -42,8 +45,24 @@ router.post('/send-email', async (req, res) => {
 
     const emailId = uuidv4();
 
+    // 이메일 서비스가 비활성화되면 즉시 성공 반환
+    if (!emailEnabled) {
+        console.warn(`⚠️ Email service disabled. Skipping email to ${recipientEmail}`);
+        return res.status(200).json({
+            success: false,
+            message: 'Email service is not configured',
+            emailId,
+        });
+    }
+
+    if (!transporter) {
+        return res.status(503).json({
+            error: 'Email service temporarily unavailable',
+        });
+    }
+
     try {
-        // 이메일 발송 로그 저장 (일단 성공으로 표시)
+        // 이메일 발송 로그 저장
         await pool.query(
             `INSERT INTO email_logs (id, user_id, email_type, recipient_email, success, error_message)
              VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -52,62 +71,57 @@ router.post('/send-email', async (req, res) => {
                 userId || null,
                 'result',
                 recipientEmail,
-                true,
-                null
+                false,
+                'Pending'
             ]
         );
 
-        // Mailplug SMTP로 이메일 발송
-        try {
-            console.log(`📧 Sending email to: ${recipientEmail}`);
-            console.log(`Subject: ${subject}`);
+        console.log(`📧 Sending email to: ${recipientEmail}`);
+        console.log(`Subject: ${subject}`);
 
-            const info = await transporter.sendMail({
-                from: `"Actuator Challenge" <${process.env.APP_EMAIL}>`,
-                to: recipientEmail,
-                subject: subject,
-                html: htmlContent,
-                text: textContent || subject,
-            });
+        const info = await transporter.sendMail({
+            from: `"Actuator Challenge" <${process.env.APP_EMAIL}>`,
+            to: recipientEmail,
+            subject: subject,
+            html: htmlContent,
+            text: textContent || subject,
+        });
 
-            console.log('✅ Email sent successfully!');
-            console.log('Message ID:', info.messageId);
-            console.log('Response:', info.response);
+        // 발송 성공 로그 업데이트
+        await pool.query(
+            `UPDATE email_logs SET success = $1, error_message = $2 WHERE id = $3`,
+            [true, null, emailId]
+        );
 
-            res.status(200).json({
-                success: true,
-                message: 'Email sent successfully',
-                emailId,
-                messageId: info.messageId,
-            });
-        } catch (mailError: any) {
-            console.error('❌ Mailplug SMTP Error:', mailError);
-            
-            // 발송 실패 로그 업데이트
-            await pool.query(
-                `UPDATE email_logs SET success = $1, error_message = $2 WHERE id = $3`,
-                [false, `Mailplug Error: ${mailError.message}`, emailId]
-            );
-            
-            return res.status(500).json({
-                success: false,
-                error: 'Failed to send email via Mailplug',
-                details: mailError.message,
-            });
-        }
-    } catch (err: any) {
-        console.error('❌ Database Error:', err);
+        console.log('✅ Email sent successfully!');
+        console.log('Message ID:', info.messageId);
+
+        res.status(200).json({
+            success: true,
+            message: 'Email sent successfully',
+            emailId,
+            messageId: info.messageId,
+        });
+    } catch (mailError: any) {
+        console.error('❌ Mailplug SMTP Error:', mailError);
         
+        // 발송 실패 로그 업데이트
         try {
             await pool.query(
                 `UPDATE email_logs SET success = $1, error_message = $2 WHERE id = $3`,
-                [false, err.message, emailId]
+                [false, `SMTP Error: ${mailError.message}`, emailId]
             );
         } catch (logErr) {
-            console.error('Error logging email failure:', logErr);
+            console.error('Error updating email log:', logErr);
         }
-
-        res.status(500).json({ error: 'Database error' });
+        
+        // 이메일 실패는 경고지만 게임 결과 저장은 성공한 것으로 간주
+        return res.status(200).json({
+            success: false,
+            message: 'Game result saved, but email could not be sent',
+            emailId,
+            error: mailError.message,
+        });
     }
 });
 
