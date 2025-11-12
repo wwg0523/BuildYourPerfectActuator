@@ -40,6 +40,8 @@ services:
       SMTP_PORT: ${SMTP_PORT:-465}
       APP_EMAIL: ${APP_EMAIL:-dev@example.com}
       APP_PASS: ${APP_PASS:-dev_email_password}
+      ENABLE_SSL: ${ENABLE_SSL:-false}
+      CA_CERT_PATH: ${CA_CERT_PATH}
       ANALYTICS_PASSWORD: ${ANALYTICS_PASSWORD:-dev_analytics}
       NODE_ENV: development
     networks:

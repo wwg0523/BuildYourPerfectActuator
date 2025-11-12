@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
+import fs from 'fs';
+import path from 'path';
 import { pool } from '../db.js';
 
 const router = Router();
@@ -11,7 +13,7 @@ interface EmailResult {
     emailId?: string;
 }
 
-// Mailplug SMTP 설정 (POP3/SMTP)
+// SMTP 설정 (POP3/SMTP)
 // 환경변수가 없으면 이메일 발송 비활성화
 const emailEnabled = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.APP_EMAIL && process.env.APP_PASS);
 
@@ -23,19 +25,39 @@ if (!emailEnabled) {
     console.warn('   - APP_PASS');
 }
 
+// SSL/TLS 설정
+const enableSSL = process.env.ENABLE_SSL !== 'false';
+const caCertPath = process.env.CA_CERT_PATH;
+
+// CA 인증서 로드
+let caCert: Buffer | undefined;
+if (enableSSL && caCertPath) {
+    try {
+        caCert = fs.readFileSync(caCertPath);
+        console.log(`✅ CA certificate loaded from: ${caCertPath}`);
+    } catch (err) {
+        console.warn(`⚠️ CA certificate not found at ${caCertPath}. Using default CA bundle.`);
+    }
+}
+
 const transporter = emailEnabled ? nodemailer.createTransport({
     host: process.env.SMTP_HOST!,
     port: parseInt(process.env.SMTP_PORT!, 10),
-    secure: false, // SSL 비활성화
+    secure: enableSSL && parseInt(process.env.SMTP_PORT!, 10) === 465, // port 465 = SSL, 587/25 = STARTTLS
     auth: {
         user: process.env.APP_EMAIL!,
         pass: process.env.APP_PASS!,
     },
     connectionTimeout: 5000,
     socketTimeout: 5000,
+    tls: {
+        // 자체 서명 인증서 허용 (특히 Synology NAS)
+        rejectUnauthorized: process.env.NODE_ENV === 'production' && !caCertPath,
+        ...(caCert && { ca: [caCert] }),
+    },
 }) : null;
 
-// POST /api/send-email: 이메일 발송 (주석처리됨 - 메일 시스템 비활성화)
+// POST /api/send-email: 이메일 발송
 router.post('/send-email', async (req, res) => {
     const { userId, recipientEmail, subject, htmlContent, textContent } = req.body;
 
@@ -45,15 +67,6 @@ router.post('/send-email', async (req, res) => {
 
     const emailId = uuidv4();
 
-    // ⚠️ 메일 시스템 일시 비활성화 - 추후 재활성화 필요
-    console.warn(`⚠️ [DISABLED] Email not sent to ${recipientEmail} (Email system is temporarily disabled)`);
-    return res.status(200).json({
-        success: false,
-        message: 'Email service is temporarily disabled',
-        emailId,
-    });
-
-    /* ======== 원본 이메일 발송 코드 (비활성화) ========
     // 이메일 서비스가 비활성화되면 즉시 성공 반환
     if (!emailEnabled) {
         console.warn(`⚠️ Email service disabled. Skipping email to ${recipientEmail}`);
@@ -112,7 +125,7 @@ router.post('/send-email', async (req, res) => {
             messageId: info.messageId,
         });
     } catch (mailError: any) {
-        console.error('❌ Mailplug SMTP Error:', mailError);
+        console.error('❌ SMTP Error:', mailError);
         
         // 발송 실패 로그 업데이트
         try {
@@ -132,7 +145,6 @@ router.post('/send-email', async (req, res) => {
             error: mailError.message,
         });
     }
-    ======== 원본 이메일 발송 코드 (비활성화) ======== */
 });
 
 // GET /api/email-logs/:userId: 특정 사용자의 이메일 발송 로그 조회

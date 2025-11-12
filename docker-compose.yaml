@@ -41,6 +41,8 @@ services:
       SMTP_PORT: ${SMTP_PORT:-465}
       APP_EMAIL: ${APP_EMAIL}
       APP_PASS: ${APP_PASS}
+      ENABLE_SSL: ${ENABLE_SSL:-true}
+      CA_CERT_PATH: ${CA_CERT_PATH}
       ANALYTICS_PASSWORD: ${ANALYTICS_PASSWORD}
       NODE_ENV: production
     networks:
