@@ -73,7 +73,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         // Retrieve grade information
         const gradeInfo = getRankInfo(leaderboardEntry.finalScore);
 
-        const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.finalScore}/100`;
+        const subject = `Your Actuator Challenge Results - Score: ${leaderboardEntry.finalScore}`;
 
         const htmlContent = `
             <!DOCTYPE html>
@@ -106,7 +106,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                         <div class="result-card">
                             <h2>Hello ${userInfo.name},</h2>
                             <p>Congratulations on completing our Actuator Component Challenge! Here are your results:</p>
-                            <div class="score-display">${leaderboardEntry.finalScore}/100</div>
+                            <div class="score-display">${leaderboardEntry.finalScore}</div>
                             <p style="text-align: center; color: #666;">Correct Answers</p>
                             <div style="text-align: center;">
                                 <span class="rank-badge">🏅 Rank #${leaderboardEntry.rank} Today</span>
@@ -207,7 +207,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                             <div className="rank-badge">
                                 <div className="rank-emoji">{getRankEmoji(leaderboardEntry.rank)}</div>
                                 <div className="rank-info">
-                                    <div className="rank-position">Today's Rank: #{leaderboardEntry.rank}</div>
+                                    <div className="rank-position">Today's Rank: <span className="rank-number">#{leaderboardEntry.rank}</span></div>
                                     <div className="rank-total">out of participants</div>
                                 </div>
                             </div>
@@ -218,9 +218,9 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                     {gradeInfo && (
                         <div className="grade-section">
                             <div className="grade-badge">
-                                <div className="grade-emoji">{gradeInfo.badge}</div>
+                                <div className={`grade-emoji grade-${gradeInfo.rank.toLowerCase()}`}>{gradeInfo.badge}</div>
                                 <div className="grade-info">
-                                    <div className="grade-rank">Grade: {gradeInfo.rank}</div>
+                                    <div className="grade-rank">Grade: <span className="grade-letter">{gradeInfo.rank}</span></div>
                                     <div className="grade-title">{gradeInfo.title}</div>
                                     <div className="grade-description">{gradeInfo.description}</div>
                                 </div>

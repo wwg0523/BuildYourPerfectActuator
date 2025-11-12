@@ -142,8 +142,7 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         };
 
         // 점수 계산
-        const scoreDetails = calculateScore(explanationState.isCorrect, explanationState.question.difficulty);
-        const displayScore = scoreDetails.finalScore;
+        const displayScore = calculateScore(explanationState.isCorrect, explanationState.question.difficulty);
 
         // 마지막 질문 여부 확인
         const isLastQuestion = gameSession.currentQuestionIndex + 1 >= gameSession.questions.length;
@@ -172,7 +171,11 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                         </button>
                     </div>
                     <div className="question-header-inline">
-                        <h2>Question {gameSession.currentQuestionIndex + 1}/5</h2>
+                        <h2>
+                            <span className="question-label-full">Question</span>
+                            <span className="question-label-short">Q</span>
+                            {' '}{gameSession.currentQuestionIndex + 1}/5
+                        </h2>
                     </div>
                     <div className="header-right">
                         <div className="timer-inline">

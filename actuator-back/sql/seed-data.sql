@@ -16,7 +16,7 @@ VALUES
    "improvements": ["Improved precision → More accurate angle adjustment", "Enhanced response speed → Faster adjustment time", "Increased torque → Smooth operation even for large mirrors"],
    "realWorldExamples": ["Premium vehicles: Memory function for automatic adjustment per driver", "Electric vehicles: Low-power actuators for better battery efficiency"]
  }'::jsonb,
- 20),
+ 15),
 
 -- Q2: Multiple-choice Easy
 ('q2', 'multiple-choice', 'daily-life', 'easy',
@@ -29,7 +29,7 @@ VALUES
    "improvements": ["Increased torque → Easy movement over high-resistance floors like carpets", "Precise control → Accurate navigation in narrow spaces", "Low-noise design → Quiet cleaning operation"],
    "realWorldExamples": ["Budget models: Simple 2-wheel drive for basic navigation", "Premium models: 4-wheel independent drive for complex path planning"]
  }'::jsonb,
- 20),
+ 15),
 
 -- Q3: Multiple-choice Medium
 ('q3', 'multiple-choice', 'daily-life', 'medium',
@@ -42,7 +42,7 @@ VALUES
    "improvements": ["Increased load capacity → Safely supports heavier patients", "Reduced noise → Minimizes patient sleep disturbance", "Speed control → Smooth movement for patient safety", "Enhanced durability → Long-lasting even with frequent use"],
    "realWorldExamples": ["Standard hospital beds: 3-5 linear actuators for multi-position adjustment", "ICU beds: Advanced sensors with safety override features"]
  }'::jsonb,
- 20),
+ 15),
 
 -- Q4: Multiple-choice Easy
 ('q4', 'multiple-choice', 'daily-life', 'easy',
@@ -55,7 +55,7 @@ VALUES
    "improvements": ["Smooth motion → Comfortable height adjustment", "Load capacity → Supports heavy equipment and materials", "Quiet operation → Non-disruptive in office environment"],
    "realWorldExamples": ["Basic models: Single motor actuator for synchronized rise", "Premium models: Dual motor for independent control and level correction"]
  }'::jsonb,
- 20),
+ 15),
 
 -- Q5: Multiple-choice Medium
 ('q5', 'multiple-choice', 'daily-life', 'medium',
@@ -120,7 +120,7 @@ VALUES
    "improvements": ["EPS precision → Variable assist based on speed (light at low speed, heavy at high speed)", "Regenerative efficiency → Recovers up to 30% of kinetic energy as electricity", "Suspension responsiveness → Real-time damping adjustment (0.001 second reaction time)"],
    "realWorldExamples": ["Tesla Model S: Dual motor AWD with air suspension", "Hyundai Ioniq 5: Regenerative braking paddles with integrated EPS control", "Audi e-tron: Predictive active suspension with torque vectoring"]
  }'::jsonb,
- 20),
+ 25),
 
 -- Q10: Multiple-choice Hard
 ('q10', 'multiple-choice', 'specification', 'hard',
@@ -146,7 +146,7 @@ VALUES
    "improvements": ["Real-world examples show compact actuators (5-10 Nm) for standard vehicles and high-torque actuators (15-20 Nm) for SUVs/large vehicles"],
    "realWorldExamples": ["Standard passenger car: Small actuator (5-10 Nm)", "SUV/large vehicle: High-torque actuator (15-20 Nm)", "Armored vehicle: Ultra-high-torque actuator (30+ Nm)", "Winter benefit: Frozen windows can still operate reliably", "Safety enhancement: Rapid response when obstacle detected"]
  }'::jsonb,
- 20),
+ 15),
 
 -- Q12: True-False Easy
 ('q12', 'true-false', 'specification', 'easy',
@@ -159,7 +159,7 @@ VALUES
    "improvements": ["Reduced defect rate → Lower production costs", "Faster work speed → Reduced rework time", "Access to new applications requiring tight tolerances"],
    "realWorldExamples": ["Electronics assembly (0.1mm precision): Smartphone component assembly", "Semiconductor manufacturing (0.01mm = 10μm precision): Wafer handling and chip bonding", "Medical devices (0.01mm+ precision): Surgical robots and dispensing systems"]
  }'::jsonb,
- 20),
+ 15),
 
 -- Q13: True-False Medium
 ('q13', 'true-false', 'specification', 'medium',
@@ -198,7 +198,7 @@ VALUES
    "improvements": ["Sleep quality → Uninterrupted patient recovery", "Stress reduction → Lower cortisol levels during hospitalization", "Better healing → Quality sleep accelerates recovery process"],
    "realWorldExamples": ["Low-noise medical actuators: 25-30dB (comparable to whisper)", "Silent actuators: Under 20dB (barely perceptible)", "Standard industrial actuators: 50-60dB (comparison: normal conversation)"]
  }'::jsonb,
- 20);
+ 25);
 
 -- Verify data insertion
 SELECT COUNT(*) as total_questions FROM quiz_questions_cache;

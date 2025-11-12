@@ -248,8 +248,8 @@ export default function ActuatorMinigame() {
                 if (answer.isCorrect && idx < sessionToSubmit.questions.length) {
                     const question = sessionToSubmit.questions[idx];
                     const difficulty = question.difficulty;
-                    const scoreCalc = calculateScore(true, difficulty);
-                    finalScore += scoreCalc.finalScore;
+                    const score = calculateScore(true, difficulty);
+                    finalScore += score;
                 }
             });
             
@@ -261,7 +261,7 @@ export default function ActuatorMinigame() {
                     isCorrect: answer.isCorrect,
                     difficulty: sessionToSubmit.questions[idx]?.difficulty,
                     pointsEarned: answer.isCorrect && idx < sessionToSubmit.questions.length
-                        ? calculateScore(true, sessionToSubmit.questions[idx].difficulty).finalScore
+                        ? calculateScore(true, sessionToSubmit.questions[idx].difficulty)
                         : 0
                 }))
             });
@@ -368,8 +368,8 @@ export default function ActuatorMinigame() {
                 if (answer.isCorrect && idx < sessionToSubmit.questions.length) {
                     const question = sessionToSubmit.questions[idx];
                     const difficulty = question.difficulty;
-                    const scoreCalc = calculateScore(true, difficulty);
-                    errorFinalScore += scoreCalc.finalScore;
+                    const score = calculateScore(true, difficulty);
+                    errorFinalScore += score;
                 }
             });
             

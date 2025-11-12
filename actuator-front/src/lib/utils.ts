@@ -90,11 +90,7 @@ export interface GameQuestion {
     points: number;
 }
 
-export interface ScoreCalculation {
-    basePoints: number;        // Base points (20 for correct answer)
-    difficultyMultiplier: number; // Difficulty multiplier
-    finalScore: number;        // Final score
-}
+// ScoreCalculation interface는 제거됨 - 이제 calculateScore는 숫자를 직접 반환
 
 export interface RankInfo {
     rank: string;
@@ -203,16 +199,36 @@ export class GameEngine {
         const quizQuestionsImport = require('../data/quizQuestions.json');
         const allQuizQuestions: GameQuestion[] = quizQuestionsImport.questions;
         
-        // 문제 1-3: 4지선다 (q1~q10 중에서 선택)
+        // 문제 유형별로 분류
         const multipleChoiceQuestions = allQuizQuestions.filter(q => q.type === 'multiple-choice');
-        const selectedMultipleChoice = this.shuffleArray(multipleChoiceQuestions).slice(0, 3);
-        
-        // 문제 4-5: OX 퀴즈 (q11~q15 중에서 선택)
         const trueFalseQuestions = allQuizQuestions.filter(q => q.type === 'true-false');
-        const selectedTrueFalse = this.shuffleArray(trueFalseQuestions).slice(0, 2);
         
-        // 최종 게임 문제 구성: 4지선다 3개 + OX 2개 = 총 5개
-        const questions = [...selectedMultipleChoice, ...selectedTrueFalse];
+        // 난이도별로 분류
+        const easyMC = multipleChoiceQuestions.filter(q => q.difficulty === 'easy');
+        const mediumMC = multipleChoiceQuestions.filter(q => q.difficulty === 'medium');
+        const hardMC = multipleChoiceQuestions.filter(q => q.difficulty === 'hard');
+        
+        const easyTF = trueFalseQuestions.filter(q => q.difficulty === 'easy');
+        const mediumTF = trueFalseQuestions.filter(q => q.difficulty === 'medium');
+        const hardTF = trueFalseQuestions.filter(q => q.difficulty === 'hard');
+        
+        // 문제 구성:
+        // 문제 1-3: 4지선다 (easy 2개 + hard 1개) → 15 + 15 + 25 = 55점
+        // 문제 4-5: OX (medium 1개 + hard 1개) → 20 + 25 = 45점
+        // 총점: 100점
+        
+        const problem1to3 = [
+            ...this.shuffleArray(easyMC).slice(0, 2),      // Easy: 2개
+            ...this.shuffleArray(hardMC).slice(0, 1)       // Hard: 1개
+        ];
+        
+        const problem4to5 = [
+            ...this.shuffleArray(mediumTF).slice(0, 1),    // Medium: 1개
+            ...this.shuffleArray(hardTF).slice(0, 1)       // Hard: 1개
+        ];
+        
+        // 최종 구성: 1-3번(4지선다), 4-5번(OX)
+        const questions = [...this.shuffleArray(problem1to3), ...this.shuffleArray(problem4to5)];
 
         return {
             sessionId: generateUUID(),
@@ -233,65 +249,56 @@ const rankSystem: RankInfo[] = [
         title: 'Actuator Master',
         description: 'You demonstrated perfect understanding!',
         minScore: 90,
-        badge: '🏆'
+        badge: '🏆'  // Gold trophy
     },
     {
         rank: 'A',
         title: 'Actuator Expert',
         description: 'You have excellent understanding.',
         minScore: 75,
-        badge: '🥇'
+        badge: '🏆'  // Silver trophy (CSS filter applied)
     },
     {
         rank: 'B',
         title: 'Actuator Specialist',
         description: 'You demonstrated good understanding.',
         minScore: 60,
-        badge: '🥈'
+        badge: '🏆'  // Bronze trophy (CSS filter applied)
     },
     {
         rank: 'C',
         title: 'Actuator Learner',
         description: 'You are continuing to learn.',
         minScore: 40,
-        badge: '🥉'
+        badge: '🏆'  // Dark bronze trophy (CSS filter applied)
     },
     {
         rank: 'D',
         title: 'Actuator Beginner',
         description: 'Every beginning is half the victory!',
         minScore: 0,
-        badge: '📚'
+        badge: '�'  // Gray trophy (CSS filter applied)
     }
 ];
 
 // 점수 계산 함수
+// 난이도별 점수: easy 15점, medium 20점, hard 25점
+// 5문제 구성: easy 2개(30점) + medium 1개(20점) + hard 2개(50점) = 100점
 export const calculateScore = (
     isCorrect: boolean,
     difficulty: 'easy' | 'medium' | 'hard'
-): ScoreCalculation => {
+): number => {
     if (!isCorrect) {
-        return {
-            basePoints: 0,
-            difficultyMultiplier: 1,
-            finalScore: 0
-        };
+        return 0;
     }
 
-    const basePoints = 20;
-    const difficultyMultiplier = {
-        easy: 1.0,      // 쉬움: 20점
-        medium: 1.5,    // 중간: 30점
-        hard: 2.0       // 어려움: 40점
+    const scoreByDifficulty = {
+        easy: 15,       // 쉬움: 15점
+        medium: 20,     // 중간: 20점
+        hard: 25        // 어려움: 25점
     }[difficulty];
 
-    const finalScore = Math.round(basePoints * difficultyMultiplier);
-
-    return {
-        basePoints,
-        difficultyMultiplier,
-        finalScore
-    };
+    return scoreByDifficulty;
 };
 
 // 등급 조회 함수
@@ -338,9 +345,9 @@ export class LeaderboardManager {
             }
             
             const difficulty = answer.difficulty || 'medium';
-            const scoreCalc = calculateScore(true, difficulty);
+            const score = calculateScore(true, difficulty);
             
-            return sum + scoreCalc.finalScore;
+            return sum + score;
         }, 0);
         
         return totalScore;
