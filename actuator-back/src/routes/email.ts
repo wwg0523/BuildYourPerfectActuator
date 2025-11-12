@@ -2,16 +2,9 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import nodemailer from 'nodemailer';
 import fs from 'fs';
-import path from 'path';
 import { pool } from '../db.js';
 
 const router = Router();
-
-interface EmailResult {
-    success: boolean;
-    message: string;
-    emailId?: string;
-}
 
 // SMTP 설정 (POP3/SMTP)
 // 환경변수가 없으면 이메일 발송 비활성화

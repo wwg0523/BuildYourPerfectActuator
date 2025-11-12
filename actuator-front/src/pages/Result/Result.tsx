@@ -14,6 +14,7 @@ interface ResultProps {
 
 const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePlayAgain, setScreen, handleDeleteUserData, userInfo }) => {
     const correctAnswers = gameSession.answers.filter(a => a.isCorrect).length;
+    const emailSentRef = React.useRef(false);
 
     const getRankEmoji = (rank?: number) => {
         if (!rank) return '🎮';
@@ -27,13 +28,13 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
     // Retrieve grade information based on score
     const gradeInfo = leaderboardEntry ? getRankInfo(leaderboardEntry.finalScore) : null;
 
-    // Send result email after entering Result screen
+    // Send result email after entering Result screen (한 번만 실행)
     useEffect(() => {
-        if (userInfo && leaderboardEntry) {
+        if (userInfo && leaderboardEntry && !emailSentRef.current) {
+            emailSentRef.current = true;
             sendResultEmail();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [leaderboardEntry, userInfo]);
+    }, [leaderboardEntry?.rank, userInfo?.id]);
 
     const sendResultEmail = async () => {
         if (!userInfo || !leaderboardEntry) return;
