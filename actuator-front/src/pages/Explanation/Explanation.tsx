@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameQuestion } from '../../lib/utils';
 import './Explanation.scss';
 
@@ -28,6 +28,8 @@ const Explanation: React.FC<ExplanationProps> = ({
         examples: false,
     });
 
+    const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
+
     // 섹션 토글 함수
     const toggleSection = (section: 'improvements' | 'examples') => {
         setExpandedSections(prev => ({
@@ -35,6 +37,36 @@ const Explanation: React.FC<ExplanationProps> = ({
             [section]: !prev[section],
         }));
     };
+
+    // 브라우저 뒤로가기 감지
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            event.preventDefault();
+            setShowBackConfirmModal(true);
+            // 뒤로가기를 막기 위해 앞으로 가기 수행
+            window.history.forward();
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+
+    // 선택지 인덱스를 실제 선택지 텍스트로 변환하는 함수
+    const getAnswerText = (answerIndex: string): string => {
+        // answerIndex는 'A', 'B', 'C', 'D' 또는 'O', 'X'
+        if (question.type === 'true-false') {
+            return answerIndex; // O 또는 X 그대로 반환
+        }
+        
+        // multiple-choice 타입
+        const answerCharCode = answerIndex.charCodeAt(0);
+        const index = answerCharCode - 'A'.charCodeAt(0);
+        return question.options[index] || answerIndex;
+    };
+
     return (
         <div className="page-explanation">
             <div className="explanation-card">
@@ -56,10 +88,20 @@ const Explanation: React.FC<ExplanationProps> = ({
                         <h3>📌 Question</h3>
                         <p className="question-text">{question.question}</p>
                         <div className="answer-display">
-                            <span className="label">Your Answer:</span>
-                            <span className={`answer ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`}>
-                                {selectedAnswer}
-                            </span>
+                            <div className="answer-item">
+                                <span className="label">Your Answer:</span>
+                                <span className={`answer ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`}>
+                                    {getAnswerText(selectedAnswer)}
+                                </span>
+                            </div>
+                            {!isCorrect && (
+                                <div className="answer-item">
+                                    <span className="label">Correct Answer:</span>
+                                    <span className="answer correct-answer">
+                                        {getAnswerText(question.correctAnswer)}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -190,6 +232,20 @@ const Explanation: React.FC<ExplanationProps> = ({
                         {buttonText}
                     </button>
                 </div>
+
+                {/* Back Confirm Modal */}
+                {showBackConfirmModal && (
+                    <div className="delete-confirm-modal-overlay" onClick={() => setShowBackConfirmModal(false)}>
+                        <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+                            <h2>Leave Game?</h2>
+                            <p>Are you sure you want to leave the game? Your progress will be lost.</p>
+                            <div className="modal-buttons">
+                                <button onClick={() => setShowBackConfirmModal(false)} className="button outline">CANCEL</button>
+                                <button onClick={() => window.location.href = '/'} className="button delete">LEAVE</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

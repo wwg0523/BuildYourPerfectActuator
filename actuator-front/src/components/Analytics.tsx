@@ -211,7 +211,7 @@ const Analytics: React.FC = () => {
                                             borderRadius: '4px 4px 0 0',
                                         }}
                                     >
-                                        � Trends
+                                        📈 Trends
                                     </button>
                                 </div>
 
@@ -297,9 +297,9 @@ const Analytics: React.FC = () => {
 
                                 {/* Companies Tab */}
                                 {activeTab === 'companies' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                                        <div style={{ width: '100%', maxWidth: '900px', height: 300, margin: '0 auto' }}>
-                                            <h3 style={{ textAlign: 'center' }}>Participants by Company</h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+                                        <div style={{ width: '100%', maxWidth: '900px', height: 300, margin: '0 auto', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+                                            <h3 style={{ textAlign: 'center', marginTop: 0 }}>Participants by Company</h3>
                                             <ResponsiveContainer>
                                                 <BarChart data={analyticsData.leadQuality}>
                                                     <CartesianGrid strokeDasharray="3 3" />
@@ -312,7 +312,7 @@ const Analytics: React.FC = () => {
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>
-                                        <div style={{ overflowX: 'auto', width: '100%' }}>
+                                        <div style={{ overflowX: 'auto', width: '100%', padding: '0 10px' }}>
                                             <table style={{
                                                 width: '100%',
                                                 borderCollapse: 'collapse',
@@ -347,9 +347,9 @@ const Analytics: React.FC = () => {
 
                                 {/* Trends Tab */}
                                 {activeTab === 'trends' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-                                        <div style={{ width: '100%', maxWidth: '1000px', height: 300 }}>
-                                            <h3 style={{ textAlign: 'center' }}>Daily Participation Trend</h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px' }}>
+                                        <div style={{ width: '100%', maxWidth: '1000px', height: 300, padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+                                            <h3 style={{ textAlign: 'center', marginTop: 0 }}>Daily Participation Trend</h3>
                                             <ResponsiveContainer>
                                                 <LineChart data={analyticsData.dailyTrend}>
                                                     <CartesianGrid strokeDasharray="3 3" />
@@ -362,7 +362,7 @@ const Analytics: React.FC = () => {
                                                 </LineChart>
                                             </ResponsiveContainer>
                                         </div>
-                                        <div style={{ overflowX: 'auto', width: '100%' }}>
+                                        <div style={{ overflowX: 'auto', width: '100%', padding: '0 10px' }}>
                                             <table style={{
                                                 width: '100%',
                                                 borderCollapse: 'collapse',

@@ -8,6 +8,17 @@ $primary-color: #4f46e5;
 $error-color: #dc2626;
 $hover-color: #2563eb;
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 // 라이트 모드 색상 변수
 :root {
     --bg-primary: #f0f4f8;
@@ -59,9 +70,15 @@ $hover-color: #2563eb;
 // 전체 화면 배경
 body {
     margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 // App 중앙 컨테이너
@@ -72,6 +89,11 @@ body {
     min-height: 100vh;
     background-color: var(--bg-primary);
     color: var(--text-primary);
+    padding: 0;
+    
+    @media (max-width: 640px) {
+        padding: 0 10px;
+    }
 }
 
 // 카드 UI
@@ -338,4 +360,11 @@ input {
     }
 }
 
-
+/* Explanation 페이지 전용 스타일 */
+.app-container > .page-explanation {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 100vh;
+}

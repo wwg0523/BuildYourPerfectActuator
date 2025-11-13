@@ -22,7 +22,7 @@
 	padding: 12px;
 }
 
-.leaderboard-header-top .header-title {
+.leaderboard-header-top .leaderboard-header-title {
 	flex: 1;
 	text-align: center;
 
@@ -34,7 +34,7 @@
 	}
 }
 
-.leaderboard-header-top .header-button {
+.leaderboard-header-top .leaderboard-header-button {
 	background: rgba(255, 255, 255, 0.2);
 	color: white;
 	border: 1px solid rgba(255, 255, 255, 0.3);
@@ -47,7 +47,7 @@
 	transition: all 0.3s ease;
 }
 
-.leaderboard-header-top .header-button:hover {
+.leaderboard-header-top .leaderboard-header-button:hover {
 	background: rgba(255, 255, 255, 0.3);
 }
 
@@ -164,7 +164,7 @@
 	color: #667eea;
 }
 
-.actions {
+.leaderboard-actions {
 	display: flex;
 	gap: 10px;
 	padding: 16px;
@@ -172,7 +172,7 @@
 	border-top: 1px solid #eee;
 }
 
-.btn {
+.leaderboard-btn {
 	padding: 10px 20px;
 	border: none;
 	border-radius: 6px;
@@ -182,22 +182,22 @@
 	transition: all 0.3s;
 }
 
-.btn.play {
+.leaderboard-btn-play {
 	background: #667eea;
 	color: white;
 }
 
-.btn.play:hover {
+.leaderboard-btn-play:hover {
 	background: #5568d3;
 	transform: translateY(-2px);
 }
 
-.btn.home {
+.leaderboard-btn-home {
 	background: #f0f0f0;
 	color: #333;
 }
 
-.btn.home:hover {
+.leaderboard-btn-home:hover {
 	background: #e0e0e0;
 }
 

@@ -11,7 +11,7 @@
 /* Game Card Container */
 .game-card {
   background: var(--bg-card, white);
-  border-radius: 0;
+  border-radius: 12px;
   box-shadow: none;
   display: flex;
   flex-direction: column;
@@ -45,6 +45,7 @@
   gap: 10px;
   flex-wrap: nowrap;
   min-width: 0;
+  border-radius: 12px 12px 0 0;
   
   @media (min-width: 1024px) {
     padding: 20px 20px;
@@ -61,19 +62,19 @@
   }
 }
 
-.header-left {
+.game-header-left {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.header-right {
+.game-header-right {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.header-button {
+.game-header-button {
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -96,14 +97,14 @@
   }
 }
 
-.home-button {
+.game-home-button {
   @media (max-width: 640px) {
     padding: 6px 10px;
     font-size: 12px;
   }
 }
 
-.question-header-inline {
+.game-question-header-inline {
   flex: 1;
   text-align: center;
   min-width: 0;
@@ -149,7 +150,7 @@
   }
 }
 
-.timer-inline {
+.game-timer-inline {
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -180,7 +181,7 @@
 }
 
 /* Fixed timer at top right */
-.timer-fixed {
+.game-timer-fixed {
   position: fixed;
   background: #059669;
   color: white;
@@ -214,7 +215,7 @@
 }
 
 /* Fixed question header at top */
-.question-header-fixed {
+.game-question-header-fixed {
   position: fixed;
   top: 15px;
   left: 50%;
@@ -254,7 +255,7 @@
   }
 }
 
-.page-game .question-header {
+.page-game .game-question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -279,7 +280,7 @@
   }
 }
 
-.page-game .question-header h2 {
+.page-game .game-question-header h2 {
   margin: 0;
   
   @media (min-width: 1024px) {
@@ -408,7 +409,7 @@
   }
 }
 
-.page-game .question-image {
+.page-game .game-question-image {
   width: 100%;
   max-width: 400px;
   height: auto;
@@ -429,7 +430,7 @@
   }
 }
 
-.page-game .options-grid {
+.page-game .game-options-grid {
   display: grid;
   margin-top: 12px;
   
@@ -449,7 +450,7 @@
   }
 }
 
-.page-game .option-button {
+.page-game .game-option-button {
   border: 2px solid #ddd;
   border-radius: 8px;
   background: var(--bg-card, white);
@@ -510,7 +511,7 @@
   word-break: break-word;
 }
 
-.page-game .submit-button {
+.page-game .game-submit-button {
   display: block;
   width: 100%;
   border: none;
@@ -550,7 +551,7 @@
 }
 
 /* Fixed submit button at bottom */
-.submit-button-fixed {
+.game-submit-button-fixed {
   position: fixed;
   bottom: 20px;
   left: 50%;
@@ -609,6 +610,7 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  border-radius: 0 0 12px 12px;
   
   @media (min-width: 1024px) {
     padding: 20px 30px;
@@ -623,7 +625,7 @@
   }
 }
 
-.submit-button-inline {
+.game-submit-button-inline {
   border: none;
   border-radius: 8px;
   cursor: not-allowed;
@@ -666,7 +668,7 @@
 }
 
 /* 피드백 모달 (Game 페이지 전용) */
-.feedback-modal {
+.game-feedback-modal {
   background: var(--bg-card, white);
   padding: 40px;
   border-radius: 12px;
@@ -684,13 +686,13 @@
   }
 }
 
-.modal-icon {
+.game-modal-icon {
   font-size: 60px;
   margin-bottom: 15px;
   animation: pop 0.5s ease;
 }
 
-.feedback-modal h2 {
+.game-feedback-modal h2 {
   margin: 0 0 15px 0;
   font-size: 28px;
   color: #333;
@@ -704,13 +706,13 @@
   }
 }
 
-.modal-selected {
+.game-modal-selected {
   margin: 15px 0;
   font-size: 16px;
   color: #666;
 }
 
-.modal-correct {
+.game-modal-correct {
   margin: 15px 0;
   padding: 15px;
   background: #fff3cd;
@@ -725,7 +727,7 @@
   }
 }
 
-.modal-button {
+.game-modal-button {
   margin-top: 25px;
   padding: 12px 40px;
   font-size: 16px;
@@ -769,7 +771,7 @@
 }
 
 /* OX Quiz Options */
-.ox-options {
+.game-ox-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -786,7 +788,7 @@
   }
 }
 
-.ox-button {
+.game-ox-button {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -826,18 +828,18 @@
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
 
-  &.ox-true.selected {
+  &.game-ox-true.selected {
     background: linear-gradient(135deg, #52c41a 0%, #45a049 100%);
     box-shadow: 0 4px 12px rgba(82, 196, 26, 0.4);
   }
 
-  &.ox-false.selected {
+  &.game-ox-false.selected {
     background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
     box-shadow: 0 4px 12px rgba(255, 77, 79, 0.4);
   }
 }
 
-.ox-label {
+.game-ox-label {
   font-size: 32px;
   font-weight: bold;
   display: flex;
@@ -861,13 +863,13 @@
     height: 50px;
   }
 
-  .ox-button.selected & {
+  .game-ox-button.selected & {
     background: rgba(255, 255, 255, 0.3);
     color: white;
   }
 }
 
-.ox-text {
+.game-ox-text {
   font-size: 14px;
   font-weight: 600;
 

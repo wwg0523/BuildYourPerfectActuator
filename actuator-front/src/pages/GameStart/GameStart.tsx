@@ -209,11 +209,28 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                             }}
                             className={`carousel-slide carousel-slide-${slides[currentSlide].id}`}
                         >
-                            {/* <div className="slide-icon">{slides[currentSlide].icon}</div> */}
                             {slides[currentSlide].id > 2 && <h2 className="slide-headline">{slides[currentSlide].headline}</h2>}
                             <div className="slide-body">{slides[currentSlide].content}</div>
                         </motion.div>
                     </AnimatePresence>
+
+                    {/* Arrow Navigation Buttons - Desktop Only */}
+                    <button
+                        className={`carousel-arrow carousel-arrow-left ${currentSlide === 0 ? 'disabled' : ''}`}
+                        onClick={handlePrevious}
+                        disabled={currentSlide === 0}
+                        aria-label="Previous slide"
+                    >
+                        ←
+                    </button>
+                    <button
+                        className={`carousel-arrow carousel-arrow-right ${currentSlide === slides.length - 1 ? 'disabled' : ''}`}
+                        onClick={handleNext}
+                        disabled={currentSlide === slides.length - 1}
+                        aria-label="Next slide"
+                    >
+                        →
+                    </button>
                 </div>
 
                 {/* Slide Indicators */}

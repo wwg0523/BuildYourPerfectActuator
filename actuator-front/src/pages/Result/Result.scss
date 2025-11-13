@@ -46,7 +46,7 @@
   }
 }
 
-.header-title {
+.result-header-title {
   flex: 1;
   text-align: center;
   min-width: 0;
@@ -76,7 +76,7 @@
   }
 }
 
-.result-header-top .header-button {
+.result-header-top .result-header-button {
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -111,7 +111,6 @@
 .score-section {
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
 .score-main-display {
@@ -120,16 +119,17 @@
   background: linear-gradient(135deg, #f8f9fc 0%, #f3f4f8 100%);
   border-radius: 12px;
   border: 2px solid #e8e8f0;
+  margin-bottom: 12px;
   
   .score-value {
-    font-size: 56px;
+    font-size: 44px;
     font-weight: 800;
     color: #333;
     margin: 0;
     line-height: 1;
     
     @media (max-width: 640px) {
-      font-size: 44px;
+      font-size: 30px;
     }
   }
   
@@ -140,7 +140,7 @@
     font-weight: 500;
     
     @media (max-width: 640px) {
-      font-size: 14px;
+      font-size: 12px;
     }
   }
 }
@@ -160,14 +160,14 @@
     border-radius: 10px;
     text-align: center;
     transition: all 0.3s ease;
+    outline: none;
     
     @media (max-width: 640px) {
       padding: 16px;
     }
     
-    &:hover {
-      background: #f0f0f7;
-      border-color: #667eea;
+    &:focus {
+      outline: none;
     }
     
     .stat-number {
@@ -177,7 +177,7 @@
       margin: 0 0 8px 0;
       
       @media (max-width: 640px) {
-        font-size: 26px;
+        font-size: 24px;
       }
     }
     
@@ -188,7 +188,7 @@
       margin: 0;
       
       @media (max-width: 640px) {
-        font-size: 12px;
+        font-size: 11px;
       }
     }
   }
@@ -202,11 +202,13 @@
   
   .rank-badge {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
+    justify-content: center;
+    gap: 12px;
     
     @media (max-width: 640px) {
-      gap: 12px;
+      gap: 2px;
     }
     
     .rank-emoji {
@@ -217,13 +219,13 @@
       flex-shrink: 0;
       
       @media (max-width: 640px) {
-        font-size: 40px;
+        font-size: 32px;
       }
     }
     
     .rank-info {
       color: white;
-      flex: 1;
+      text-align: center;
       
       .rank-position {
         font-size: 16px;
@@ -267,8 +269,10 @@
   
   .grade-badge {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
+    justify-content: center;
+    gap: 12px;
     
     @media (max-width: 640px) {
       gap: 12px;
@@ -282,7 +286,7 @@
       flex-shrink: 0;
       
       @media (max-width: 640px) {
-        font-size: 40px;
+        font-size: 32px;
       }
 
       // Rank별 색상 필터
@@ -309,7 +313,7 @@
     
     .grade-info {
       color: white;
-      flex: 1;
+      text-align: center;
       
       .grade-rank {
         font-size: 18px;
@@ -377,18 +381,14 @@
 
 /* Main Content Area */
 .result-content-main {
-  padding: 28px;
-  
-  @media (min-width: 1024px) {
-    padding: 32px;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    padding: 28px;
-  }
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   
   @media (max-width: 640px) {
-    padding: 20px;
+    padding: 16px;
+    gap: 10px;
   }
 }
 
@@ -471,10 +471,10 @@
 }
 
 .btn.leaderboard {
-  background: #8b5cf6;
+  background: #B0B0B0;
   
   &:hover {
-    background: #7c3aed;
+    background: #9CA3AF;
   }
 }
 

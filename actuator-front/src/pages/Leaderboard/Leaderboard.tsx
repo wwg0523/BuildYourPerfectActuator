@@ -49,13 +49,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
         <div className="page-leaderboard">
             {/* Header with HOME, Title, and STATS */}
             <div className="leaderboard-header-top">
-                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                <button className="leaderboard-header-button leaderboard-home-button" onClick={() => setScreen('home')} title="Home">
                     🏠 HOME
                 </button>
-                <div className="header-title">
+                <div className="leaderboard-header-title">
                     <h2>Today's Rankings</h2>
                 </div>
-                <button className="header-button stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
+                <button className="leaderboard-header-button leaderboard-stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
                     📊 STATS
                 </button>
             </div>
@@ -101,9 +101,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                         ))}
                     </div>
                 )}
-                <div className="actions">
-                    <button onClick={handlePlayAgain} className="btn play">🔄 PLAY AGAIN</button>
-                    <button onClick={() => setScreen('home')} className="btn home">🏠 HOME</button>
+                <div className="leaderboard-actions">
+                    <button onClick={handlePlayAgain} className="leaderboard-btn leaderboard-btn-play">🔄 PLAY AGAIN</button>
+                    <button onClick={() => setScreen('home')} className="leaderboard-btn leaderboard-btn-home">🏠 HOME</button>
                 </div>
             </div>
         </div>

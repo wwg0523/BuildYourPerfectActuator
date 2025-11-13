@@ -1,27 +1,48 @@
-/* Explanation Page Styles */
+/* Page-specific styles for Explanation.tsx */
 .page-explanation {
-  display: block;
+  display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: auto;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   padding: 0;
   margin: 0;
-  width: 100%;
+  max-width: 100%;
 }
 
 /* Explanation Card Container */
 .explanation-card {
   background: var(--bg-card, white);
-  border-radius: 0;
+  border-radius: 12px;
   box-shadow: none;
   display: flex;
   flex-direction: column;
   height: auto;
   max-height: none;
   min-height: auto;
-  overflow: visible;
+  overflow: hidden;
   width: 100%;
+  max-width: 100vw;
+  max-height: calc(100vh - 100px);
+  
+  @media (min-width: 1024px) {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  @media (max-width: 640px) {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - 80px);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
 }
 
 /* Explanation Header */
@@ -32,7 +53,7 @@
   padding: clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-radius: 0;
+  border-radius: 12px 12px 0 0;
   min-height: auto;
   
   &.correct {
@@ -106,11 +127,15 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  background: var(--bg-card, white);
   padding: clamp(16px, 3vw, 28px);
+  margin-bottom: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   
   @media (max-width: 640px) {
-    flex: none;
-    overflow-y: visible;
+    padding: clamp(12px, 3vw, 20px);
   }
   
   /* Scrollbar styling */
@@ -139,26 +164,29 @@
 .examples-section,
 .learn-more-card {
   padding: 0;
+  margin-bottom: 10px;
+  max-width: 100%;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.examples-section {
   margin-bottom: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 /* Original Question Section */
 .original-question {
-  padding-top: 28px;
-  padding-bottom: 20px;
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    padding-top: 22px;
-    padding-bottom: 16px;
-  }
+  padding-top: 0;
+  padding-bottom: 0;
   
   @media (max-width: 640px) {
-    padding-top: 16px;
-    padding-bottom: 12px;
+    padding-bottom: 0;
   }
   
   h3 {
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0;
     font-size: 16px;
     color: #667eea;
     font-weight: 600;
@@ -171,7 +199,7 @@
   }
   
   .question-text {
-    margin: 0 0 16px 0;
+    margin: 0 0 12px 0;
     font-size: 16px;
     line-height: 1.6;
     font-weight: 500;
@@ -189,42 +217,49 @@
 /* Answer Display */
 .answer-display {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px 16px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
   background: #f9f9f9;
   border-radius: 8px;
   border: 2px solid #e0e0e0;
-  margin: 0 auto;
+  margin: 10px auto 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.answer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
   
-  @media (min-width: 1024px) {
-    width: fit-content;
-  }
-  
-  @media (min-width: 641px) and (max-width: 1023px) {
-    width: fit-content;
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   
   .label {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
     font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
     
     @media (max-width: 640px) {
-      font-size: 13px;
+      font-size: 12px;
     }
   }
   
   .answer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
-    font-size: 18px;
-    font-weight: 700;
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: clamp(12px, 2vw, 14px);
+    font-weight: 600;
     border-radius: 6px;
+    max-width: 100%;
+    word-break: break-word;
     
     &.correct-answer {
       background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
@@ -240,57 +275,45 @@
 
 /* Explanation Section */
 .explanation-section {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border-top: 1px solid #eee;
-  
-  @media (max-width: 640px) {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
+  padding-top: 0;
+  padding-bottom: 0;
   
   h3 {
-    margin: 0 0 12px 0;
-    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-size: 15px;
     color: #333;
     font-weight: 600;
     
     @media (max-width: 640px) {
-      font-size: 14px;
+      font-size: 13px;
     }
   }
   
   p {
     margin: 0;
-    font-size: 15px;
+    font-size: 14px;
     color: #555;
-    line-height: 1.7;
+    line-height: 1.5;
     
     @media (max-width: 640px) {
-      font-size: 13px;
+      font-size: 12px;
     }
   }
 }
 
 /* Improvements Section */
 .improvements-section {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border-top: 1px solid #eee;
-  
-  @media (max-width: 640px) {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
+  padding-top: 0;
+  padding-bottom: 0;
 
   h3 {
-    margin: 0 0 12px 0;
-    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-size: 15px;
     color: #333;
     font-weight: 600;
     
     @media (max-width: 640px) {
-      font-size: 14px;
+      font-size: 13px;
     }
   }
 
@@ -305,7 +328,7 @@
       cursor: pointer;
       user-select: none;
       padding: 10px;
-      margin: -10px;
+      margin: 0;
       border-radius: 6px;
       transition: background-color 0.2s ease;
 
@@ -358,6 +381,7 @@
   .improvements-expanded {
     position: relative;
     display: block;
+    overflow: hidden;
 
     @media (max-width: 640px) {
       display: block;
@@ -411,20 +435,26 @@
 
 .improvements-list {
   margin: 0;
-  padding-left: clamp(1.5rem, 5vw, 2.5rem);
+  padding-left: clamp(1.2rem, 5vw, 2rem);
   list-style-position: outside;
   list-style: disc;
   display: block;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
   
   li {
-    margin: 8px 0 8px clamp(0.5rem, 2vw, 1rem);
-    font-size: 14px;
+    margin: 4px 0 4px clamp(0.3rem, 2vw, 0.8rem);
+    font-size: 13px;
     color: #555;
-    line-height: 1.6;
+    line-height: 1.4;
+    word-break: break-word;
+    max-width: 100%;
+    overflow: hidden;
     
     @media (max-width: 640px) {
-      font-size: 13px;
-      margin: 6px 0 6px 0.5rem;
+      font-size: 12px;
+      margin: 3px 0 3px 0.5rem;
     }
   }
 
@@ -440,23 +470,17 @@
 
 /* Examples Section */
 .examples-section {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  border-top: 1px solid #eee;
-  
-  @media (max-width: 640px) {
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
+  padding-top: 0;
+  padding-bottom: 0;
 
   h3 {
-    margin: 0 0 12px 0;
-    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-size: 15px;
     color: #333;
     font-weight: 600;
     
     @media (max-width: 640px) {
-      font-size: 14px;
+      font-size: 13px;
     }
   }
 
@@ -471,7 +495,7 @@
       cursor: pointer;
       user-select: none;
       padding: 10px;
-      margin: -10px;
+      margin: 0;
       border-radius: 6px;
       transition: background-color 0.2s ease;
 
@@ -524,6 +548,7 @@
   .examples-expanded {
     position: relative;
     display: block;
+    overflow: hidden;
 
     @media (max-width: 640px) {
       display: block;
@@ -577,20 +602,26 @@
 
 .examples-list {
   margin: 0;
-  padding-left: clamp(1.5rem, 5vw, 2.5rem);
+  padding-left: clamp(1.2rem, 5vw, 2rem);
   list-style-position: outside;
   list-style: disc;
   display: block;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
   
   li {
-    margin: 8px 0 8px clamp(0.5rem, 2vw, 1rem);
-    font-size: 14px;
+    margin: 4px 0 4px clamp(0.3rem, 2vw, 0.8rem);
+    font-size: 13px;
     color: #555;
-    line-height: 1.6;
+    line-height: 1.4;
+    word-break: break-word;
+    max-width: 100%;
+    overflow: hidden;
     
     @media (max-width: 640px) {
-      font-size: 13px;
-      margin: 6px 0 6px 0.5rem;
+      font-size: 12px;
+      margin: 3px 0 3px 0.5rem;
     }
   }
 
@@ -606,19 +637,20 @@
 
 /* Footer Section */
 .explanation-footer {
-  padding: clamp(16px, 3vw, 20px) clamp(16px, 3vw, 28px);
-  background: #fafafa;
+  padding: clamp(12px, 2vw, 16px) clamp(12px, 3vw, 20px);
+  background: transparent;
   border-top: 1px solid #eee;
-  border-radius: 0;
+  border-radius: 0 0 12px 12px;
   display: flex;
   justify-content: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 /* Next Button */
 .next-button {
-  padding: 14px 40px;
-  font-size: 16px;
+  padding: 12px 32px;
+  font-size: 15px;
   font-weight: 600;
   border: none;
   border-radius: 8px;
@@ -639,14 +671,9 @@
     transform: translateY(0);
   }
   
-  @media (min-width: 641px) and (max-width: 1023px) {
-    padding: 12px 32px;
-    font-size: 15px;
-  }
-  
   @media (max-width: 640px) {
-    padding: 12px 24px;
-    font-size: 14px;
+    padding: 11px 20px;
+    font-size: 13px;
     width: 100%;
   }
 }

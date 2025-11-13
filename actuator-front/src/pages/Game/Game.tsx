@@ -21,6 +21,7 @@ interface ExplanationState {
 const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, setScreen }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [elapsedTime, setElapsedTime] = useState<number>(0);
+    const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
     const [explanationState, setExplanationState] = useState<ExplanationState>({
         isOpen: false,
         question: null,
@@ -50,6 +51,22 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         // Reset selected answer when question changes
         setSelectedAnswer(null);
     }, [gameSession.currentQuestionIndex]);
+
+    // 브라우저 뒤로가기 감지
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            event.preventDefault();
+            setShowBackConfirmModal(true);
+            // 뒤로가기를 막기 위해 앞으로 가기 수행
+            window.history.forward();
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
 
     const handleAnswerSubmit = () => {
         if (!currentQuestion || selectedAnswer === null) return;
@@ -165,20 +182,20 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
             <div className="game-card">
                 {/* Header Section with HOME, Question, Timer */}
                 <div className="game-header">
-                    <div className="header-left">
-                        <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                    <div className="game-header-left">
+                        <button className="game-header-button game-home-button" onClick={() => setShowBackConfirmModal(true)} title="Home">
                             🏠 HOME
                         </button>
                     </div>
-                    <div className="question-header-inline">
+                    <div className="game-question-header-inline">
                         <h2>
                             <span className="question-label-full">Question</span>
                             <span className="question-label-short">Q</span>
                             {' '}{gameSession.currentQuestionIndex + 1}/5
                         </h2>
                     </div>
-                    <div className="header-right">
-                        <div className="timer-inline">
+                    <div className="game-header-right">
+                        <div className="game-timer-inline">
                             <span>⏱️ {Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}</span>
                         </div>
                     </div>
@@ -205,11 +222,11 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                             <p className="required-components">
                                 Select the correct answer
                             </p>
-                            <div className="options-grid">
+                            <div className="game-options-grid">
                                 {currentQuestion.options.map((option, index) => (
                                     <button
                                         key={index}
-                                        className={`option-button ${selectedAnswer === option.charAt(0) ? 'selected' : ''}`}
+                                        className={`game-option-button ${selectedAnswer === option.charAt(0) ? 'selected' : ''}`}
                                         onClick={() => setSelectedAnswer(option.charAt(0))}
                                     >
                                         <span className="option-name">{option}</span>
@@ -222,20 +239,20 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                             <p className="required-components">
                                 Select <span style={{ fontWeight: 'bold' }}>True (O) or False (X)</span>
                             </p>
-                            <div className="ox-options">
+                            <div className="game-ox-options">
                                 <button
-                                    className={`ox-button ox-true ${selectedAnswer === 'O' ? 'selected' : ''}`}
+                                    className={`game-ox-button game-ox-true ${selectedAnswer === 'O' ? 'selected' : ''}`}
                                     onClick={() => setSelectedAnswer('O')}
                                 >
-                                    <span className="ox-label">O</span>
-                                    <span className="ox-text">True</span>
+                                    <span className="game-ox-label">O</span>
+                                    <span className="game-ox-text">True</span>
                                 </button>
                                 <button
-                                    className={`ox-button ox-false ${selectedAnswer === 'X' ? 'selected' : ''}`}
+                                    className={`game-ox-button game-ox-false ${selectedAnswer === 'X' ? 'selected' : ''}`}
                                     onClick={() => setSelectedAnswer('X')}
                                 >
-                                    <span className="ox-label">X</span>
-                                    <span className="ox-text">False</span>
+                                    <span className="game-ox-label">X</span>
+                                    <span className="game-ox-text">False</span>
                                 </button>
                             </div>
                         </>
@@ -247,11 +264,25 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
                     <button
                         onClick={handleAnswerSubmit}
                         disabled={selectedAnswer === null}
-                        className={"submit-button-inline " + (selectedAnswer !== null ? 'enabled' : '')}
+                        className={"game-submit-button-inline " + (selectedAnswer !== null ? 'enabled' : '')}
                     >
                         SUBMIT ANSWER
                     </button>
                 </div>
+
+                {/* Back Confirm Modal */}
+                {showBackConfirmModal && (
+                    <div className="delete-confirm-modal-overlay" onClick={() => setShowBackConfirmModal(false)}>
+                        <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
+                            <h2>Leave Game?</h2>
+                            <p>Are you sure you want to leave the game? Your progress will be lost.</p>
+                            <div className="modal-buttons">
+                                <button onClick={() => setShowBackConfirmModal(false)} className="button outline">CANCEL</button>
+                                <button onClick={() => setScreen('home')} className="button delete">LEAVE</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

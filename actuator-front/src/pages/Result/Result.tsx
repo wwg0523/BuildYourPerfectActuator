@@ -169,13 +169,13 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         <div className="page-result">
             {/* Header with HOME, Title, and STATS */}
             <div className="result-header-top">
-                <button className="header-button home-button" onClick={() => setScreen('home')} title="Home">
+                <button className="result-header-button result-home-button" onClick={() => setScreen('home')} title="Home">
                     🏠 HOME
                 </button>
-                <div className="header-title">
+                <div className="result-header-title">
                     <h2>Game Complete</h2>
                 </div>
-                <button className="header-button stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
+                <button className="result-header-button result-stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
                     📊 STATS
                 </button>
             </div>
