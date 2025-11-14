@@ -65,27 +65,59 @@ export default function ActuatorMinigame() {
 
     // 브라우저 뒤로가기 감지 (모든 페이지에 적용)
     useEffect(() => {
-        // 컴포넌트 마운트 시 히스토리 스택에 더미 항목 추가
-        window.history.pushState(null, '', window.location.href);
+        if (typeof window === 'undefined') return;
+
+        // popstate 되돌릴 때 한 번은 무시하기 위한 플래그
+        let ignoreNextPop = false;
 
         const handlePopState = (event: PopStateEvent) => {
-            event.preventDefault();
-            // 모든 타이머 일시 중지
-            clearAllTimers();
-            hideWarningMessage();
-            
-            // 뒤로가기 alert 모달 표시
-            setShowBackAlert(true);
-            // 다시 히스토리에 더미 항목 추가해서 뒤로가기 방지
-            window.history.pushState(null, '', window.location.href);
+            // 되돌리기(history.go(1)) 때문에 발생한 popstate 는 무시
+            if (ignoreNextPop) {
+                ignoreNextPop = false;
+                return;
+            }
+
+            console.log('🔙 Back button detected');
+
+            const userConfirmed = window.confirm(
+                'You cannot go back during the game. Please use the navigation buttons to move.\n\nDo you want to go back?'
+            );
+            console.log('👤 User confirmed:', userConfirmed);
+
+            if (userConfirmed) {
+                console.log('✅ User confirmed going back');
+                // 게임 관련 정리
+                clearAllTimers();
+                hideWarningMessage();
+
+                // 여기서 네가 정의한 "실제 뒤로가기" 로직 수행
+                // 예: react-router 의 navigate(-1) 이라면 handleBack 내부에서 처리
+                handleBack();
+            } else {
+                console.log('❌ User cancelled, staying on page');
+
+                // 현재 페이지로 다시 되돌리기 위해 앞으로 한 칸 이동
+                // 이 동작 때문에 popstate 가 한 번 더 발생하므로, 그건 무시하도록 플래그 설정
+                ignoreNextPop = true;
+                window.history.go(1);
+
+                // 타이머 재시작
+                if (screen !== 'home') {
+                    resetIdleTimer();
+                }
+            }
         };
 
         window.addEventListener('popstate', handlePopState);
+        console.log('✅ popstate event listener added');
 
         return () => {
             window.removeEventListener('popstate', handlePopState);
+            console.log('❌ popstate event listener removed');
         };
-    }, []);
+        // ⚠️ 여기 의존성은 가능하면 [] (혹은 route 기준) 으로 두는 게 안전함
+        // screen 이 변할 때마다 새 리스너를 만들 이유가 없으면 [] 로 바꾸는 걸 추천
+    }, []); // ← 핵심: screen 말고, 한 번만 등록
 
     const clearAllTimers = () => {
         if (countdownTimeoutRef.current) {
@@ -149,14 +181,14 @@ export default function ActuatorMinigame() {
         setUserInfo({ name: '', company: '', email: '', phone: '' });
         setErrors({});
         setTermsAccepted(false);
-        
+
         // Home에서 GameStart로 넘어갈 때 참가자 수 증가
         try {
             await participantCounter.incrementParticipant();
         } catch (error) {
             // Silent failure
         }
-        
+
         setScreen('gamestart');
     };
 
@@ -217,7 +249,7 @@ export default function ActuatorMinigame() {
         if (isSubmitted) {
             return;
         }
-        
+
         // finalGameSession이 있으면 사용, 없으면 gameSession 사용
         const sessionToSubmit = finalGameSession || gameSession;
         if (!sessionToSubmit) return;
@@ -257,19 +289,19 @@ export default function ActuatorMinigame() {
             // Calculate game completion time and score
             // Use completionTime from gameSession (accurate value calculated from timer)
             completionTime = sessionToSubmit.completionTime || 0;
-            
+
             // If completionTime is 0, calculate from startTime and endTime
             if (completionTime === 0 && sessionToSubmit.endTime) {
                 completionTime = sessionToSubmit.endTime.getTime() - sessionToSubmit.startTime.getTime();
             }
-            
+
             // 최종 검증: completionTime이 여전히 0이면 최소 1초 설정
             if (completionTime <= 0) {
                 completionTime = 1000; // 최소 1초
             }
-            
+
             correctAnswers = sessionToSubmit.answers.filter(a => a.isCorrect).length;
-            
+
             // 최종 점수 계산: 각 답변의 난이도별 점수 합산
             let finalScore = 0;
             sessionToSubmit.answers.forEach((answer, idx) => {
@@ -280,7 +312,7 @@ export default function ActuatorMinigame() {
                     finalScore += score;
                 }
             });
-            
+
             console.log(`📊 Score Calculation:`, {
                 correctAnswers,
                 finalScore,
@@ -293,7 +325,7 @@ export default function ActuatorMinigame() {
                         : 0
                 }))
             });
-            
+
             // game_users 테이블에 사용자 저장 (필수!)
             try {
                 console.log(`\n👤 ===== USER SAVE START =====`);
@@ -386,7 +418,7 @@ export default function ActuatorMinigame() {
                     });
                 }
             }
-            
+
             setScreen('result');
         } catch (error) {
             console.error('Error in game completion:', error);
@@ -400,11 +432,11 @@ export default function ActuatorMinigame() {
                     errorFinalScore += score;
                 }
             });
-            
+
             // userForGame이 null인 경우를 대비해 기본값 사용
             const displayName = userForGame?.name || userInfo.name || 'Guest';
             const displayCompany = userForGame?.company || userInfo.company || '';
-            
+
             setLeaderboardEntry({
                 rank: 0,
                 playerName: displayName,
@@ -451,7 +483,7 @@ export default function ActuatorMinigame() {
             const normalized: LeaderboardEntry[] = (data || []).map((row: any, idx: number) => {
                 // completionTime은 이미 백엔드에서 ms 단위로 반환됨
                 let completionTimeMs = Number(row.completionTime ?? 0);
-                
+
                 return {
                     rank: row.rank ?? idx + 1,
                     playerName: row.playerName ?? 'Anonymous',
@@ -520,14 +552,14 @@ export default function ActuatorMinigame() {
 
         const stayButton = modalContent.querySelector('#stay-here');
         const handleStay = (e: Event) => {
-            try { e.preventDefault(); } catch {}
-            try { e.stopPropagation(); } catch {}
+            try { e.preventDefault(); } catch { }
+            try { e.stopPropagation(); } catch { }
             if ((modalContent as any)._handled) return;
             (modalContent as any)._handled = true;
 
             const consumeNext = (ev: Event) => {
-                try { ev.preventDefault(); } catch {}
-                try { ev.stopPropagation(); } catch {}
+                try { ev.preventDefault(); } catch { }
+                try { ev.stopPropagation(); } catch { }
                 cleanup();
             };
             const cleanup = () => {
@@ -547,14 +579,14 @@ export default function ActuatorMinigame() {
 
         const goHomeButton = modalContent.querySelector('#go-home-now');
         const handleGoHome = (e: Event) => {
-            try { e.preventDefault(); } catch {}
-            try { e.stopPropagation(); } catch {}
+            try { e.preventDefault(); } catch { }
+            try { e.stopPropagation(); } catch { }
             if ((modalContent as any)._handled) return;
             (modalContent as any)._handled = true;
 
             const consumeNext = (ev: Event) => {
-                try { ev.preventDefault(); } catch {}
-                try { ev.stopPropagation(); } catch {}
+                try { ev.preventDefault(); } catch { }
+                try { ev.stopPropagation(); } catch { }
                 cleanup();
             };
             const cleanup = () => {
@@ -616,7 +648,90 @@ export default function ActuatorMinigame() {
         const warningDuration = isMobile ? 40000 : 25000;
 
         warningTimeoutRef.current = setTimeout(() => {
-            createWarningMessage('Returning to home screen in 5 seconds...');
+            const existingModal = document.getElementById('warning-modal');
+            if (existingModal) existingModal.remove();
+
+            if (countdownTimeoutRef.current) {
+                clearTimeout(countdownTimeoutRef.current);
+                countdownTimeoutRef.current = null;
+            }
+
+            const modalOverlay = document.createElement('div');
+            modalOverlay.id = 'warning-modal';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                text-align: center;
+                font-family: Arial, sans-serif;
+                max-width: 400px;
+                width: 90%;
+            `;
+
+            modalContent.innerHTML = `
+                <h2>⚠️ Warning</h2>
+                <p id="countdown-message">Returning to home screen in 5 seconds...</p>
+                <div style="margin-top: 20px;">
+                    <button id="stay-here" style="padding: 10px 20px; margin-right: 10px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px;">STAY HERE</button>
+                    <button id="go-home-now" style="padding: 10px 20px; cursor: pointer; background: #dc3545; color: white; border: none; border-radius: 4px;">GO HOME NOW</button>
+                </div>
+            `;
+
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+
+            const stayButton = modalContent.querySelector('#stay-here');
+            const handleStay = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearAllTimers();
+                hideWarningMessage();
+                resetIdleTimer();
+            };
+            stayButton?.addEventListener('click', handleStay);
+
+            const goHomeButton = modalContent.querySelector('#go-home-now');
+            const handleGoHome = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearAllTimers();
+                hideWarningMessage();
+                handleBack();
+            };
+            goHomeButton?.addEventListener('click', handleGoHome);
+
+            setCountdown(5);
+            const startCountdown = (count: number) => {
+                const messageElement = document.getElementById('countdown-message');
+                if (messageElement) {
+                    messageElement.textContent = `Returning to home screen in ${count} second${count === 1 ? '' : 's'}...`;
+                }
+                if (count <= 0) {
+                    clearAllTimers();
+                    handleBack();
+                    return;
+                }
+                countdownTimeoutRef.current = setTimeout(() => {
+                    setCountdown(count - 1);
+                    startCountdown(count - 1);
+                }, 1000);
+            };
+            startCountdown(5);
         }, warningDuration);
 
         currentTimeoutRef.current = setTimeout(() => {
@@ -624,7 +739,7 @@ export default function ActuatorMinigame() {
         }, timeoutDuration);
 
         setIdleDetector(prev => ({ ...prev, warningTimeout: warningTimeoutRef.current, currentTimeout: currentTimeoutRef.current }));
-    }, [createWarningMessage, handleBack]);
+    }, []);
 
     const hideWarningMessage = (): void => {
         const modal = document.getElementById('warning-modal');
@@ -638,26 +753,22 @@ export default function ActuatorMinigame() {
 
     const handleCloseBackAlert = (): void => {
         setShowBackAlert(false);
-        // 게임 중이면 타이머 재시작
-        if (screen === 'game' || screen === 'result' || screen === 'gamestart') {
-            resetIdleTimer();
-        }
     };
 
     useEffect(() => {
         const events = ['touchstart', 'click', 'keypress', 'mousemove'] as const;
-        
-        // Gamestart 화면에서는 idle detection 비활성화
-        if (screen === 'home' || screen === 'gamestart') {
+
+        // 유휴 감지 비활성화: Home만
+        if (screen === 'home') {
             // 타이머만 정리하고, setState 호출 없이 처리
             if (currentTimeoutRef.current) clearTimeout(currentTimeoutRef.current);
             if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
             if (countdownTimeoutRef.current) clearTimeout(countdownTimeoutRef.current);
             if (finalTimeoutRef.current) clearTimeout(finalTimeoutRef.current);
-            
+
             const modal = document.getElementById('warning-modal');
             if (modal) modal.remove();
-            
+
             return;
         }
 
@@ -675,11 +786,11 @@ export default function ActuatorMinigame() {
             if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
             if (countdownTimeoutRef.current) clearTimeout(countdownTimeoutRef.current);
             if (finalTimeoutRef.current) clearTimeout(finalTimeoutRef.current);
-            
+
             const modal = document.getElementById('warning-modal');
             if (modal) modal.remove();
         };
-    }, [screen]);
+    }, [screen, resetIdleTimer]);
 
     // 리더보드 화면으로 진입할 때마다 최신 데이터 갱신
     useEffect(() => {
@@ -711,7 +822,7 @@ export default function ActuatorMinigame() {
     const renderDeleteConfirmModal = () => {
         if (screen !== 'result' && screen !== 'leaderboard') return null;
         if (!showDeleteConfirmModal) return null;
-        
+
         return (
             <div className="delete-confirm-modal-overlay" onClick={() => setShowDeleteConfirmModal(false)}>
                 <div className="delete-confirm-modal" onClick={(e) => e.stopPropagation()}>
@@ -727,136 +838,87 @@ export default function ActuatorMinigame() {
     };
 
     return (
-            <div className="app-container">
-                {screen === 'home' && <Home onStartGame={handleStartGame} />}
-                {screen === 'info' && (
-                    <div className="info-card">
-                        <Info
-                            userInfo={userInfo}
-                            errors={errors}
-                            termsAccepted={termsAccepted}
-                            showModal={showModal}
-                            agreeTerms={agreeTerms}
-                            agreeMarketing={agreeMarketing}
-                            handleInputChange={handleInputChange}
-                            handleCheckboxClick={handleCheckboxClick}
-                            setShowModal={setShowModal}
-                            setAgreeTerms={setAgreeTerms}
-                            setAgreeMarketing={setAgreeMarketing}
-                            setTermsAccepted={setTermsAccepted}
-                            handleBack={handleBack}
-                            handleContinue={handleContinue}
-                        />
-                    </div>
-                )}
-                {screen === 'gamestart' && (
-                    <div className="gamestart-card">
-                        <GameStart
-                            onStartGame={() => setScreen('info')}
-                            onBack={() => setScreen('home')}
-                        />
-                    </div>
-                )}
-                {screen === 'game' && gameSession && (
-                    <div className="game-card">
-                        <Game
-                            key="game"
-                            gameSession={gameSession}
-                            setGameSession={setGameSession}
-                            setScreen={setScreen}
-                            elapsedTime={elapsedTime}
-                        />
-                    </div>
-                )}
-                {screen === 'explanation' && gameSession && (
-                    <div className="explanation-card">
-                        <Explanation
-                            gameSession={gameSession}
-                            setGameSession={setGameSession}
-                            setScreen={setScreen}
-                            handleSubmit={handleSubmit}
-                        />
-                    </div>
-                )}
-                {screen === 'result' && gameSession && (
-                    <div className="result-card">
-                        <Result
-                            gameSession={gameSession}
-                            leaderboardEntry={leaderboardEntry ?? undefined}
-                            handlePlayAgain={handlePlayAgain}
-                            setScreen={setScreen}
-                            handleDeleteUserData={handleDeleteUserData}
-                            userInfo={{
-                                id: userId,
-                                name: userInfo.name,
-                                company: userInfo.company,
-                                email: userInfo.email,
-                                phone: userInfo.phone,
-                            }}
-                        />
-                    </div>
-                )}
-                {screen === 'leaderboard' && (
-                    <div className="leaderboard-card">
-                        <Leaderboard
-                            leaderboardData={leaderboardData}
-                            fetchLeaderboard={fetchLeaderboard}
-                            handlePlayAgain={handlePlayAgain}
-                            setScreen={setScreen}
-                            handleDeleteUserData={handleDeleteUserData}
-                        />
-                    </div>
-                )}
-                {renderDeleteConfirmModal()}
-                
-                {/* 뒤로가기 Alert 모달 */}
-                {showBackAlert && (
-                    <div style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        background: 'rgba(0, 0, 0, 0.5)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        zIndex: 9999,
-                    }}>
-                        <div style={{
-                            background: 'white',
-                            padding: '30px',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                            textAlign: 'center',
-                            maxWidth: '400px',
-                            fontFamily: 'Arial, sans-serif',
-                        }}>
-                            <h2 style={{ margin: '0 0 15px 0', color: '#333' }}>⚠️ Warning</h2>
-                            <p style={{ margin: '0 0 25px 0', color: '#666', fontSize: '16px' }}>
-                                You cannot go back during the game. Please use the navigation buttons to move.
-                            </p>
-                            <button
-                                onClick={handleCloseBackAlert}
-                                style={{
-                                    padding: '12px 30px',
-                                    fontSize: '15px',
-                                    fontWeight: '600',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                    color: 'white',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
-                                onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
-                            >
-                                OK
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
+        <div className="app-container">
+            {screen === 'home' && <Home onStartGame={handleStartGame} />}
+            {screen === 'info' && (
+                <div className="info-card">
+                    <Info
+                        userInfo={userInfo}
+                        errors={errors}
+                        termsAccepted={termsAccepted}
+                        showModal={showModal}
+                        agreeTerms={agreeTerms}
+                        agreeMarketing={agreeMarketing}
+                        handleInputChange={handleInputChange}
+                        handleCheckboxClick={handleCheckboxClick}
+                        setShowModal={setShowModal}
+                        setAgreeTerms={setAgreeTerms}
+                        setAgreeMarketing={setAgreeMarketing}
+                        setTermsAccepted={setTermsAccepted}
+                        handleBack={handleBack}
+                        handleContinue={handleContinue}
+                    />
+                </div>
+            )}
+            {screen === 'gamestart' && (
+                <div className="gamestart-card">
+                    <GameStart
+                        onStartGame={() => setScreen('info')}
+                        onBack={() => setScreen('home')}
+                    />
+                </div>
+            )}
+            {screen === 'game' && gameSession && (
+                <div className="game-card">
+                    <Game
+                        key="game"
+                        gameSession={gameSession}
+                        setGameSession={setGameSession}
+                        setScreen={setScreen}
+                        elapsedTime={elapsedTime}
+                    />
+                </div>
+            )}
+            {screen === 'explanation' && gameSession && (
+                <div className="explanation-card">
+                    <Explanation
+                        gameSession={gameSession}
+                        setGameSession={setGameSession}
+                        setScreen={setScreen}
+                        handleSubmit={handleSubmit}
+                    />
+                </div>
+            )}
+            {screen === 'result' && gameSession && (
+                <div className="result-card">
+                    <Result
+                        gameSession={gameSession}
+                        leaderboardEntry={leaderboardEntry ?? undefined}
+                        handlePlayAgain={handlePlayAgain}
+                        setScreen={setScreen}
+                        handleDeleteUserData={handleDeleteUserData}
+                        userInfo={{
+                            id: userId,
+                            name: userInfo.name,
+                            company: userInfo.company,
+                            email: userInfo.email,
+                            phone: userInfo.phone,
+                        }}
+                    />
+                </div>
+            )}
+            {screen === 'leaderboard' && (
+                <div className="leaderboard-card">
+                    <Leaderboard
+                        leaderboardData={leaderboardData}
+                        fetchLeaderboard={fetchLeaderboard}
+                        handlePlayAgain={handlePlayAgain}
+                        setScreen={setScreen}
+                        handleDeleteUserData={handleDeleteUserData}
+                    />
+                </div>
+            )}
+            {renderDeleteConfirmModal()}
+        </div>
     );
 }

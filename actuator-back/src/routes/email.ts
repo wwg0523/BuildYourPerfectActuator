@@ -95,7 +95,7 @@ router.post('/send-email', async (req, res) => {
         console.log(`Subject: ${subject}`);
 
         const info = await transporter.sendMail({
-            from: `"Actuator Challenge" <${process.env.APP_EMAIL}>`,
+            from: `"Lebot Inc." <${process.env.APP_EMAIL}>`,
             to: recipientEmail,
             subject: subject,
             html: htmlContent,
