@@ -870,8 +870,10 @@ export default function ActuatorMinigame() {
         );
     };
 
+    const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+
     return (
-        <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ''}>
+        <GoogleOAuthProvider clientId={googleClientId || 'invalid-client-id'}>
             <div className="app-container">
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'authchoice' && (

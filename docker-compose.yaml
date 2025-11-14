@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
       args:
         REACT_APP_ENCRYPTION_KEY: ${REACT_APP_ENCRYPTION_KEY}
+        REACT_APP_GOOGLE_CLIENT_ID: ${REACT_APP_GOOGLE_CLIENT_ID}
+        REACT_APP_API_NINJAS_KEY: ${REACT_APP_API_NINJAS_KEY}
         NODE_ENV: production
     image: actuator-front:latest
     container_name: actuator-front
