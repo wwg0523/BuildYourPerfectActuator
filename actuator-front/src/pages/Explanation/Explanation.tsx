@@ -1,23 +1,19 @@
-import React, { useState } from 'react';
-import { GameQuestion } from '../../lib/utils';
+import React, { useState, useEffect } from 'react';
+import { GameSession, UserAnswer, GameQuestion, calculateScore } from '../../lib/utils';
 import './Explanation.scss';
 
 interface ExplanationProps {
-    question: GameQuestion;
-    selectedAnswer: string;
-    isCorrect: boolean;
-    score: number;
-    onNext: () => void;
-    buttonText?: string;
+    gameSession: GameSession;
+    setGameSession: React.Dispatch<React.SetStateAction<GameSession | null>>;
+    setScreen: (screen: 'home' | 'info' | 'game' | 'explanation' | 'result' | 'leaderboard') => void;
+    handleSubmit: (finalSession: GameSession) => void;
 }
 
 const Explanation: React.FC<ExplanationProps> = ({
-    question,
-    selectedAnswer,
-    isCorrect,
-    score,
-    onNext,
-    buttonText = 'Next Question →',
+    gameSession,
+    setGameSession,
+    setScreen,
+    handleSubmit,
 }) => {
     // 접기/펼치기 상태 관리
     const [expandedSections, setExpandedSections] = useState<{
@@ -29,6 +25,36 @@ const Explanation: React.FC<ExplanationProps> = ({
     });
 
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
+
+    useEffect(() => {
+        if (gameSession.lastAnsweredQuestion) {
+            console.log('📋 Explanation Debug:', {
+                currentQuestionIndex: gameSession.currentQuestionIndex,
+                totalQuestions: gameSession.questions.length,
+                answersCount: gameSession.answers.length,
+                lastAnsweredQuestion: gameSession.lastAnsweredQuestion.id,
+                selectedAnswer: gameSession.lastSelectedAnswer,
+                isCorrect: gameSession.lastIsCorrect,
+            });
+        }
+    }, [gameSession.currentQuestionIndex, gameSession.lastAnsweredQuestion?.id]);
+
+    if (
+        !gameSession.lastAnsweredQuestion ||
+        gameSession.lastSelectedAnswer === undefined ||
+        gameSession.lastIsCorrect === undefined
+    ) {
+        return <div>Loading...</div>;
+    }
+
+    const question = gameSession.lastAnsweredQuestion;
+    const selectedAnswer = gameSession.lastSelectedAnswer;
+    const isCorrect = gameSession.lastIsCorrect;
+    const displayScore = calculateScore(isCorrect, question.difficulty);
+    
+    // 마지막 질문인지 확인: 현재 인덱스 + 1 이 전체 질문 수와 같거나 크면 마지막
+    const isLastQuestion = gameSession.currentQuestionIndex + 1 >= gameSession.questions.length;
+    const buttonText = isLastQuestion ? 'View Results →' : 'Next Question →';
 
     // 섹션 토글 함수
     const toggleSection = (section: 'improvements' | 'examples') => {
@@ -51,17 +77,65 @@ const Explanation: React.FC<ExplanationProps> = ({
         return question.options[index] || answerIndex;
     };
 
+    const handleExplanationNext = () => {
+        const answer: UserAnswer = {
+            questionId: question.id,
+            selectedComponents: [selectedAnswer],
+            isCorrect,
+            timestamp: new Date(),
+            difficulty: question.difficulty,
+        };
+
+        if (isLastQuestion) {
+            // All questions answered, time to submit
+            const now = new Date();
+            const actualElapsedMs = now.getTime() - gameSession.startTime.getTime();
+            const updatedAnswers = [...gameSession.answers, answer];
+            const totalCorrect = updatedAnswers.filter(a => a.isCorrect).length;
+
+            const finalSession: GameSession = {
+                ...gameSession,
+                answers: updatedAnswers,
+                endTime: now,
+                totalScore: totalCorrect,
+                completionTime: actualElapsedMs,
+                lastAnsweredQuestion: undefined,
+                lastSelectedAnswer: undefined,
+                lastIsCorrect: undefined,
+            };
+
+            setGameSession(finalSession);
+            setTimeout(() => {
+                handleSubmit(finalSession);
+            }, 0);
+        } else {
+            // Move to next question
+            setGameSession(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    answers: [...prev.answers, answer],
+                    currentQuestionIndex: prev.currentQuestionIndex + 1,
+                    lastAnsweredQuestion: undefined,
+                    lastSelectedAnswer: undefined,
+                    lastIsCorrect: undefined,
+                };
+            });
+
+            setScreen('game');
+        }
+    };
+
     return (
         <div className="page-explanation">
-            <div className="explanation-card">
-                {/* Header Section */}
+            {/* Header Section */}
                 <div className={`explanation-header ${isCorrect ? 'correct' : 'incorrect'}`}>
                     <div className="header-icon">
                         {isCorrect ? '✅' : '❌'}
                     </div>
                     <div className="header-content">
                         <h1>{isCorrect ? 'Correct!' : 'Incorrect!'}</h1>
-                        {isCorrect && <span className="score-badge">+{score} points</span>}
+                        {isCorrect && <span className="score-badge">+{displayScore} points</span>}
                     </div>
                 </div>
 
@@ -212,7 +286,7 @@ const Explanation: React.FC<ExplanationProps> = ({
 
                 {/* Footer Section */}
                 <div className="explanation-footer">
-                    <button onClick={onNext} className="next-button">
+                    <button onClick={handleExplanationNext} className="next-button">
                         {buttonText}
                     </button>
                 </div>
@@ -230,7 +304,6 @@ const Explanation: React.FC<ExplanationProps> = ({
                         </div>
                     </div>
                 )}
-            </div>
         </div>
     );
 };

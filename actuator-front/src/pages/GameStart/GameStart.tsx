@@ -27,8 +27,15 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '✨ The Secret Behind All Movement',
             icon: '🔧',
             content: (
-                <div className="slide-content slide-with-fullimage">
-                    <img src="/images/carousel/slide1.png" alt="Actuator Demo" className="slide-fullimage" />
+                <div 
+                    className="slide-content slide-with-fullimage"
+                    style={{ backgroundImage: 'url(/images/carousel/slide1.png)' }}
+                >
+                    <div className="slide-overlay"></div>
+                    <div className="slide-text-content">
+                        <h3>✨ The Secret Behind All Movement</h3>
+                        <p>Discover the core technology powering everything!</p>
+                    </div>
                 </div>
             ),
         },
@@ -37,8 +44,15 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '🚀 The Core Component of Future Tech!',
             icon: '🤖',
             content: (
-                <div className="slide-content slide-with-fullimage">
-                    <img src="/images/carousel/slide2.png" alt="Future Technology" className="slide-fullimage" />
+                <div 
+                    className="slide-content slide-with-fullimage"
+                    style={{ backgroundImage: 'url(/images/carousel/slide2.png)' }}
+                >
+                    <div className="slide-overlay"></div>
+                    <div className="slide-text-content">
+                        <h3>🚀 The Core Component of Future Tech!</h3>
+                        <p>Building tomorrow's innovations today!</p>
+                    </div>
                 </div>
             ),
         },

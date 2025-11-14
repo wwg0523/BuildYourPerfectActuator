@@ -38,7 +38,8 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     };
 
     return (
-        <div className="page-home" onClick={handleClickOrTouch}>
+        <div className="home-card">
+            <div className="page-home" onClick={handleClickOrTouch}>
             <video
                 ref={videoRef}
                 className="home-video"
@@ -53,6 +54,7 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
             {/* 클릭/터치 안내 텍스트 */}
             <div className="home-overlay">
                 <span className="click-hint">Click or Tap to Continue →</span>
+            </div>
             </div>
         </div>
     );

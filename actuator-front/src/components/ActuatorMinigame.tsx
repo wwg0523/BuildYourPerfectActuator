@@ -5,6 +5,7 @@ import Home from '../pages/Home/Home';
 import Info from '../pages/Info/Info';
 import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
+import Explanation from '../pages/Explanation/Explanation';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
 import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter, calculateScore, API_BASE_URL } from '../lib/utils';
@@ -21,7 +22,7 @@ const generateUUID = (): string => {
 };
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -30,11 +31,13 @@ export default function ActuatorMinigame() {
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [gameSession, setGameSession] = useState<GameSession | null>(null);
+    const [elapsedTime, setElapsedTime] = useState<number>(0);
     const [leaderboardEntry, setLeaderboardEntry] = useState<LeaderboardEntry | null>(null);
     const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+    const [showBackAlert, setShowBackAlert] = useState(false);
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [agreeMarketing, setAgreeMarketing] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -67,8 +70,12 @@ export default function ActuatorMinigame() {
 
         const handlePopState = (event: PopStateEvent) => {
             event.preventDefault();
-            // alert로 뒤로가기 방지 안내
-            alert('You cannot go back during the game. Please use the navigation buttons to move.');
+            // 모든 타이머 일시 중지
+            clearAllTimers();
+            hideWarningMessage();
+            
+            // 뒤로가기 alert 모달 표시
+            setShowBackAlert(true);
             // 다시 히스토리에 더미 항목 추가해서 뒤로가기 방지
             window.history.pushState(null, '', window.location.href);
         };
@@ -183,6 +190,7 @@ export default function ActuatorMinigame() {
             }
 
             setGameSession(gameEngine.generateGameSession(currentUserId));
+            setElapsedTime(0);
             setScreen('game');
         } catch (error) {
             console.error('Error in continue:', error);
@@ -628,6 +636,14 @@ export default function ActuatorMinigame() {
         setCountdown(5);
     };
 
+    const handleCloseBackAlert = (): void => {
+        setShowBackAlert(false);
+        // 게임 중이면 타이머 재시작
+        if (screen === 'game' || screen === 'result' || screen === 'gamestart') {
+            resetIdleTimer();
+        }
+    };
+
     useEffect(() => {
         const events = ['touchstart', 'click', 'keypress', 'mousemove'] as const;
         
@@ -672,6 +688,25 @@ export default function ActuatorMinigame() {
         }
     }, [screen]);
 
+    // Game timer - runs only during game and explanation screens
+    useEffect(() => {
+        if (screen !== 'game' && screen !== 'explanation') {
+            return;
+        }
+
+        if (!gameSession) {
+            return;
+        }
+
+        const timer = setInterval(() => {
+            const now = new Date();
+            const elapsed = Math.floor((now.getTime() - gameSession.startTime.getTime()) / 1000);
+            setElapsedTime(elapsed);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [screen, gameSession]);
+
     // Delete confirmation modal (used by Result and Leaderboard components)
     const renderDeleteConfirmModal = () => {
         if (screen !== 'result' && screen !== 'leaderboard') return null;
@@ -693,67 +728,135 @@ export default function ActuatorMinigame() {
 
     return (
             <div className="app-container">
-            <div className={screen === 'info' ? 'info-card' : 'card'}>
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'info' && (
-                    <Info
-                        userInfo={userInfo}
-                        errors={errors}
-                        termsAccepted={termsAccepted}
-                        showModal={showModal}
-                        agreeTerms={agreeTerms}
-                        agreeMarketing={agreeMarketing}
-                        handleInputChange={handleInputChange}
-                        handleCheckboxClick={handleCheckboxClick}
-                        setShowModal={setShowModal}
-                        setAgreeTerms={setAgreeTerms}
-                        setAgreeMarketing={setAgreeMarketing}
-                        setTermsAccepted={setTermsAccepted}
-                        handleBack={handleBack}
-                        handleContinue={handleContinue}
-                    />
+                    <div className="info-card">
+                        <Info
+                            userInfo={userInfo}
+                            errors={errors}
+                            termsAccepted={termsAccepted}
+                            showModal={showModal}
+                            agreeTerms={agreeTerms}
+                            agreeMarketing={agreeMarketing}
+                            handleInputChange={handleInputChange}
+                            handleCheckboxClick={handleCheckboxClick}
+                            setShowModal={setShowModal}
+                            setAgreeTerms={setAgreeTerms}
+                            setAgreeMarketing={setAgreeMarketing}
+                            setTermsAccepted={setTermsAccepted}
+                            handleBack={handleBack}
+                            handleContinue={handleContinue}
+                        />
+                    </div>
                 )}
                 {screen === 'gamestart' && (
-                    <GameStart
-                        onStartGame={() => setScreen('info')}
-                        onBack={() => setScreen('home')}
-                    />
+                    <div className="gamestart-card">
+                        <GameStart
+                            onStartGame={() => setScreen('info')}
+                            onBack={() => setScreen('home')}
+                        />
+                    </div>
                 )}
                 {screen === 'game' && gameSession && (
-                    <Game
-                        gameSession={gameSession}
-                        setGameSession={setGameSession}
-                        handleSubmit={handleSubmit}
-                        setScreen={setScreen}
-                    />
+                    <div className="game-card">
+                        <Game
+                            key="game"
+                            gameSession={gameSession}
+                            setGameSession={setGameSession}
+                            setScreen={setScreen}
+                            elapsedTime={elapsedTime}
+                        />
+                    </div>
+                )}
+                {screen === 'explanation' && gameSession && (
+                    <div className="explanation-card">
+                        <Explanation
+                            gameSession={gameSession}
+                            setGameSession={setGameSession}
+                            setScreen={setScreen}
+                            handleSubmit={handleSubmit}
+                        />
+                    </div>
                 )}
                 {screen === 'result' && gameSession && (
-                    <Result
-                        gameSession={gameSession}
-                        leaderboardEntry={leaderboardEntry ?? undefined}
-                        handlePlayAgain={handlePlayAgain}
-                        setScreen={setScreen}
-                        handleDeleteUserData={handleDeleteUserData}
-                        userInfo={{
-                            id: userId,
-                            name: userInfo.name,
-                            company: userInfo.company,
-                            email: userInfo.email,
-                            phone: userInfo.phone,
-                        }}
-                    />
+                    <div className="result-card">
+                        <Result
+                            gameSession={gameSession}
+                            leaderboardEntry={leaderboardEntry ?? undefined}
+                            handlePlayAgain={handlePlayAgain}
+                            setScreen={setScreen}
+                            handleDeleteUserData={handleDeleteUserData}
+                            userInfo={{
+                                id: userId,
+                                name: userInfo.name,
+                                company: userInfo.company,
+                                email: userInfo.email,
+                                phone: userInfo.phone,
+                            }}
+                        />
+                    </div>
                 )}
                 {screen === 'leaderboard' && (
-                    <Leaderboard
-                        leaderboardData={leaderboardData}
-                        fetchLeaderboard={fetchLeaderboard}
-                        handlePlayAgain={handlePlayAgain}
-                        setScreen={setScreen}
-                        handleDeleteUserData={handleDeleteUserData}
-                    />
+                    <div className="leaderboard-card">
+                        <Leaderboard
+                            leaderboardData={leaderboardData}
+                            fetchLeaderboard={fetchLeaderboard}
+                            handlePlayAgain={handlePlayAgain}
+                            setScreen={setScreen}
+                            handleDeleteUserData={handleDeleteUserData}
+                        />
+                    </div>
                 )}
                 {renderDeleteConfirmModal()}
+                
+                {/* 뒤로가기 Alert 모달 */}
+                {showBackAlert && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: 9999,
+                    }}>
+                        <div style={{
+                            background: 'white',
+                            padding: '30px',
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                            textAlign: 'center',
+                            maxWidth: '400px',
+                            fontFamily: 'Arial, sans-serif',
+                        }}>
+                            <h2 style={{ margin: '0 0 15px 0', color: '#333' }}>⚠️ Warning</h2>
+                            <p style={{ margin: '0 0 25px 0', color: '#666', fontSize: '16px' }}>
+                                You cannot go back during the game. Please use the navigation buttons to move.
+                            </p>
+                            <button
+                                onClick={handleCloseBackAlert}
+                                style={{
+                                    padding: '12px 30px',
+                                    fontSize: '15px',
+                                    fontWeight: '600',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-2px)')}
+                                onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
-        </div>
     );
 }

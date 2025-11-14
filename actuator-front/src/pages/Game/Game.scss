@@ -1,25 +1,18 @@
 /* Page-specific styles for Game.tsx */
 .page-game {
-  display: flex;
   justify-content: center;
   align-items: flex-start;
   width: 100%;
   padding: 0;
   margin: 0;
-}
-
-/* Game Card Container */
-.game-card {
   background: var(--bg-card, white);
   border-radius: 12px;
   box-shadow: none;
-  display: flex;
   flex-direction: column;
   height: auto;
   max-height: none;
   min-height: auto;
   overflow: visible;
-  width: 100%;
   
   @media (min-width: 1024px) {
     max-width: 100%;

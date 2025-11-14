@@ -118,6 +118,9 @@ export interface GameSession {
     endTime?: Date;
     totalScore: number;
     completionTime?: number; // Game completion time (ms)
+    lastAnsweredQuestion?: GameQuestion; // For passing data to Explanation page
+    lastSelectedAnswer?: string; // For passing data to Explanation page
+    lastIsCorrect?: boolean; // For passing data to Explanation page
 }
 
 export interface LeaderboardEntry {
