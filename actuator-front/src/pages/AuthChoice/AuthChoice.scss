@@ -65,10 +65,35 @@
         display: flex;
         justify-content: center;
 
+        /* Google OAuth 버튼 스타일 리셋 */
         div {
-            width: 100% !important;
+            width: auto !important;
             display: flex !important;
             justify-content: center !important;
+            align-items: center !important;
+            max-width: 100% !important;
+            flex-wrap: nowrap !important;
+        }
+
+        button {
+            max-width: 100% !important;
+            width: auto !important;
+            height: auto !important;
+            min-height: 40px;
+            padding: 0.5rem 1rem !important;
+            font-size: 14px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.75rem !important;
+            overflow: visible !important;
+            white-space: nowrap !important;
+        }
+
+        img {
+            max-width: 20px !important;
+            height: auto !important;
+            flex-shrink: 0;
         }
     }
 }

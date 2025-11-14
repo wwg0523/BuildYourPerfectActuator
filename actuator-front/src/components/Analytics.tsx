@@ -129,7 +129,7 @@ const Analytics: React.FC = () => {
 
     return (
         <div className="app-container">
-            <div className="card">
+            <div className="analytics-card">
                 {!isAuthenticated ? (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
                         <h2 style={{ marginBottom: '20px' }}>Analytics Dashboard</h2>

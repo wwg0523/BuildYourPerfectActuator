@@ -218,7 +218,9 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                     {gradeInfo && (
                         <div className="grade-section">
                             <div className="grade-badge">
-                                <div className={`grade-emoji grade-${gradeInfo.rank.toLowerCase()}`}>{gradeInfo.badge}</div>
+                                <div className={`grade-emoji grade-${gradeInfo.rank.toLowerCase()}`}>
+                                    {['S', 'A', 'B'].includes(gradeInfo.rank) ? gradeInfo.badge : gradeInfo.rank}
+                                </div>
                                 <div className="grade-info">
                                     <div className="grade-rank">Grade: <span className="grade-letter">{gradeInfo.rank}</span></div>
                                     <div className="grade-title">{gradeInfo.title}</div>

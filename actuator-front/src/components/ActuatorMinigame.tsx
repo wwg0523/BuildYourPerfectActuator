@@ -872,7 +872,7 @@ export default function ActuatorMinigame() {
 
     return (
         <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ''}>
-            <div className="container">
+            <div className="app-container">
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
                 {screen === 'authchoice' && (
                     <div className="authchoice-card">

@@ -1,20 +1,30 @@
 /* Explanation Page Styles */
 .page-explanation {
-  display: block;
   justify-content: center;
   align-items: flex-start;
-  min-height: auto;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  width: 100%;
   padding: 0;
   margin: 0;
-  width: 100%;
   background: var(--bg-card, white);
-  border-radius: 0;
+  border-radius: 12px;
   box-shadow: none;
   flex-direction: column;
   height: auto;
   max-height: none;
+  min-height: auto;
   overflow: visible;
+  
+  @media (min-width: 1024px) {
+    max-width: 100%;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    max-width: 100%;
+  }
+  
+  @media (max-width: 640px) {
+    max-width: 100%;
+  }
 }
 
 /* Explanation Header */
@@ -25,8 +35,25 @@
   padding: clamp(12px, 2vw, 16px) clamp(16px, 3vw, 24px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-radius: 0;
+  border-radius: 12px 12px 0 0;
   min-height: auto;
+  position: relative;
+  flex-wrap: nowrap;
+  min-width: 0;
+  
+  @media (min-width: 1024px) {
+    padding: 16px 20px;
+  }
+  
+  @media (min-width: 641px) and (max-width: 1023px) {
+    padding: 14px 16px;
+  }
+  
+  @media (max-width: 640px) {
+    padding: 12px 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
   
   &.correct {
     background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
@@ -100,10 +127,14 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: clamp(16px, 3vw, 28px);
+  width: 100%;
+  box-sizing: border-box;
   
   @media (max-width: 640px) {
     flex: none;
     overflow-y: visible;
+    overflow-x: hidden;
+    padding: clamp(12px, 2vw, 16px);
   }
   
   /* Scrollbar styling */
@@ -133,12 +164,16 @@
 .learn-more-card {
   padding: 0;
   margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Original Question Section */
 .original-question {
   padding-top: 28px;
   padding-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
   
   @media (min-width: 641px) and (max-width: 1023px) {
     padding-top: 22px;
@@ -190,6 +225,9 @@
   border-radius: 8px;
   border: 2px solid #e0e0e0;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
   
   @media (min-width: 1024px) {
     width: fit-content;
@@ -203,6 +241,7 @@
     font-size: 14px;
     color: #666;
     font-weight: 500;
+    flex-shrink: 0;
     
     @media (max-width: 640px) {
       font-size: 13px;
@@ -213,20 +252,39 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
-    font-size: 18px;
-    font-weight: 700;
-    border-radius: 6px;
+    min-width: 50px;
+    min-height: 50px;
+    padding: 0 16px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    @media (max-width: 640px) {
+      min-width: 45px;
+      min-height: 45px;
+      padding: 0 12px;
+      font-size: 15px;
+    }
     
     &.correct-answer {
       background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
       color: white;
+      
+      &:hover {
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      }
     }
     
     &.incorrect-answer {
       background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
       color: white;
+      
+      &:hover {
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+      }
     }
   }
 }
@@ -236,6 +294,8 @@
   padding-top: 20px;
   padding-bottom: 20px;
   border-top: 1px solid #eee;
+  width: 100%;
+  box-sizing: border-box;
   
   @media (max-width: 640px) {
     padding-top: 16px;
@@ -270,6 +330,8 @@
   padding-top: 20px;
   padding-bottom: 20px;
   border-top: 1px solid #eee;
+  width: 100%;
+  box-sizing: border-box;
   
   @media (max-width: 640px) {
     padding-top: 16px;
@@ -294,13 +356,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
       cursor: pointer;
       user-select: none;
-      padding: 10px;
-      margin: -10px;
+      padding: 10px 0;
+      margin: 0;
       border-radius: 6px;
       transition: background-color 0.2s ease;
+      width: 100%;
+      overflow: hidden;
 
       &:hover {
         background-color: rgba(102, 126, 234, 0.08);
@@ -316,8 +380,8 @@
         min-width: 0;
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding-left: clamp(0.5rem, 2vw, 1rem);
+        gap: 4px;
+        padding-left: 0;
 
         .preview-text {
           display: block;
@@ -408,16 +472,19 @@
   list-style-position: outside;
   list-style: disc;
   display: block;
+  width: 100%;
   
   li {
     margin: 8px 0 8px clamp(0.5rem, 2vw, 1rem);
     font-size: 14px;
     color: #555;
     line-height: 1.6;
+    overflow: hidden;
     
     @media (max-width: 640px) {
       font-size: 13px;
-      margin: 6px 0 6px 0.5rem;
+      margin: 6px 0 6px 0;
+      padding-left: clamp(0.5rem, 2vw, 1rem);
     }
   }
 
@@ -436,6 +503,8 @@
   padding-top: 20px;
   padding-bottom: 20px;
   border-top: 1px solid #eee;
+  width: 100%;
+  box-sizing: border-box;
   
   @media (max-width: 640px) {
     padding-top: 16px;
@@ -460,13 +529,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 8px;
       cursor: pointer;
       user-select: none;
-      padding: 10px;
-      margin: -10px;
+      padding: 10px 0;
+      margin: 0;
       border-radius: 6px;
       transition: background-color 0.2s ease;
+      width: 100%;
+      overflow: hidden;
 
       &:hover {
         background-color: rgba(102, 126, 234, 0.08);
@@ -482,8 +553,8 @@
         min-width: 0;
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding-left: clamp(0.5rem, 2vw, 1rem);
+        gap: 4px;
+        padding-left: 0;
 
         .preview-text {
           display: block;
@@ -574,16 +645,19 @@
   list-style-position: outside;
   list-style: disc;
   display: block;
+  width: 100%;
   
   li {
     margin: 8px 0 8px clamp(0.5rem, 2vw, 1rem);
     font-size: 14px;
     color: #555;
     line-height: 1.6;
+    overflow: hidden;
     
     @media (max-width: 640px) {
       font-size: 13px;
-      margin: 6px 0 6px 0.5rem;
+      margin: 6px 0 6px 0;
+      padding-left: clamp(0.5rem, 2vw, 1rem);
     }
   }
 
@@ -602,7 +676,7 @@
   padding: clamp(16px, 3vw, 20px) clamp(16px, 3vw, 28px);
   background: #fafafa;
   border-top: 1px solid #eee;
-  border-radius: 0;
+  border-radius: 0 0 12px 12px;
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -656,5 +730,25 @@
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* Explanation Card Container */
+.explanation-card {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 1024px) {
+    max-width: 100%;
+  }
+
+  @media (min-width: 641px) and (max-width: 1023px) {
+    max-width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    max-width: 100%;
   }
 }
