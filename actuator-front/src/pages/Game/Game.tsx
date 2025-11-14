@@ -52,22 +52,6 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, handleSubmit, 
         setSelectedAnswer(null);
     }, [gameSession.currentQuestionIndex]);
 
-    // 브라우저 뒤로가기 감지
-    useEffect(() => {
-        const handlePopState = (event: PopStateEvent) => {
-            event.preventDefault();
-            setShowBackConfirmModal(true);
-            // 뒤로가기를 막기 위해 앞으로 가기 수행
-            window.history.forward();
-        };
-
-        window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, []);
-
     const handleAnswerSubmit = () => {
         if (!currentQuestion || selectedAnswer === null) return;
 

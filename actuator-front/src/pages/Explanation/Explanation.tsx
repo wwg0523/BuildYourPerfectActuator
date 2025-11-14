@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { GameQuestion } from '../../lib/utils';
 import './Explanation.scss';
 
@@ -37,22 +37,6 @@ const Explanation: React.FC<ExplanationProps> = ({
             [section]: !prev[section],
         }));
     };
-
-    // 브라우저 뒤로가기 감지
-    useEffect(() => {
-        const handlePopState = (event: PopStateEvent) => {
-            event.preventDefault();
-            setShowBackConfirmModal(true);
-            // 뒤로가기를 막기 위해 앞으로 가기 수행
-            window.history.forward();
-        };
-
-        window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, []);
 
     // 선택지 인덱스를 실제 선택지 텍스트로 변환하는 함수
     const getAnswerText = (answerIndex: string): string => {

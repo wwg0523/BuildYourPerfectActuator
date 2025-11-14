@@ -60,6 +60,26 @@ export default function ActuatorMinigame() {
     const leaderboardManager = new LeaderboardManager();
     const participantCounter = new ParticipantCounter();
 
+    // 브라우저 뒤로가기 감지 (모든 페이지에 적용)
+    useEffect(() => {
+        // 컴포넌트 마운트 시 히스토리 스택에 더미 항목 추가
+        window.history.pushState(null, '', window.location.href);
+
+        const handlePopState = (event: PopStateEvent) => {
+            event.preventDefault();
+            // alert로 뒤로가기 방지 안내
+            alert('You cannot go back during the game. Please use the navigation buttons to move.');
+            // 다시 히스토리에 더미 항목 추가해서 뒤로가기 방지
+            window.history.pushState(null, '', window.location.href);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+
     const clearAllTimers = () => {
         if (countdownTimeoutRef.current) {
             clearTimeout(countdownTimeoutRef.current);

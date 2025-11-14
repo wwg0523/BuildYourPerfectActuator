@@ -221,7 +221,7 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                         disabled={currentSlide === 0}
                         aria-label="Previous slide"
                     >
-                        ←
+                        <img src="/images/carousel/left-arrow.svg" alt="Previous" />
                     </button>
                     <button
                         className={`carousel-arrow carousel-arrow-right ${currentSlide === slides.length - 1 ? 'disabled' : ''}`}
@@ -229,7 +229,7 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                         disabled={currentSlide === slides.length - 1}
                         aria-label="Next slide"
                     >
-                        →
+                        <img src="/images/carousel/right-arrow.svg" alt="Next" />
                     </button>
                 </div>
 
