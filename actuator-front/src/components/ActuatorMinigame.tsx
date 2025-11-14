@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import '../styles/main.scss';
 import CryptoJS from 'crypto-js';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import type { CredentialResponse } from '../types/google-oauth';
 import Home from '../pages/Home/Home';
+import AuthChoice from '../pages/AuthChoice/AuthChoice';
 import Info from '../pages/Info/Info';
 import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
@@ -22,7 +25,7 @@ const generateUUID = (): string => {
 };
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'authchoice' | 'info' | 'gamestart' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -67,11 +70,9 @@ export default function ActuatorMinigame() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        // popstate 되돌릴 때 한 번은 무시하기 위한 플래그
         let ignoreNextPop = false;
 
         const handlePopState = (event: PopStateEvent) => {
-            // 되돌리기(history.go(1)) 때문에 발생한 popstate 는 무시
             if (ignoreNextPop) {
                 ignoreNextPop = false;
                 return;
@@ -86,18 +87,11 @@ export default function ActuatorMinigame() {
 
             if (userConfirmed) {
                 console.log('✅ User confirmed going back');
-                // 게임 관련 정리
                 clearAllTimers();
                 hideWarningMessage();
-
-                // 여기서 네가 정의한 "실제 뒤로가기" 로직 수행
-                // 예: react-router 의 navigate(-1) 이라면 handleBack 내부에서 처리
                 handleBack();
             } else {
                 console.log('❌ User cancelled, staying on page');
-
-                // 현재 페이지로 다시 되돌리기 위해 앞으로 한 칸 이동
-                // 이 동작 때문에 popstate 가 한 번 더 발생하므로, 그건 무시하도록 플래그 설정
                 ignoreNextPop = true;
                 window.history.go(1);
 
@@ -189,7 +183,46 @@ export default function ActuatorMinigame() {
             // Silent failure
         }
 
-        setScreen('gamestart');
+        setScreen('authchoice');
+    };
+
+    const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
+        try {
+            if (!credentialResponse.credential) {
+                console.error('No credential received from Google');
+                return;
+            }
+
+            // JWT 디코드 (실제로는 백엔드에서 검증해야 함)
+            const base64Url = credentialResponse.credential.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(
+                atob(base64)
+                    .split('')
+                    .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                    .join('')
+            );
+
+            const decodedToken = JSON.parse(jsonPayload);
+            console.log('Google login successful:', decodedToken);
+
+            // 구글에서 받은 정보로 사용자 정보 채우기
+            setUserInfo({
+                name: decodedToken.name || '',
+                company: '', // 구글에서는 제공하지 않음
+                email: decodedToken.email || '',
+                phone: '', // 구글에서는 제공하지 않음
+            });
+
+            // 토큰 저장 (나중에 백엔드 인증에 사용 가능)
+            localStorage.setItem('googleCredential', credentialResponse.credential);
+            localStorage.setItem('googleTokenId', decodedToken.jti || '');
+
+            // 회원가입 형식의 정보 페이지로 이동 (company와 phone은 입력 필수)
+            setScreen('info');
+        } catch (error) {
+            console.error('Error processing Google login:', error);
+        }
     };
 
     const handleContinue = async () => {
@@ -838,9 +871,19 @@ export default function ActuatorMinigame() {
     };
 
     return (
-        <div className="app-container">
-            {screen === 'home' && <Home onStartGame={handleStartGame} />}
-            {screen === 'info' && (
+        <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ''}>
+            <div className="container">
+                {screen === 'home' && <Home onStartGame={handleStartGame} />}
+                {screen === 'authchoice' && (
+                    <div className="authchoice-card">
+                        <AuthChoice
+                            handleBack={() => setScreen('home')}
+                            handleGoogleSuccess={handleGoogleSuccess}
+                            handleSignUp={() => setScreen('info')}
+                        />
+                    </div>
+                )}
+                {screen === 'info' && (
                 <div className="info-card">
                     <Info
                         userInfo={userInfo}
@@ -919,6 +962,7 @@ export default function ActuatorMinigame() {
                 </div>
             )}
             {renderDeleteConfirmModal()}
-        </div>
+            </div>
+        </GoogleOAuthProvider>
     );
 }
