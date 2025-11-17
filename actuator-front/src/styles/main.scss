@@ -532,3 +532,25 @@ input {
         margin: 0;
     }
 }
+
+/* Auth Card Container */
+.auth-card {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @media (min-width: 1024px) {
+        max-width: 500px;
+    }
+
+    @media (min-width: 641px) and (max-width: 1023px) {
+        max-width: 500px;
+    }
+
+    @media (max-width: 640px) {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+

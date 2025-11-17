@@ -25,7 +25,7 @@ const generateUUID = (): string => {
 };
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'gamestart' | 'info' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
@@ -46,6 +46,7 @@ export default function ActuatorMinigame() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [userId, setUserId] = useState<string>('');
+    const [isQrRoute, setIsQrRoute] = useState(false);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [idleDetector, setIdleDetector] = useState<IdleDetector>({
@@ -115,6 +116,18 @@ export default function ActuatorMinigame() {
         // ⚠️ 여기 의존성은 가능하면 [] (혹은 route 기준) 으로 두는 게 안전함
         // screen 이 변할 때마다 새 리스너를 만들 이유가 없으면 [] 로 바꾸는 걸 추천
     }, []); // ← 핵심: screen 말고, 한 번만 등록
+
+    // QR 접근 감지
+    useEffect(() => {
+        if (screen === 'home') {
+            const qrAccess = localStorage.getItem('qrAccess');
+            if (qrAccess === 'true') {
+                console.log('🔍 QR access detected');
+                setIsQrRoute(true);
+                localStorage.removeItem('qrAccess'); // 한 번만 사용
+            }
+        }
+    }, [screen]);
 
     const clearAllTimers = () => {
         if (countdownTimeoutRef.current) {
@@ -210,19 +223,61 @@ export default function ActuatorMinigame() {
             console.log('Google login successful:', decodedToken);
 
             // 구글에서 받은 정보로 사용자 정보 채우기
-            setUserInfo({
+            const googleUserInfo: UserInfo = {
                 name: decodedToken.name || '',
-                company: '', // 구글에서는 제공하지 않음
+                company: 'QR User', // QR에서는 기본값
                 email: decodedToken.email || '',
-                phone: '', // 구글에서는 제공하지 않음
-            });
+                phone: '000-0000-0000', // QR에서는 기본값
+            };
+
+            setUserInfo(googleUserInfo);
 
             // 토큰 저장 (나중에 백엔드 인증에 사용 가능)
             localStorage.setItem('googleCredential', credentialResponse.credential);
             localStorage.setItem('googleTokenId', decodedToken.jti || '');
 
-            // 회원가입 형식의 정보 페이지로 이동 (company와 phone은 입력 필수)
-            setScreen('info');
+            // QR 경로인 경우: 암호화하고 게임 시작
+            if (isQrRoute) {
+                console.log('🎮 QR route: Starting game with Google login');
+                
+                // 암호화된 사용자 정보 저장
+                const encryptedName = CryptoJS.AES.encrypt(googleUserInfo.name, ENCRYPTION_KEY).toString();
+                const encryptedCompany = CryptoJS.AES.encrypt(googleUserInfo.company, ENCRYPTION_KEY).toString();
+                const encryptedEmail = CryptoJS.AES.encrypt(googleUserInfo.email, ENCRYPTION_KEY).toString();
+                const encryptedPhone = CryptoJS.AES.encrypt(googleUserInfo.phone, ENCRYPTION_KEY).toString();
+
+                localStorage.setItem(
+                    'encryptedUserInfo',
+                    JSON.stringify({
+                        name: encryptedName,
+                        company: encryptedCompany,
+                        email: encryptedEmail,
+                        phone: encryptedPhone,
+                    })
+                );
+
+                // Generate userId
+                let currentUserId = userId;
+                if (!currentUserId) {
+                    currentUserId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                        const r = (Math.random() * 16) | 0;
+                        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+                        return v.toString(16);
+                    });
+                    setUserId(currentUserId);
+                }
+
+                // 게임 세션 생성
+                const session = gameEngine.generateGameSession(currentUserId);
+                setGameSession(session);
+                setElapsedTime(0);
+
+                // 게임 시작
+                setScreen('game');
+            } else {
+                // 일반 경로: Info로 이동 (company와 phone은 입력 필수)
+                setScreen('info');
+            }
         } catch (error) {
             console.error('Error processing Google login:', error);
         }
@@ -276,8 +331,10 @@ export default function ActuatorMinigame() {
         setAgreeMarketing(false);
         setUserId('');
         localStorage.removeItem('encryptedUserInfo');
+        localStorage.removeItem('qrAccess');
         setGameSession(null);
         setLeaderboardEntry(null);
+        setIsQrRoute(false);
         setScreen('home');
     };
 
@@ -889,22 +946,31 @@ export default function ActuatorMinigame() {
                 )}
                 {screen === 'info' && (
                 <div className="info-card">
-                    <Info
-                        userInfo={userInfo}
-                        errors={errors}
-                        termsAccepted={termsAccepted}
-                        showModal={showModal}
-                        agreeTerms={agreeTerms}
-                        agreeMarketing={agreeMarketing}
-                        handleInputChange={handleInputChange}
-                        handleCheckboxClick={handleCheckboxClick}
-                        setShowModal={setShowModal}
-                        setAgreeTerms={setAgreeTerms}
-                        setAgreeMarketing={setAgreeMarketing}
-                        setTermsAccepted={setTermsAccepted}
-                        handleBack={handleBack}
-                        handleContinue={handleContinue}
-                    />
+                    {isQrRoute ? (
+                        // QR 경로: Google 로그인만
+                        <Auth
+                            handleBack={() => setScreen('home')}
+                            handleGoogleSuccess={handleGoogleSuccess}
+                        />
+                    ) : (
+                        // 일반 경로: 정보 입력 폼
+                        <Info
+                            userInfo={userInfo}
+                            errors={errors}
+                            termsAccepted={termsAccepted}
+                            showModal={showModal}
+                            agreeTerms={agreeTerms}
+                            agreeMarketing={agreeMarketing}
+                            handleInputChange={handleInputChange}
+                            handleCheckboxClick={handleCheckboxClick}
+                            setShowModal={setShowModal}
+                            setAgreeTerms={setAgreeTerms}
+                            setAgreeMarketing={setAgreeMarketing}
+                            setTermsAccepted={setTermsAccepted}
+                            handleBack={handleBack}
+                            handleContinue={handleContinue}
+                        />
+                    )}
                 </div>
             )}
             
