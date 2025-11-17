@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ParticipantCounterProvider } from './context/ParticipantCounterContext';
 import ActuatorMinigame from './components/ActuatorMinigame';
-import QrAuthPage from './pages/AuthChoice/QrAuthPage';
+import QrAuthPage from './pages/Auth/QrAuthPage';
 import Analytics from './components/Analytics';
 import ParticipantCountDisplay from './components/ParticipantCountDisplay';
 

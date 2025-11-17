@@ -4,7 +4,7 @@ import CryptoJS from 'crypto-js';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import type { CredentialResponse } from '../types/google-oauth';
 import Home from '../pages/Home/Home';
-import AuthChoice from '../pages/AuthChoice/AuthChoice';
+import Auth from '../pages/Auth/Auth';
 import Info from '../pages/Info/Info';
 import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
@@ -25,7 +25,7 @@ const generateUUID = (): string => {
 };
 
 export default function ActuatorMinigame() {
-    const [screen, setScreen] = useState<'home' | 'authchoice' | 'info' | 'gamestart' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
+    const [screen, setScreen] = useState<'home' | 'info' | 'gamestart' | 'game' | 'explanation' | 'result' | 'leaderboard'>('home');
     const [userInfo, setUserInfo] = useState<UserInfo>({
         name: '',
         company: '',
