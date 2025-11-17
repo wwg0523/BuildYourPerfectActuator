@@ -32,10 +32,10 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                     style={{ backgroundImage: 'url(/images/carousel/slide1.png)' }}
                 >
                     <div className="slide-overlay"></div>
-                    <div className="slide-text-content">
+                    {/* <div className="slide-text-content">
                         <h3>✨ The Secret Behind All Movement</h3>
                         <p>Discover the core technology powering everything!</p>
-                    </div>
+                    </div> */}
                 </div>
             ),
         },
@@ -49,10 +49,10 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                     style={{ backgroundImage: 'url(/images/carousel/slide2.png)' }}
                 >
                     <div className="slide-overlay"></div>
-                    <div className="slide-text-content">
+                    {/* <div className="slide-text-content">
                         <h3>🚀 The Core Component of Future Tech!</h3>
                         <p>Building tomorrow's innovations today!</p>
-                    </div>
+                    </div> */}
                 </div>
             ),
         },

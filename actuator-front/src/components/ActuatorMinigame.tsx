@@ -70,6 +70,9 @@ export default function ActuatorMinigame() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
+        const url = window.location.href;
+        window.history.pushState(null, '', url);
+
         let ignoreNextPop = false;
 
         const handlePopState = (event: PopStateEvent) => {
@@ -183,7 +186,7 @@ export default function ActuatorMinigame() {
             // Silent failure
         }
 
-        setScreen('authchoice');
+        setScreen('gamestart');
     };
 
     const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
@@ -876,6 +879,14 @@ export default function ActuatorMinigame() {
         <GoogleOAuthProvider clientId={googleClientId || 'invalid-client-id'}>
             <div className="app-container">
                 {screen === 'home' && <Home onStartGame={handleStartGame} />}
+                {screen === 'gamestart' && (
+                    <div className="gamestart-card">
+                        <GameStart
+                            onStartGame={() => setScreen('authchoice')}
+                            onBack={() => setScreen('home')}
+                        />
+                    </div>
+                )}
                 {screen === 'authchoice' && (
                     <div className="authchoice-card">
                         <AuthChoice
@@ -905,14 +916,7 @@ export default function ActuatorMinigame() {
                     />
                 </div>
             )}
-            {screen === 'gamestart' && (
-                <div className="gamestart-card">
-                    <GameStart
-                        onStartGame={() => setScreen('info')}
-                        onBack={() => setScreen('home')}
-                    />
-                </div>
-            )}
+            
             {screen === 'game' && gameSession && (
                 <div className="game-card">
                     <Game
