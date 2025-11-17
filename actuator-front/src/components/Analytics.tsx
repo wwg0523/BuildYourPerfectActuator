@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/main.scss';
+import '../styles/Analytics.scss';
 import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../lib/utils';
 import {
@@ -77,6 +78,18 @@ const Analytics: React.FC = () => {
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'companies' | 'trends'>('overview');
 
+    const formatDate = (dateString: string): string => {
+        try {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        } catch {
+            return dateString;
+        }
+    };
+
     const fetchAnalytics = useCallback(async () => {
         try {
             console.log('🔐 Fetching analytics with password:', password.substring(0, 3) + '***');
@@ -131,85 +144,52 @@ const Analytics: React.FC = () => {
         <div className="app-container">
             <div className="analytics-card">
                 {!isAuthenticated ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' }}>
-                        <h2 style={{ marginBottom: '20px' }}>Analytics Dashboard</h2>
+                    <div className="analytics-login">
+                        <h2>Analytics Dashboard</h2>
                         <input
                             type="password"
                             placeholder="Enter admin password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{ maxWidth: '300px', width: '100%', marginBottom: '16px' }}
                         />
-                        <p className="error" style={{ minHeight: '20px' }}>{error || '\u00A0'}</p>
-                        <button className="button" onClick={handleLogin} style={{ minWidth: '120px' }}>
+                        <p className="error">{error || '\u00A0'}</p>
+                        <button className="button" onClick={handleLogin}>
                             Login
                         </button>
                     </div>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
-                        <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>Data Analytics Dashboard</h2>
+                    <div className="analytics-content">
+                        <h2>Data Analytics Dashboard</h2>
                         {analyticsData ? (
                             <motion.div 
                                 initial={{ opacity: 0 }} 
                                 animate={{ opacity: 1 }} 
                                 transition={{ duration: 0.5 }}
-                                style={{ width: '100%', maxWidth: '1200px' }}
+                                className="analytics-container"
                             >
                                 {/* Tab Navigation */}
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '2px solid #eee', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                <div className="analytics-tabs">
                                     <button
                                         onClick={() => setActiveTab('overview')}
-                                        style={{
-                                            padding: '10px 20px',
-                                            border: 'none',
-                                            background: activeTab === 'overview' ? '#007bff' : '#f0f0f0',
-                                            color: activeTab === 'overview' ? '#fff' : '#333',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            borderRadius: '4px 4px 0 0',
-                                        }}
+                                        className={activeTab === 'overview' ? 'active' : ''}
                                     >
                                         📊 Overview
                                     </button>
                                     <button
                                         onClick={() => setActiveTab('questions')}
-                                        style={{
-                                            padding: '10px 20px',
-                                            border: 'none',
-                                            background: activeTab === 'questions' ? '#007bff' : '#f0f0f0',
-                                            color: activeTab === 'questions' ? '#fff' : '#333',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            borderRadius: '4px 4px 0 0',
-                                        }}
+                                        className={activeTab === 'questions' ? 'active' : ''}
                                     >
                                         ❓ Questions
                                     </button>
                                     <button
                                         onClick={() => setActiveTab('companies')}
-                                        style={{
-                                            padding: '10px 20px',
-                                            border: 'none',
-                                            background: activeTab === 'companies' ? '#007bff' : '#f0f0f0',
-                                            color: activeTab === 'companies' ? '#fff' : '#333',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            borderRadius: '4px 4px 0 0',
-                                        }}
+                                        className={activeTab === 'companies' ? 'active' : ''}
                                     >
                                         🏢 Companies
                                     </button>
                                     <button
                                         onClick={() => setActiveTab('trends')}
-                                        style={{
-                                            padding: '10px 20px',
-                                            border: 'none',
-                                            background: activeTab === 'trends' ? '#007bff' : '#f0f0f0',
-                                            color: activeTab === 'trends' ? '#fff' : '#333',
-                                            cursor: 'pointer',
-                                            fontWeight: 'bold',
-                                            borderRadius: '4px 4px 0 0',
-                                        }}
+                                        className={activeTab === 'trends' ? 'active' : ''}
                                     >
                                         📈 Trends
                                     </button>
@@ -217,34 +197,34 @@ const Analytics: React.FC = () => {
 
                                 {/* Overview Tab */}
                                 {activeTab === 'overview' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', width: '100%' }}>
-                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Total Participants</p>
-                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#007bff' }}>{analyticsData.summary.totalParticipants}</p>
+                                    <div className="tab-content overview-section">
+                                        <div className="stats-grid">
+                                            <div className="stat-card">
+                                                <p>Total Participants</p>
+                                                <p style={{ color: '#007bff' }}>{analyticsData.summary.totalParticipants}</p>
                                             </div>
-                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Completed</p>
-                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#28a745' }}>{analyticsData.summary.totalCompleted}</p>
+                                            <div className="stat-card">
+                                                <p>Completed</p>
+                                                <p style={{ color: '#28a745' }}>{analyticsData.summary.totalCompleted}</p>
                                             </div>
-                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Completion Rate</p>
-                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#ffc107' }}>{analyticsData.summary.completionRate.toFixed(1)}%</p>
+                                            <div className="stat-card">
+                                                <p>Completion Rate</p>
+                                                <p style={{ color: '#ffc107' }}>{analyticsData.summary.completionRate.toFixed(1)}%</p>
                                             </div>
-                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Avg Time (sec)</p>
-                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#17a2b8' }}>{analyticsData.summary.averageCompletionTime.toFixed(1)}</p>
+                                            <div className="stat-card">
+                                                <p>Avg Time (sec)</p>
+                                                <p style={{ color: '#17a2b8' }}>{analyticsData.summary.averageCompletionTime.toFixed(1)}</p>
                                             </div>
-                                            <div style={{ background: '#f0f0f0', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-                                                <p style={{ margin: '0 0 10px 0', color: '#666', fontSize: '0.9em' }}>Avg Score</p>
-                                                <p style={{ margin: 0, fontSize: '2em', fontWeight: 'bold', color: '#6f42c1' }}>{analyticsData.summary.averageScore.toFixed(2)}</p>
+                                            <div className="stat-card">
+                                                <p>Avg Score</p>
+                                                <p style={{ color: '#6f42c1' }}>{analyticsData.summary.averageScore.toFixed(2)}</p>
                                             </div>
                                         </div>
 
                                         {/* Difficulty Distribution */}
                                         <div style={{ width: '100%', marginTop: '20px' }}>
                                             <h3 style={{ textAlign: 'center' }}>Difficulty Level Performance</h3>
-                                            <div style={{ width: '100%', maxWidth: '800px', height: 300, margin: '0 auto' }}>
+                                            <div className="difficulty-chart">
                                                 <ResponsiveContainer>
                                                     <BarChart data={analyticsData.difficultyAnalysis}>
                                                         <CartesianGrid strokeDasharray="3 3" />
@@ -262,32 +242,27 @@ const Analytics: React.FC = () => {
 
                                 {/* Questions Tab */}
                                 {activeTab === 'questions' && (
-                                    <div style={{ overflowX: 'auto', width: '100%' }}>
-                                        <table style={{
-                                            width: '100%',
-                                            borderCollapse: 'collapse',
-                                            marginBottom: '20px',
-                                            fontSize: '0.9em'
-                                        }}>
+                                    <div className="tab-content questions-table">
+                                        <table>
                                             <thead>
-                                                <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
-                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>App</th>
-                                                    <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Difficulty</th>
-                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Attempts</th>
-                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Correct</th>
-                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Success Rate</th>
-                                                    <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>Avg Points</th>
+                                                <tr>
+                                                    <th>App</th>
+                                                    <th>Difficulty</th>
+                                                    <th>Attempts</th>
+                                                    <th>Correct</th>
+                                                    <th>Success Rate</th>
+                                                    <th>Avg Points</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {analyticsData.questionPerformance.map((q, idx) => (
-                                                    <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                                                        <td style={{ padding: '12px', borderRight: '1px solid #eee' }}>{q.applicationName}</td>
-                                                        <td style={{ padding: '12px', borderRight: '1px solid #eee' }}>{q.difficulty}</td>
-                                                        <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{q.totalAttempts}</td>
-                                                        <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{q.correctAttempts}</td>
-                                                        <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee', fontWeight: 'bold', color: q.successRate > 50 ? '#28a745' : '#dc3545' }}>{q.successRate.toFixed(1)}%</td>
-                                                        <td style={{ padding: '12px', textAlign: 'center' }}>{q.avgPointsEarned.toFixed(2)}</td>
+                                                    <tr key={idx}>
+                                                        <td>{q.applicationName}</td>
+                                                        <td>{q.difficulty}</td>
+                                                        <td style={{ textAlign: 'center' }}>{q.totalAttempts}</td>
+                                                        <td style={{ textAlign: 'center' }}>{q.correctAttempts}</td>
+                                                        <td style={{ textAlign: 'center' }} className={`success-rate ${q.successRate > 50 ? 'high' : 'low'}`}>{q.successRate.toFixed(1)}%</td>
+                                                        <td style={{ textAlign: 'center' }}>{q.avgPointsEarned.toFixed(2)}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -297,46 +272,42 @@ const Analytics: React.FC = () => {
 
                                 {/* Companies Tab */}
                                 {activeTab === 'companies' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-                                        <div style={{ width: '100%', maxWidth: '900px', height: 300, margin: '0 auto', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-                                            <h3 style={{ textAlign: 'center', marginTop: 0 }}>Participants by Company</h3>
+                                    <div className="tab-content companies-section">
+                                        <div className="companies-chart">
+                                            <h3>Participants by Company</h3>
                                             <ResponsiveContainer>
-                                                <BarChart data={analyticsData.leadQuality}>
+                                                <BarChart data={analyticsData.leadQuality} margin={{ bottom: 50, left: 0, right: 0, top: 0 }}>
                                                     <CartesianGrid strokeDasharray="3 3" />
-                                                    <XAxis dataKey="company" angle={-45} textAnchor="end" height={100} />
-                                                    <YAxis />
+                                                    <XAxis dataKey="company" angle={-45} textAnchor="end" height={50} tick={{ fontSize: 10 }} />
+                                                    <YAxis tick={{ fontSize: 10 }} />
                                                     <Tooltip />
-                                                    <Legend />
+                                                    <Legend wrapperStyle={{ fontSize: '12px' }} />
                                                     <Bar dataKey="participantCount" fill="#8884d8" name="Total Participants" />
                                                     <Bar dataKey="completedCount" fill="#82ca9d" name="Completed" />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>
-                                        <div style={{ overflowX: 'auto', width: '100%', padding: '0 10px' }}>
-                                            <table style={{
-                                                width: '100%',
-                                                borderCollapse: 'collapse',
-                                                fontSize: '0.9em'
-                                            }}>
+                                        <div className="questions-table">
+                                            <table>
                                                 <thead>
-                                                    <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
-                                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Company</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Participants</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Completed</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Completion Rate</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Avg Score</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>Avg Time (sec)</th>
+                                                    <tr>
+                                                        <th>Company</th>
+                                                        <th>Participants</th>
+                                                        <th>Completed</th>
+                                                        <th>Completion Rate</th>
+                                                        <th>Avg Score</th>
+                                                        <th>Avg Time (sec)</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {analyticsData.leadQuality.map((company, idx) => (
-                                                        <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                                                            <td style={{ padding: '12px', borderRight: '1px solid #eee', fontWeight: 'bold' }}>{company.company}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{company.participantCount}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{company.completedCount}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee', color: company.completionRate > 50 ? '#28a745' : '#ffc107' }}>{company.completionRate.toFixed(1)}%</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{company.avgScore.toFixed(2)}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center' }}>{company.avgCompletionTime.toFixed(1)}</td>
+                                                        <tr key={idx}>
+                                                            <td style={{ fontWeight: 'bold' }}>{company.company}</td>
+                                                            <td style={{ textAlign: 'center' }}>{company.participantCount}</td>
+                                                            <td style={{ textAlign: 'center' }}>{company.completedCount}</td>
+                                                            <td style={{ textAlign: 'center', color: company.completionRate > 50 ? '#28a745' : '#ffc107' }}>{company.completionRate.toFixed(1)}%</td>
+                                                            <td style={{ textAlign: 'center' }}>{company.avgScore.toFixed(2)}</td>
+                                                            <td style={{ textAlign: 'center' }}>{company.avgCompletionTime.toFixed(1)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -347,9 +318,9 @@ const Analytics: React.FC = () => {
 
                                 {/* Trends Tab */}
                                 {activeTab === 'trends' && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px' }}>
-                                        <div style={{ width: '100%', maxWidth: '1000px', height: 300, padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-                                            <h3 style={{ textAlign: 'center', marginTop: 0 }}>Daily Participation Trend</h3>
+                                    <div className="tab-content trends-section">
+                                        <div className="trends-chart">
+                                            <h3>Daily Participation Trend</h3>
                                             <ResponsiveContainer>
                                                 <LineChart data={analyticsData.dailyTrend}>
                                                     <CartesianGrid strokeDasharray="3 3" />
@@ -362,29 +333,23 @@ const Analytics: React.FC = () => {
                                                 </LineChart>
                                             </ResponsiveContainer>
                                         </div>
-                                        <div style={{ overflowX: 'auto', width: '100%', padding: '0 10px' }}>
-                                            <table style={{
-                                                width: '100%',
-                                                borderCollapse: 'collapse',
-                                                fontSize: '0.9em',
-                                                maxWidth: '600px',
-                                                margin: '0 auto'
-                                            }}>
+                                        <div className="questions-table" style={{ maxWidth: '600px' }}>
+                                            <table>
                                                 <thead>
-                                                    <tr style={{ backgroundColor: '#f0f0f0', borderBottom: '2px solid #ddd' }}>
-                                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Date</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Participants</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #ddd' }}>Completions</th>
-                                                        <th style={{ padding: '12px', textAlign: 'center', fontWeight: 'bold' }}>Avg Score</th>
+                                                    <tr>
+                                                        <th style={{ textAlign: 'center' }}>Date</th>
+                                                        <th style={{ textAlign: 'center' }}>Participants</th>
+                                                        <th style={{ textAlign: 'center' }}>Completions</th>
+                                                        <th style={{ textAlign: 'center' }}>Avg Score</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {analyticsData.dailyTrend.map((day, idx) => (
-                                                        <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
-                                                            <td style={{ padding: '12px', borderRight: '1px solid #eee' }}>{day.date}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{day.participants}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center', borderRight: '1px solid #eee' }}>{day.completions}</td>
-                                                            <td style={{ padding: '12px', textAlign: 'center' }}>{day.avgScore.toFixed(2)}</td>
+                                                        <tr key={idx}>
+                                                            <td style={{ textAlign: 'center' }}>{formatDate(day.date)}</td>
+                                                            <td style={{ textAlign: 'center' }}>{day.participants}</td>
+                                                            <td style={{ textAlign: 'center' }}>{day.completions}</td>
+                                                            <td style={{ textAlign: 'center' }}>{day.avgScore.toFixed(2)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
@@ -393,7 +358,7 @@ const Analytics: React.FC = () => {
                                     </div>
                                 )}
 
-                                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '20px', flexWrap: 'wrap' }}>
+                                <div className="analytics-actions">
                                     <button className="button outline" onClick={fetchAnalytics}>
                                         🔄 REFRESH
                                     </button>
@@ -403,7 +368,7 @@ const Analytics: React.FC = () => {
                                 </div>
                             </motion.div>
                         ) : (
-                            <p style={{ textAlign: 'center' }}>Loading analytics data...</p>
+                            <p className="loading">Loading analytics data...</p>
                         )}
                     </div>
                 )}

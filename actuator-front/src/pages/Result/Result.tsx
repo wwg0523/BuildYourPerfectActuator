@@ -193,10 +193,10 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                         </div>
 
                         {/* Stats Grid */}
-                        <div className="stats-grid">
-                            <div className="stat-item">
-                                <div className="stat-number">{leaderboardEntry?.score || 0}/5</div>
-                                <div className="stat-text">Correct Answers</div>
+                        <div className="result-stats-grid">
+                            <div className="result-stat-item">
+                                <div className="result-stat-number">{leaderboardEntry?.score || 0}/5</div>
+                                <div className="result-stat-text">Correct Answers</div>
                             </div>
                         </div>
                     </div>
@@ -218,8 +218,11 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                     {gradeInfo && (
                         <div className="grade-section">
                             <div className="grade-badge">
-                                <div className={`grade-emoji grade-${gradeInfo.rank.toLowerCase()}`}>
-                                    {['S', 'A', 'B'].includes(gradeInfo.rank) ? gradeInfo.badge : gradeInfo.rank}
+                                <div className="grade-emoji">
+                                    {gradeInfo.rank === 'S' && <img src="/images/trophy/Gold.png" alt="Gold Trophy" />}
+                                    {gradeInfo.rank === 'A' && <img src="/images/trophy/Silver.png" alt="Silver Trophy" />}
+                                    {gradeInfo.rank === 'B' && <img src="/images/trophy/Bronze.png" alt="Bronze Trophy" />}
+                                    {!['S', 'A', 'B'].includes(gradeInfo.rank) && <span>{gradeInfo.rank}</span>}
                                 </div>
                                 <div className="grade-info">
                                     <div className="grade-rank">Grade: <span className="grade-letter">{gradeInfo.rank}</span></div>

@@ -6,13 +6,11 @@ import './AuthChoice.scss';
 interface AuthChoiceProps {
     handleBack: () => void;
     handleGoogleSuccess: (credentialResponse: CredentialResponse) => void;
-    handleSignUp: () => void;
 }
 
 const AuthChoice: React.FC<AuthChoiceProps> = ({
     handleBack,
     handleGoogleSuccess,
-    handleSignUp,
 }) => {
     const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     const isGoogleConfigured = googleClientId && googleClientId !== 'invalid-client-id';
@@ -32,9 +30,6 @@ const AuthChoice: React.FC<AuthChoiceProps> = ({
 
     return (
         <div className="auth-choice-container">
-            <h2>Welcome</h2>
-            <p className="subtitle">Choose how you want to proceed</p>
-
             <div className="auth-options">
                 <div className="option google-login-option">
                     <h3>Login with Google</h3>
@@ -54,18 +49,6 @@ const AuthChoice: React.FC<AuthChoiceProps> = ({
                             />
                         )}
                     </div>
-                </div>
-
-                <div className="divider">
-                    <span>OR</span>
-                </div>
-
-                <div className="option signup-option">
-                    <h3>Sign Up</h3>
-                    <p className="option-description">Create a new account manually</p>
-                    <button className="button signup-btn" onClick={handleSignUp}>
-                        SIGN UP
-                    </button>
                 </div>
             </div>
 

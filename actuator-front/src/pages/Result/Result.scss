@@ -155,14 +155,14 @@
 }
 
 /* Stats Grid */
-.stats-grid {
+.result-stats-grid {
   gap: 16px;
   
   @media (max-width: 640px) {
     gap: 12px;
   }
   
-  .stat-item {
+  .result-stat-item {
     padding: 20px;
     background: #f9f9f9;
     border: 2px solid #e8e8f0;
@@ -187,7 +187,7 @@
       outline: none;
     }
     
-    .stat-number {
+    .result-stat-number {
       font-size: 32px;
       font-weight: 700;
       color: #667eea;
@@ -198,7 +198,7 @@
       }
     }
     
-    .stat-text {
+    .result-stat-text {
       font-size: 13px;
       color: #666;
       font-weight: 500;
@@ -307,24 +307,20 @@
         font-size: 32px;
       }
 
-      // S 등급 - 금색 필터
-      &.grade-s {
-        filter: saturate(1.5) hue-rotate(-10deg) brightness(1.1);
-      }
-
-      // A 등급 - 은색 필터
-      &.grade-a {
-        filter: saturate(0.5) brightness(1.2) invert(0.1);
-      }
-
-      // B 등급 - 동색 필터
-      &.grade-b {
-        filter: hue-rotate(30deg) saturate(0.9) brightness(0.95);
+      img {
+        max-width: 100%;
+        height: auto;
+        width: 80px;
+        height: 80px;
+        
+        @media (max-width: 640px) {
+          width: 60px;
+          height: 60px;
+        }
       }
 
       // C 등급 이하 - 그레이 배경에 텍스트
-      &.grade-c,
-      &.grade-d {
+      span {
         font-weight: 700;
         letter-spacing: 2px;
         min-width: 80px;
@@ -333,6 +329,9 @@
         background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
         color: white;
         box-shadow: 0 4px 12px rgba(158, 158, 158, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         
         @media (max-width: 640px) {
           min-width: 60px;

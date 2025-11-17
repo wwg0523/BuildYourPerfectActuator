@@ -882,17 +882,8 @@ export default function ActuatorMinigame() {
                 {screen === 'gamestart' && (
                     <div className="gamestart-card">
                         <GameStart
-                            onStartGame={() => setScreen('authchoice')}
+                            onStartGame={() => setScreen('info')}
                             onBack={() => setScreen('home')}
-                        />
-                    </div>
-                )}
-                {screen === 'authchoice' && (
-                    <div className="authchoice-card">
-                        <AuthChoice
-                            handleBack={() => setScreen('home')}
-                            handleGoogleSuccess={handleGoogleSuccess}
-                            handleSignUp={() => setScreen('info')}
                         />
                     </div>
                 )}
