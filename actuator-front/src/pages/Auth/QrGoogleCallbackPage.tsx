@@ -1,50 +1,61 @@
-// src/pages/Auth/QrGoogleCallbackPage.tsx
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const QrGoogleCallbackPage: React.FC = () => {
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 
-  useEffect(() => {
-    // URL 예시: https://example.com/qr/google-callback#id_token=...&state=qr
-    const hash = window.location.hash.startsWith('#')
-      ? window.location.hash.substring(1)
-      : window.location.hash;
+	useEffect(() => {
+		if (window.location.pathname !== '/qr/google-callback') {
+			return;
+		}
+		// URL 예시: https://example.com/qr/google-callback#id_token=...&state=qr
+		const hash = window.location.hash.startsWith('#')
+			? window.location.hash.substring(1)
+			: window.location.hash;
 
-    const params = new URLSearchParams(hash);
-    const idToken = params.get('id_token');
+		console.log('📍 callback href:', window.location.href);
+		console.log('📍 callback search:', window.location.search);
+		console.log('📍 callback hash:', window.location.hash);
 
-    if (!idToken) {
-      console.error('❌ No id_token in callback URL');
-      navigate('/'); // 실패 시 홈으로
-      return;
-    }
+		const params = new URLSearchParams(hash);
+		const idToken = params.get('id_token');
 
-    // QR 경로 플래그 + 토큰 저장
-    localStorage.setItem('qrAccess', 'true');
-    localStorage.setItem('qrIdToken', idToken);
+		console.log('🔑 extracted id_token:', idToken);
 
-    console.log('✅ QR redirect: got id_token, stored in localStorage.');
+		if (!idToken) {
+			console.error('❌ No id_token in callback URL');
 
-    // 실제 처리는 ActuatorMinigame에서 하도록 홈으로 보냄
-    navigate('/');
-  }, [navigate]);
+			const debugParams = new URLSearchParams(
+				window.location.hash.substring(1) || window.location.search.substring(1)
+			);
+			console.log('🔎 debug params:', Object.fromEntries(debugParams.entries()));
+			navigate('/'); // 실패 시 홈으로
+			return;
+		}
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        fontSize: '18px',
-        color: '#666',
-      }}
-    >
-      <p>Finalizing Google login...</p>
-    </div>
-  );
+		// QR 경로 플래그 + 토큰 저장
+		localStorage.setItem('qrAccess', 'true');
+		localStorage.setItem('qrIdToken', idToken);
+
+		console.log('✅ QR redirect: got id_token, stored in localStorage.');
+
+		navigate('/');
+	}, [navigate]);
+
+	return (
+		<div
+			style={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				minHeight: '100vh',
+				fontSize: '18px',
+				color: '#666',
+			}}
+		>
+			<p>Finalizing Google login...</p>
+		</div>
+	);
 };
 
 export default QrGoogleCallbackPage;

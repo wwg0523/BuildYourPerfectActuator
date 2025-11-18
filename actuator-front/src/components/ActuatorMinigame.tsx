@@ -4,7 +4,6 @@ import CryptoJS from 'crypto-js';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import type { CredentialResponse } from '../types/google-oauth';
 import Home from '../pages/Home/Home';
-import Auth from '../pages/Auth/Auth';
 import Info from '../pages/Info/Info';
 import GameStart from '../pages/GameStart/GameStart';
 import Game from '../pages/Game/Game';
@@ -124,7 +123,6 @@ export default function ActuatorMinigame() {
             if (qrAccess === 'true') {
                 console.log('🔍 QR access detected');
                 setIsQrRoute(true);
-                localStorage.removeItem('qrAccess'); // 한 번만 사용
             }
         }
     }, [screen]);
@@ -236,10 +234,13 @@ export default function ActuatorMinigame() {
             localStorage.setItem('googleCredential', credentialResponse.credential);
             localStorage.setItem('googleTokenId', decodedToken.jti || '');
 
+            // 🔑 여기서 isQrRoute 대신 localStorage 로 판별
+            const fromQr = localStorage.getItem('qrAccess') === 'true';
+
             // QR 경로인 경우: 암호화하고 게임 시작
-            if (isQrRoute) {
+            if (fromQr) {
                 console.log('🎮 QR route: Starting game with Google login');
-                
+
                 // 암호화된 사용자 정보 저장
                 const encryptedName = CryptoJS.AES.encrypt(googleUserInfo.name, ENCRYPTION_KEY).toString();
                 const encryptedCompany = CryptoJS.AES.encrypt(googleUserInfo.company, ENCRYPTION_KEY).toString();
@@ -271,17 +272,31 @@ export default function ActuatorMinigame() {
                 const session = gameEngine.generateGameSession(currentUserId);
                 setGameSession(session);
                 setElapsedTime(0);
-
-                // 게임 시작
-                setScreen('game');
-            } else {
-                // 일반 경로: Info로 이동 (company와 phone은 입력 필수)
-                setScreen('info');
             }
         } catch (error) {
             console.error('Error processing Google login:', error);
         }
     };
+
+    useEffect(() => {
+        const fromQr = localStorage.getItem('qrAccess') === 'true';
+        const pendingToken = localStorage.getItem('qrIdToken');
+
+        if (fromQr && pendingToken) {
+            console.log('🚀 Detected QR Google callback token, auto calling handleGoogleSuccess');
+
+            const fakeCredentialResponse: CredentialResponse = {
+                credential: pendingToken,
+            };
+
+            // 한 번만 쓰고 제거
+            localStorage.removeItem('qrIdToken');
+
+            handleGoogleSuccess(fakeCredentialResponse);
+        }
+    }, [handleGoogleSuccess]);
+
+
 
     const handleContinue = async () => {
         if (!validate()) return;
@@ -939,7 +954,7 @@ export default function ActuatorMinigame() {
                 {screen === 'gamestart' && (
                     <div className="gamestart-card">
                         <GameStart
-                            onStartGame={() => setScreen('info')}
+                            onStartGame={() => setScreen(isQrRoute ? 'game' : 'info')}
                             onBack={() => setScreen('home')}
                         />
                     </div>
@@ -964,7 +979,7 @@ export default function ActuatorMinigame() {
                         />
                     </div>
                 )}
-                {(screen === 'game' || (screen === 'info' && isQrRoute)) && gameSession && (
+                {screen === 'game' && gameSession && (
                     <div className="game-card">
                         <Game
                             key="game"
