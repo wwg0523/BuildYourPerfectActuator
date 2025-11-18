@@ -65,15 +65,15 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '💡 Design Your Own Actuator, Easily!',
             icon: '⚙️',
             content: (
-                <div className="slide-content">
-                    <p className="main-text">
-                        Forget complex physics and endless equations. Our web solution allows you to 
-                        design and simulate the exact actuator you need, based on just your idea.
-                    </p>
-                    <div className="key-emphasis">
-                        <span>✓ Create your ideal actuator 'lightly' and efficiently</span>
-                        <span>✓ Intuitive tools with visual feedback</span>
-                        <span>✓ No complex calculations required</span>
+                <div 
+                    className="slide-content slide-with-fullimage"
+                    style={{ backgroundImage: 'url(/images/carousel/slide3.png)' }}
+                >
+                    <div className="slide-text-content">
+                        <h3>💡 Design Your Own Actuator, Easily!</h3>
+                        <p>Forget complex physics and endless equations.</p>
+                        <p>Our web solution allows you to design and simulate the exact actuator you need, based on just your idea.</p>
+                        <p>You can create your ideal actuator 'lightly' and efficiently with our intuitive tools.</p>
                     </div>
                 </div>
             ),
@@ -83,15 +83,16 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '🏆 5 Minutes to Win a Prize!',
             icon: '🎁',
             content: (
-                <div className="slide-content">
-                    <p className="main-text">
-                        Take the quiz and prove you're an actuator expert. Participants are entered 
-                        into a draw, and high scorers on the Leaderboard will receive a special 
-                        prize at the CES booth!
-                    </p>
-                    <p className="call-to-action">
-                        Test your knowledge now and grab your chance to win!
-                    </p>
+                <div 
+                    className="slide-content slide-with-fullimage"
+                    style={{ backgroundImage: 'url(/images/carousel/slide4.png)' }}
+                >
+                    <div className="slide-text-content">
+                        <h3>🏆 5 Minutes to Win a Prize!</h3>
+                        <p>Take the quiz and prove you're an actuator expert.</p>
+                        <p>Participants are entered into a draw, and high scorers on the Leaderboard will receive a special prize at the CES booth!</p>
+                        <p>Test your knowledge now and grab your chance to win!</p>
+                    </div>
                 </div>
             ),
         },
@@ -227,7 +228,6 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                             }}
                             className={`carousel-slide carousel-slide-${slides[currentSlide].id}`}
                         >
-                            {slides[currentSlide].id > 2 && <h2 className="slide-headline">{slides[currentSlide].headline}</h2>}
                             <div className="slide-body">{slides[currentSlide].content}</div>
                         </motion.div>
                     </AnimatePresence>
