@@ -1,5 +1,5 @@
 // ============================================================
-// 전역 CSS 변수 및 믹스인
+// 전역 변수 & 믹스인
 // ============================================================
 
 $app-bg: #f0f4f8;
@@ -8,15 +8,17 @@ $primary-color: #4f46e5;
 $error-color: #dc2626;
 $hover-color: #2563eb;
 
-html, body {
-  margin: 0;
-  padding: 0;
+// 전역 reset
+html,
+body {
+    margin: 0;
+    padding: 0;
 }
 
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 // 라이트 모드 색상 변수
@@ -32,7 +34,7 @@ html, body {
     --timer-color: #059669;
 }
 
-// 1024px 기준 반응형 믹스인
+// 반응형 믹스인 (필요한 것만 남김)
 @mixin mobile {
     @media (max-width: 640px) {
         @content;
@@ -51,34 +53,14 @@ html, body {
     }
 }
 
-@mixin small-screen {
-    @media (max-width: 1023px) {
-        @content;
-    }
-}
-
-@mixin large-screen {
-    @media (min-width: 1024px) {
-        @content;
-    }
-}
-
 // ============================================================
 // 전역 공통 스타일
 // ============================================================
 
-// 전체 화면 배경
 body {
-    margin: 0;
-    padding: 0;
     font-family: Arial, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    box-sizing: border-box;
-}
-
-* {
-    box-sizing: border-box;
 }
 
 // App 중앙 컨테이너
@@ -90,8 +72,8 @@ body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     padding: 0;
-    
-    @media (max-width: 640px) {
+
+    @include mobile {
         padding: 0 10px;
     }
 }
@@ -108,17 +90,22 @@ body {
     margin: 0.5rem;
     transition: background-color 0.2s ease;
 
-    &:hover { background-color: $hover-color; }
+    &:hover {
+        background-color: $hover-color;
+    }
 
     &.outline {
         background: white;
         color: #374151;
         border: 1px solid #9ca3af;
-        &:hover { background: #f3f4f6; }
+
+        &:hover {
+            background: #f3f4f6;
+        }
     }
 }
 
-// 입력 필드
+// 입력 필드 (전역)
 input {
     width: 100%;
     padding: 0.75rem;
@@ -126,7 +113,6 @@ input {
     border: 1px solid #d1d5db;
     border-radius: 0.75rem;
     font-size: 1rem;
-    box-sizing: border-box;
 
     &:focus {
         outline: none;
@@ -136,10 +122,11 @@ input {
 }
 
 // ============================================================
-// 모달 및 오버레이 (여러 페이지에서 공용)
+// 모달 공통
 // ============================================================
 
-.modal-overlay {
+.modal-overlay,
+.delete-confirm-modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
@@ -149,38 +136,31 @@ input {
     z-index: 1000;
 }
 
-.modal {
+.delete-confirm-modal-overlay {
+    z-index: 1001; // 필요하면 덮어쓰기
+}
+
+.modal,
+.delete-confirm-modal {
     background: white;
-    padding: 2rem;
     border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+// 기본 모달
+.modal {
+    padding: 2rem;
     width: 90%;
     max-width: 520px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     text-align: left;
     display: flex;
     flex-direction: column;
     max-height: 80vh;
 }
 
-/* Delete confirmation modal (used by Result and Leaderboard components) */
-.delete-confirm-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1001;
-}
-
+// 삭제 확인 모달
 .delete-confirm-modal {
-    background: white;
     padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     text-align: center;
     max-width: 400px;
     width: 90%;
@@ -205,11 +185,8 @@ input {
 
         .button {
             padding: 10px 20px;
-            border: none;
             border-radius: 4px;
             font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
 
             &.outline {
                 background: #e5e7eb;
@@ -232,7 +209,10 @@ input {
     }
 }
 
+// ============================================================
 // 약관 동의 섹션
+// ============================================================
+
 .terms-container {
     display: flex;
     justify-content: center;
@@ -240,7 +220,7 @@ input {
     gap: 0.5rem;
     margin: 1.5rem 0;
     width: 100%;
-    
+
     input[type="checkbox"] {
         width: 1.2rem;
         height: 1.2rem;
@@ -256,7 +236,7 @@ input {
         color: #374151;
         cursor: pointer;
         line-height: 1.2rem;
-        
+
         a {
             color: $primary-color;
             text-decoration: none;
@@ -271,7 +251,6 @@ input {
 }
 
 .terms-modal {
-    
     h2 {
         text-align: center;
         margin-top: 2rem;
@@ -311,7 +290,8 @@ input {
             font-weight: 600;
         }
 
-        p, li {
+        p,
+        li {
             font-size: 0.85rem;
             line-height: 1.4;
             color: #374151;
@@ -334,174 +314,8 @@ input {
     }
 }
 
-/* Analytics Page Responsive Styles */
-.analytics-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    
-    @media (max-width: 640px) {
-        padding: 10px;
-    }
-}
-
-/* Analytics Tab Buttons */
-.analytics-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-    
-    @media (max-width: 640px) {
-        gap: 4px;
-    }
-    
-    button {
-        padding: 10px 15px;
-        font-size: 14px;
-        
-        @media (max-width: 640px) {
-            padding: 8px 12px;
-            font-size: 12px;
-        }
-    }
-}
-
-/* Analytics Charts Responsive */
-.analytics-chart-container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto 20px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-sizing: border-box;
-    overflow-x: auto;
-    
-    @media (max-width: 640px) {
-        padding: 5px;
-        margin-bottom: 15px;
-    }
-}
-
-.analytics-chart {
-    width: 100%;
-    height: 300px;
-    
-    @media (max-width: 640px) {
-        height: 250px;
-        min-width: 100%;
-    }
-}
-
-/* Analytics Tables Responsive */
-.analytics-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    box-sizing: border-box;
-    
-    @media (max-width: 640px) {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-}
-
-.analytics-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    font-size: 0.9em;
-    
-    @media (max-width: 640px) {
-        font-size: 0.8em;
-    }
-    
-    th, td {
-        padding: 12px;
-        text-align: left;
-        border-right: 1px solid #ddd;
-        
-        @media (max-width: 640px) {
-            padding: 8px;
-        }
-        
-        &:last-child {
-            border-right: none;
-        }
-    }
-    
-    th {
-        background-color: #f0f0f0;
-        border-bottom: 2px solid #ddd;
-        font-weight: bold;
-    }
-    
-    tbody tr {
-        border-bottom: 1px solid #eee;
-        
-        &:hover {
-            background-color: #f9f9f9;
-        }
-    }
-}
-
-/* Analytics Stats Grid */
-.analytics-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    width: 100%;
-    margin-bottom: 20px;
-    
-    @media (max-width: 768px) {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-    }
-    
-    @media (max-width: 640px) {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-}
-
-.analytics-stat-card {
-    background: #f0f0f0;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    
-    @media (max-width: 640px) {
-        padding: 15px;
-    }
-    
-    p {
-        margin: 0;
-        
-        &:first-child {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-            
-            @media (max-width: 640px) {
-                font-size: 0.8em;
-            }
-        }
-        
-        &:last-child {
-            font-size: 2em;
-            font-weight: bold;
-            margin-top: 10px;
-            
-            @media (max-width: 640px) {
-                font-size: 1.5em;
-            }
-        }
-    }
-}
-
-/* Explanation 페이지 전용 스타일 */
-.app-container > .page-explanation {
+// Explanation 페이지 전용
+.app-container>.page-explanation {
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -509,48 +323,70 @@ input {
     min-height: 100vh;
 }
 
-/* Analytics Card Container */
-.analytics-card {
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    background-color: #FAFAFA;
-    border-radius: 8px;
-    
-    @media (min-width: 1024px) {
-        max-width: 100%;
-    }
-    
-    @media (min-width: 641px) and (max-width: 1023px) {
-        max-width: 100%;
-    }
-    
-    @media (max-width: 640px) {
-        max-width: 100%;
-        width: 100%;
-        padding: 0;
-        margin: 0;
-    }
-}
-
-/* Auth Card Container */
+// Auth Card
 .auth-card {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 
-    @media (min-width: 1024px) {
+    @include desktop {
         max-width: 500px;
     }
 
-    @media (min-width: 641px) and (max-width: 1023px) {
+    @include tablet {
         max-width: 500px;
     }
 
-    @media (max-width: 640px) {
+    @include mobile {
         max-width: 100%;
-        width: 100%;
     }
 }
 
+// 참가자 배지
+.participant-count-badge {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #111827;
+    color: #f9fafb;
+}
+
+.status-indicator {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 14px;
+
+    &.offline {
+        opacity: 0.7;
+    }
+}
+
+.count-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.count-label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.count-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.count-suffix {
+    font-size: 13px;
+    opacity: 0.8;
+}

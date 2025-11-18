@@ -40,21 +40,21 @@ const Home: React.FC<HomeProps> = ({ onStartGame }) => {
     return (
         <div className="home-card">
             <div className="page-home" onClick={handleClickOrTouch}>
-            <video
-                ref={videoRef}
-                className="home-video"
-                autoPlay
-                muted
-                playsInline
-            >
-                <source src="/videos/test.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
-            
-            {/* 클릭/터치 안내 텍스트 */}
-            <div className="home-overlay">
-                <span className="click-hint">Click or Tap to Continue →</span>
-            </div>
+                <video
+                    ref={videoRef}
+                    className="home-video"
+                    autoPlay
+                    muted
+                    playsInline
+                >
+                    <source src="/videos/test.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+                
+                {/* 클릭/터치 안내 텍스트 */}
+                <div className="home-overlay">
+                    <span className="click-hint">Click or Tap to Continue →</span>
+                </div>
             </div>
         </div>
     );

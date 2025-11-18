@@ -1,4 +1,8 @@
-/* Leaderboard Page Styles - Vertical Layout */
+/* ============================================================
+   Leaderboard Page Styles (Leaderboard.tsx)
+   ============================================================ */
+
+/* 페이지 래퍼 */
 .page-leaderboard {
 	padding: 16px;
 	flex-direction: column;
@@ -10,6 +14,10 @@
 		padding: 30px;
 	}
 }
+
+/* ============================================================
+   Header (HOME / TITLE / BUTTON)
+   ============================================================ */
 
 .leaderboard-header-top {
 	display: flex;
@@ -29,7 +37,7 @@
 	h2 {
 		margin: 0;
 		font-size: 16px;
-		color: #FFFFFF;
+		color: #ffffff;
 		font-weight: bold;
 	}
 }
@@ -45,12 +53,13 @@
 	font-size: 12px;
 	white-space: nowrap;
 	transition: all 0.3s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.3);
+	}
 }
 
-.leaderboard-header-top .leaderboard-header-button:hover {
-	background: rgba(255, 255, 255, 0.3);
-}
-
+/* 메인 카드 컨테이너 */
 .leaderboard-container {
 	background: var(--bg-card, white);
 	border-radius: 0 0 12px 12px;
@@ -60,16 +69,22 @@
 	max-width: 100%;
 }
 
+/* 상단 테이블 헤더 (현재는 숨김) */
 .leaderboard-header {
 	display: none;
 }
 
+/* 빈 상태 메시지 */
 .empty-state {
 	text-align: center;
 	color: #999;
 	padding: 50px 20px;
 	font-size: 1em;
 }
+
+/* ============================================================
+   리스트 / 아이템
+   ============================================================ */
 
 .leaderboard-list {
 	display: flex;
@@ -85,16 +100,28 @@
 	padding: 12px;
 	gap: 8px;
 	transition: background-color 0.2s;
+
+	&:hover {
+		background-color: #f9f9f9;
+	}
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	@media (min-width: 641px) and (max-width: 1023px) {
+		padding: 14px;
+	}
+
+	@media (min-width: 1024px) {
+		padding: 16px;
+		flex-direction: row;
+		align-items: center;
+		gap: 16px;
+	}
 }
 
-.leaderboard-item:hover {
-	background-color: #f9f9f9;
-}
-
-.leaderboard-item:last-child {
-	border-bottom: none;
-}
-
+/* 랭크 + 이모지/뱃지 영역 */
 .rank-and-badge {
 	display: flex;
 	align-items: center;
@@ -102,6 +129,11 @@
 
 	@media (max-width: 640px) {
 		justify-content: center;
+	}
+
+	@media (min-width: 1024px) {
+		gap: 10px;
+		min-width: 80px;
 	}
 }
 
@@ -120,9 +152,15 @@
 	font-size: 12px;
 }
 
+/* 플레이어 정보 */
 .player-info {
 	padding-bottom: 4px;
 	text-align: center;
+
+	@media (min-width: 1024px) {
+		flex: 1;
+		padding-bottom: 0;
+	}
 }
 
 .player-name {
@@ -137,12 +175,26 @@
 	font-size: 11px;
 }
 
+/* 통계 영역 */
 .player-stats {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: 8px;
 	padding-top: 8px;
 	border-top: 1px solid #f0f0f0;
+
+	@media (min-width: 641px) and (max-width: 1023px) {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+
+	@media (min-width: 1024px) {
+		display: flex;
+		gap: 20px;
+		border-top: none;
+		padding-top: 0;
+		min-width: 250px;
+		justify-content: flex-end;
+	}
 }
 
 .stat {
@@ -150,6 +202,10 @@
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
+
+	@media (min-width: 1024px) {
+		align-items: flex-start;
+	}
 }
 
 .stat-label {
@@ -162,7 +218,15 @@
 	font-weight: bold;
 	font-size: 12px;
 	color: #667eea;
+
+	@media (min-width: 1024px) {
+		font-size: 14px;
+	}
 }
+
+/* ============================================================
+   Footer Actions
+   ============================================================ */
 
 .leaderboard-actions {
 	display: flex;
@@ -185,69 +249,26 @@
 .leaderboard-btn-play {
 	background: #667eea;
 	color: white;
-}
 
-.leaderboard-btn-play:hover {
-	background: #5568d3;
-	transform: translateY(-2px);
+	&:hover {
+		background: #5568d3;
+		transform: translateY(-2px);
+	}
 }
 
 .leaderboard-btn-home {
 	background: #f0f0f0;
 	color: #333;
-}
 
-.leaderboard-btn-home:hover {
-	background: #e0e0e0;
-}
-
-@media (min-width: 641px) and (max-width: 1023px) {
-	.leaderboard-item {
-		padding: 14px;
-	}
-
-	.player-stats {
-		grid-template-columns: 1fr 1fr 1fr;
+	&:hover {
+		background: #e0e0e0;
 	}
 }
 
-@media (min-width: 1024px) {
-	.leaderboard-item {
-		padding: 16px;
-		flex-direction: row;
-		align-items: center;
-		gap: 16px;
-	}
+/* ============================================================
+   Card Container
+   ============================================================ */
 
-	.rank-and-badge {
-		gap: 10px;
-		min-width: 80px;
-	}
-
-	.player-info {
-		flex: 1;
-		padding-bottom: 0;
-	}
-
-	.player-stats {
-		display: flex;
-		gap: 20px;
-		border-top: none;
-		padding-top: 0;
-		min-width: 250px;
-		justify-content: flex-end;
-	}
-
-	.stat {
-		align-items: flex-start;
-	}
-
-	.stat-value {
-		font-size: 14px;
-	}
-}
-
-/* Leaderboard Card Container */
 .leaderboard-card {
 	width: 100%;
 	max-width: 100%;

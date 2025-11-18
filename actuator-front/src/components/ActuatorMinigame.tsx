@@ -944,16 +944,8 @@ export default function ActuatorMinigame() {
                         />
                     </div>
                 )}
-                {screen === 'info' && (
-                <div className="info-card">
-                    {isQrRoute ? (
-                        // QR 경로: Google 로그인만
-                        <Auth
-                            handleBack={() => setScreen('home')}
-                            handleGoogleSuccess={handleGoogleSuccess}
-                        />
-                    ) : (
-                        // 일반 경로: 정보 입력 폼
+                {screen === 'info' && !isQrRoute && (
+                    <div className="info-card">
                         <Info
                             userInfo={userInfo}
                             errors={errors}
@@ -970,61 +962,59 @@ export default function ActuatorMinigame() {
                             handleBack={handleBack}
                             handleContinue={handleContinue}
                         />
-                    )}
-                </div>
-            )}
-            
-            {screen === 'game' && gameSession && (
-                <div className="game-card">
-                    <Game
-                        key="game"
-                        gameSession={gameSession}
-                        setGameSession={setGameSession}
-                        setScreen={setScreen}
-                        elapsedTime={elapsedTime}
-                    />
-                </div>
-            )}
-            {screen === 'explanation' && gameSession && (
-                <div className="explanation-card">
-                    <Explanation
-                        gameSession={gameSession}
-                        setGameSession={setGameSession}
-                        setScreen={setScreen}
-                        handleSubmit={handleSubmit}
-                    />
-                </div>
-            )}
-            {screen === 'result' && gameSession && (
-                <div className="result-card">
-                    <Result
-                        gameSession={gameSession}
-                        leaderboardEntry={leaderboardEntry ?? undefined}
-                        handlePlayAgain={handlePlayAgain}
-                        setScreen={setScreen}
-                        handleDeleteUserData={handleDeleteUserData}
-                        userInfo={{
-                            id: userId,
-                            name: userInfo.name,
-                            company: userInfo.company,
-                            email: userInfo.email,
-                            phone: userInfo.phone,
-                        }}
-                    />
-                </div>
-            )}
-            {screen === 'leaderboard' && (
-                <div className="leaderboard-card">
-                    <Leaderboard
-                        leaderboardData={leaderboardData}
-                        fetchLeaderboard={fetchLeaderboard}
-                        handlePlayAgain={handlePlayAgain}
-                        setScreen={setScreen}
-                        handleDeleteUserData={handleDeleteUserData}
-                    />
-                </div>
-            )}
-            {renderDeleteConfirmModal()}
+                    </div>
+                )}
+                {(screen === 'game' || (screen === 'info' && isQrRoute)) && gameSession && (
+                    <div className="game-card">
+                        <Game
+                            key="game"
+                            gameSession={gameSession}
+                            setGameSession={setGameSession}
+                            setScreen={setScreen}
+                            elapsedTime={elapsedTime}
+                        />
+                    </div>
+                )}
+                {screen === 'explanation' && gameSession && (
+                    <div className="explanation-card">
+                        <Explanation
+                            gameSession={gameSession}
+                            setGameSession={setGameSession}
+                            setScreen={setScreen}
+                            handleSubmit={handleSubmit}
+                        />
+                    </div>
+                )}
+                {screen === 'result' && gameSession && (
+                    <div className="result-card">
+                        <Result
+                            gameSession={gameSession}
+                            leaderboardEntry={leaderboardEntry ?? undefined}
+                            handlePlayAgain={handlePlayAgain}
+                            setScreen={setScreen}
+                            handleDeleteUserData={handleDeleteUserData}
+                            userInfo={{
+                                id: userId,
+                                name: userInfo.name,
+                                company: userInfo.company,
+                                email: userInfo.email,
+                                phone: userInfo.phone,
+                            }}
+                        />
+                    </div>
+                )}
+                {screen === 'leaderboard' && (
+                    <div className="leaderboard-card">
+                        <Leaderboard
+                            leaderboardData={leaderboardData}
+                            fetchLeaderboard={fetchLeaderboard}
+                            handlePlayAgain={handlePlayAgain}
+                            setScreen={setScreen}
+                            handleDeleteUserData={handleDeleteUserData}
+                        />
+                    </div>
+                )}
+                {renderDeleteConfirmModal()}
             </div>
         </GoogleOAuthProvider>
     );

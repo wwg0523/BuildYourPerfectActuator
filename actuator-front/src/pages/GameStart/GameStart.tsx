@@ -31,7 +31,6 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                     className="slide-content slide-with-fullimage"
                     style={{ backgroundImage: 'url(/images/carousel/slide1.png)' }}
                 >
-                    <div className="slide-overlay"></div>
                     <div className="slide-text-content">
                         <h3>✨ The Secret Behind All Movement</h3>
                         <p>An actuator is a device that takes electrical energy, hydraulic, or pneumatic power and converts it into physical 'motion' (linear or rotary).</p>
@@ -46,21 +45,19 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
             headline: '🚀 The Core Component of Future Tech!',
             icon: '🤖',
             content: (
-                <>
-                    <p>Actuators are not just parts; they are essential for technologies</p>
-                    <p>ranging from robotics and smart home appliances to wearable devices.</p>
-                    <p>They enable precise control and new user experiences.</p>
-                    <div 
-                        className="slide-content slide-with-fullimage"
-                        style={{ backgroundImage: 'url(/images/carousel/slide2.png)' }}
-                    >
-                        <div className="slide-overlay"></div>
-                        {/* <div className="slide-text-content">
-                            <h3>🚀 The Core Component of Future Tech!</h3>
-                            <p>Building tomorrow's innovations today!</p>
-                        </div> */}
+                <div 
+                    className="slide-content slide-with-fullimage"
+                    style={{ backgroundImage: 'url(/images/carousel/slide2.png)' }}
+                >
+                    <div className="slide-text-content">
+                        <h3>🚀 The Core Component of Future Tech!</h3>
+                        <p>Actuators are not just parts; they are essential for technologies</p>
+                        <p>ranging from robotics and smart home appliances to wearable devices.</p>
+                        <p>They enable precise control and new user experiences.</p>
+                        <p>Expand your knowledge and discover this hidden technology!</p>
+                        <p>Building tomorrow's innovations today!</p>
                     </div>
-                </>
+                </div>
             ),
         },
         {

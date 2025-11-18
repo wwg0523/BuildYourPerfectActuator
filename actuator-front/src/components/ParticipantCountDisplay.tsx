@@ -28,15 +28,20 @@ const ParticipantCountDisplay: React.FC = () => {
 
   return (
     <div className="participant-count-badge">
-      <div className="count-header">
-        <span className="count-label">Total Participants Today</span>
-        <span className={`status-indicator ${isOnline ? 'online' : 'offline'}`}>
-          {isOnline ? '🟢' : '🔴'}
-        </span>
-      </div>
-      <div className="count-display">
-        <span className="count-number">{totalCount.toLocaleString()}</span>
-        <span className="count-suffix">players</span>
+      {/* 오른쪽 위 상태 아이콘 */}
+      <span className={`status-indicator ${isOnline ? 'online' : 'offline'}`}>
+        {isOnline ? '🟢' : '🔴'}
+      </span>
+
+      {/* 가운데 정렬되는 내용 */}
+      <div className="count-content">
+        <span className="count-label">Total Participants</span>
+        <div className="count-display">
+          <span className="count-number">
+            {totalCount.toLocaleString()}
+          </span>
+          <span className="count-suffix">players</span>
+        </div>
       </div>
     </div>
   );

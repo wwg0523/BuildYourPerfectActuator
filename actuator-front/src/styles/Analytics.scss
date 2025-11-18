@@ -1,422 +1,432 @@
 // Analytics Component Styles
 
 .analytics-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+
+	@media (max-width: 640px) {
+		padding: 10px;
+	}
 }
 
 // Login Section
 .analytics-login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	text-align: center;
 
-  h2 {
-    margin-bottom: 20px;
-  }
+	h2 {
+		margin-bottom: 20px;
+	}
 
-  input {
-    max-width: 300px;
-    width: 100%;
-    margin-bottom: 16px;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1em;
+	input {
+		max-width: 300px;
+		width: 100%;
+		margin-bottom: 16px;
+		padding: 10px 12px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		font-size: 1em;
 
-    &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-    }
-  }
+		&:focus {
+			outline: none;
+			border-color: #007bff;
+			box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+		}
+	}
 
-  .error {
-    min-height: 20px;
-    color: #dc3545;
-    font-weight: 500;
-    margin-bottom: 16px;
-  }
+	.error {
+		min-height: 20px;
+		color: #dc3545;
+		font-weight: 500;
+		margin-bottom: 16px;
+	}
 
-  button {
-    min-width: 120px;
-  }
+	button {
+		min-width: 120px;
+	}
 }
 
 // Main Content
 .analytics-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	width: 100%;
 
-  h2 {
-    text-align: center;
-    margin-bottom: 24px;
-  }
+	h2 {
+		text-align: center;
+		margin-bottom: 24px;
+	}
 }
 
 // Tab Navigation
 .analytics-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #eee;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
+	display: flex;
+	gap: 8px;
+	margin-bottom: 20px;
+	border-bottom: 2px solid #eee;
+	justify-content: center;
+	flex-wrap: wrap;
+	width: 100%;
 
-  button {
-    padding: 10px 16px;
-    border: none;
-    background: #f0f0f0;
-    color: #333;
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 4px 4px 0 0;
-    transition: all 0.3s ease;
-    font-size: 0.9em;
+	@media (max-width: 640px) {
+		gap: 4px;
+	}
 
-    &:hover {
-      background: #e0e0e0;
-    }
+	button {
+		padding: 10px 16px;
+		border: none;
+		background: #f0f0f0;
+		color: #333;
+		cursor: pointer;
+		font-weight: bold;
+		border-radius: 4px 4px 0 0;
+		transition: all 0.3s ease;
+		font-size: 0.9em;
 
-    &.active {
-      background: #007bff;
-      color: #fff;
-    }
-  }
+		@media (max-width: 640px) {
+			padding: 8px 12px;
+			font-size: 0.8em;
+		}
+
+		&:hover {
+			background: #e0e0e0;
+		}
+
+		&.active {
+			background: #007bff;
+			color: #fff;
+		}
+	}
 }
 
-// Stats Grid
+// Stats Grid (analytics-stats-grid / analytics-stat-card 대신 이 세트만 사용)
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  width: 100%;
-  margin-bottom: 20px;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+	width: 100%;
+	margin-bottom: 20px;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
+	@media (max-width: 1024px) {
+		gap: 12px;
+	}
 
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
+	@media (max-width: 768px) {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 12px;
+	}
 
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
+	@media (max-width: 480px) {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 10px;
+	}
 }
 
 .stat-card {
-  background: #f0f0f0;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+	background: #f0f0f0;
+	padding: 12px;
+	border-radius: 8px;
+	text-align: center;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-  @media (max-width: 768px) {
-    padding: 10px;
-  }
+	@media (max-width: 768px) {
+		padding: 10px;
+	}
 
-  @media (max-width: 480px) {
-    padding: 8px;
-  }
+	@media (max-width: 480px) {
+		padding: 8px;
+	}
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+	&:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
 
-  p {
-    margin: 0;
+	p {
+		margin: 0;
 
-    &:first-child {
-      margin-bottom: 6px;
-      color: #666;
-      font-size: 0.75em;
+		&:first-child {
+			margin-bottom: 6px;
+			color: #666;
+			font-size: 0.75em;
 
-      @media (max-width: 768px) {
-        font-size: 0.7em;
-      }
+			@media (max-width: 768px) {
+				font-size: 0.7em;
+			}
 
-      @media (max-width: 480px) {
-        font-size: 0.65em;
-      }
-    }
+			@media (max-width: 480px) {
+				font-size: 0.65em;
+			}
+		}
 
-    &:last-child {
-      font-size: 1.5em;
-      font-weight: bold;
+		&:last-child {
+			font-size: 1.5em;
+			font-weight: bold;
 
-      @media (max-width: 768px) {
-        font-size: 1.3em;
-      }
+			@media (max-width: 768px) {
+				font-size: 1.3em;
+			}
 
-      @media (max-width: 480px) {
-        font-size: 1.1em;
-      }
-    }
-  }
+			@media (max-width: 480px) {
+				font-size: 1.1em;
+			}
+		}
+	}
 }
 
-// Tab Content
+// 공통 Tab Content
 .tab-content {
-  width: 100%;
-  animation: fadeIn 0.3s ease;
+	width: 100%;
+	animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
 }
 
 // Overview Tab
 .overview-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	width: 100%;
 }
 
 .difficulty-chart {
-  width: 100%;
-  max-width: 800px;
-  height: 250px;
-  margin-top: 16px;
+	width: 100%;
+	max-width: 800px;
+	height: 250px;
+	margin-top: 16px;
 
-  @media (max-width: 768px) {
-    height: 200px;
-  }
+	@media (max-width: 768px) {
+		height: 200px;
+	}
 
-  @media (max-width: 480px) {
-    height: 150px;
-  }
+	@media (max-width: 480px) {
+		height: 150px;
+	}
+}
+
+// Chart Container (Overview / Companies / Trends 공통 컨테이너)
+.analytics-chart-container,
+.companies-chart,
+.trends-chart {
+	width: 100%;
+	max-width: 100%;
+	margin: 0 auto 20px;
+	padding: 10px;
+	background: #f9f9f9;
+	border-radius: 8px;
+	box-sizing: border-box;
+	overflow-x: auto;
+	flex-shrink: 0;
+
+	@media (max-width: 640px) {
+		padding: 5px;
+		margin-bottom: 15px;
+	}
+}
+
+.analytics-chart {
+	width: 100%;
+	height: 300px;
+
+	@media (max-width: 640px) {
+		height: 250px;
+		min-width: 100%;
+	}
 }
 
 // Questions Tab
 .questions-table {
-  overflow-x: auto;
-  width: 100%;
-  margin-bottom: 0;
-  border-radius: 8px;
-  flex-shrink: 0;
+	overflow-x: auto;
+	width: 100%;
+	margin-bottom: 0;
+	border-radius: 8px;
+	flex-shrink: 0;
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85em;
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.85em;
 
-    @media (max-width: 768px) {
-      font-size: 0.8em;
-    }
+		@media (max-width: 768px) {
+			font-size: 0.8em;
+		}
 
-    @media (max-width: 480px) {
-      font-size: 0.75em;
-    }
+		@media (max-width: 480px) {
+			font-size: 0.75em;
+		}
 
-    thead {
-      background-color: #f0f0f0;
+		thead {
+			background-color: #f0f0f0;
 
-      tr {
-        border-bottom: 2px solid #ddd;
+			tr {
+				border-bottom: 2px solid #ddd;
 
-        th {
-          padding: 10px;
-          text-align: left;
-          font-weight: bold;
-          border-right: 1px solid #ddd;
+				th {
+					padding: 10px;
+					text-align: left;
+					font-weight: bold;
+					border-right: 1px solid #ddd;
 
-          @media (max-width: 768px) {
-            padding: 8px;
-          }
+					@media (max-width: 768px) {
+						padding: 8px;
+					}
 
-          @media (max-width: 480px) {
-            padding: 6px;
-          }
+					@media (max-width: 480px) {
+						padding: 6px;
+					}
 
-          &:last-child {
-            border-right: none;
-          }
-        }
-      }
-    }
+					&:last-child {
+						border-right: none;
+					}
+				}
+			}
+		}
 
-    tbody {
-      tr {
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.2s ease;
+		tbody {
+			tr {
+				border-bottom: 1px solid #eee;
+				transition: background-color 0.2s ease;
 
-        &:hover {
-          background-color: #f9f9f9;
-        }
+				&:hover {
+					background-color: #f9f9f9;
+				}
 
-        td {
-          padding: 10px;
-          border-right: 1px solid #eee;
+				td {
+					padding: 10px;
+					border-right: 1px solid #eee;
 
-          @media (max-width: 768px) {
-            padding: 8px;
-          }
+					@media (max-width: 768px) {
+						padding: 8px;
+					}
 
-          @media (max-width: 480px) {
-            padding: 6px;
-          }
+					@media (max-width: 480px) {
+						padding: 6px;
+					}
 
-          &:last-child {
-            border-right: none;
-          }
+					&:last-child {
+						border-right: none;
+					}
 
-          &.success-rate {
-            font-weight: bold;
+					&.success-rate {
+						font-weight: bold;
 
-            &.high {
-              color: #28a745;
-            }
+						&.high {
+							color: #28a745;
+						}
 
-            &.low {
-              color: #dc3545;
-            }
-          }
-        }
-      }
-    }
-  }
+						&.low {
+							color: #dc3545;
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 // Companies Tab
 .companies-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	width: 100%;
 
-  @media (max-width: 768px) {
-    gap: 16px;
-  }
+	@media (max-width: 768px) {
+		gap: 16px;
+	}
 }
 
 .companies-chart {
-  width: 100%;
-  height: 250px;
-  padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  flex-shrink: 0;
+	h3 {
+		text-align: center;
+		margin: 0 0 10px 0;
+		font-size: 0.95em;
 
-  h3 {
-    text-align: center;
-    margin: 0 0 10px 0;
-    font-size: 0.95em;
+		@media (max-width: 768px) {
+			font-size: 0.9em;
+		}
 
-    @media (max-width: 768px) {
-      font-size: 0.9em;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 0.85em;
-      margin-bottom: 8px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    height: 200px;
-    padding: 10px;
-  }
-
-  @media (max-width: 480px) {
-    height: 150px;
-    padding: 8px;
-  }
+		@media (max-width: 480px) {
+			font-size: 0.85em;
+			margin-bottom: 8px;
+		}
+	}
 }
 
 // Trends Tab
 .trends-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	width: 100%;
 
-  @media (max-width: 768px) {
-    gap: 16px;
-  }
+	@media (max-width: 768px) {
+		gap: 16px;
+	}
 }
 
 .trends-chart {
-  width: 100%;
-  height: 250px;
-  padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  flex-shrink: 0;
+	h3 {
+		text-align: center;
+		margin: 0 0 10px 0;
+		font-size: 0.95em;
 
-  h3 {
-    text-align: center;
-    margin: 0 0 10px 0;
-    font-size: 0.95em;
+		@media (max-width: 768px) {
+			font-size: 0.9em;
+		}
 
-    @media (max-width: 768px) {
-      font-size: 0.9em;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 0.85em;
-      margin-bottom: 8px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    height: 200px;
-    padding: 10px;
-  }
-
-  @media (max-width: 480px) {
-    height: 150px;
-    padding: 8px;
-  }
+		@media (max-width: 480px) {
+			font-size: 0.85em;
+			margin-bottom: 8px;
+		}
+	}
 }
 
 // Action Buttons
 .analytics-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 10px;
-  flex-wrap: wrap;
-  width: 100%;
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	margin-top: 10px;
+	flex-wrap: wrap;
+	width: 100%;
 
-  button {
-    min-width: 140px;
+	button {
+		min-width: 140px;
 
-    @media (max-width: 480px) {
-      min-width: 120px;
-      padding: 8px 12px;
-      font-size: 0.9em;
-    }
-  }
+		@media (max-width: 480px) {
+			min-width: 120px;
+			padding: 8px 12px;
+			font-size: 0.9em;
+		}
+	}
 }
 
 // Loading State
 .loading {
-  text-align: center;
-  padding: 40px 20px;
-  color: #666;
+	text-align: center;
+	padding: 40px 20px;
+	color: #666;
 }
