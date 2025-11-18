@@ -55,11 +55,15 @@ const Game: React.FC<GameProps> = ({ gameSession, setGameSession, setScreen, ela
 
     return (
         <div className="page-game">
-            {/* Header Section with HOME, Question, Timer */}
+            {/* Header Section with Logo, Question, Timer */}
             <div className="game-header">
                 <div className="game-header-left">
                     <button className="game-header-button game-home-button" onClick={() => setShowBackConfirmModal(true)} title="Home">
-                        🏠 HOME
+                        <img 
+                            src="/images/logo/lebot-logo.png" 
+                            alt="lebot-logo" 
+                            className="home-logo"
+                        />
                     </button>
                 </div>
                 <div className="game-question-header-inline">

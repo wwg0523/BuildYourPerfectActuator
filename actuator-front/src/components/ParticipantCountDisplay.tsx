@@ -43,6 +43,16 @@ const ParticipantCountDisplay: React.FC = () => {
           <span className="count-suffix">players</span>
         </div>
       </div>
+
+      {/* Powered by Logo */}
+      <div className="powered-by">
+        Powered by
+        <img 
+            src="/images/logo/lebot-logo.png" 
+            alt="lebot-logo" 
+            className="home-logo"
+        />
+      </div>
     </div>
   );
 };

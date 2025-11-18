@@ -47,10 +47,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
 
     return (
         <div className="page-leaderboard">
-            {/* Header with HOME, Title, and STATS */}
+            {/* Header with Logo, Title, and STATS */}
             <div className="leaderboard-header-top">
                 <button className="leaderboard-header-button leaderboard-home-button" onClick={() => setScreen('home')} title="Home">
-                    🏠 HOME
+                    <img 
+                        src="/images/logo/lebot-logo.png" 
+                        alt="lebot-logo" 
+                        className="home-logo"
+                    />
                 </button>
                 <div className="leaderboard-header-title">
                     <h2>Today's Rankings</h2>

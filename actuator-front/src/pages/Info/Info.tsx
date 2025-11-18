@@ -87,9 +87,19 @@ const Info: React.FC<InfoProps> = ({
                 }}
             />
 
-            <div>
+            <div className="info-button">
                 <button className="button outline" onClick={handleBack}>BACK</button>
                 <button className="button" onClick={handleContinue}>CONTINUE</button>
+            </div>
+
+            {/* Powered by Logo */}
+            <div className="powered-by">
+                Powered by
+                <img 
+                    src="/images/logo/lebot-logo.png" 
+                    alt="lebot-logo" 
+                    className="home-logo"
+                />
             </div>
         </>
     );

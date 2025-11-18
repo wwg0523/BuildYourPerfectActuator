@@ -366,6 +366,16 @@ const Analytics: React.FC = () => {
                                         🏠 BACK TO GAME
                                     </button>
                                 </div>
+
+                                {/* Powered by Logo */}
+                                <div className="powered-by">
+                                    Powered by
+                                    <img 
+                                        src="/images/logo/lebot-logo.png" 
+                                        alt="lebot-logo" 
+                                        className="home-logo"
+                                    />
+                                </div>
                             </motion.div>
                         ) : (
                             <p className="loading">Loading analytics data...</p>

@@ -67,6 +67,16 @@ const TermsModal: React.FC<TermsModalProps> = ({
                     <button onClick={onClose} className="button outline">DECLINE</button>
                     <button onClick={handleAccept} className="button">ACCEPT</button>
                 </div>
+
+                {/* Powered by Logo */}
+                <div className="powered-by">
+                    Powered by
+                    <img 
+                        src="/images/logo/lebot-logo.png" 
+                        alt="lebot-logo" 
+                        className="home-logo"
+                    />
+                </div>
             </div>
         </div>
     );

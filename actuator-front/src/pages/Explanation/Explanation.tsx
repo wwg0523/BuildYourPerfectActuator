@@ -128,15 +128,26 @@ const Explanation: React.FC<ExplanationProps> = ({
 
     return (
         <div className="page-explanation">
-            {/* Header Section */}
+                {/* Result Section */}
                 <div className={`explanation-header ${isCorrect ? 'correct' : 'incorrect'}`}>
-                    <div className="header-icon">
-                        {isCorrect ? '✅' : '❌'}
+                    <div className="explanation-header-left">
+                        <button className="explanation-header-button explanation-home-button" onClick={() => setShowBackConfirmModal(true)} title="Home">
+                            <img 
+                                src="/images/logo/lebot-logo.png" 
+                                alt="lebot-logo" 
+                                className="home-logo"
+                            />
+                        </button>
                     </div>
-                    <div className="header-content">
-                        <h1>{isCorrect ? 'Correct!' : 'Incorrect!'}</h1>
-                        {isCorrect && <span className="score-badge">+{displayScore} points</span>}
+                    <div className="explanation-header-result">
+                        {/* <div className="header-icon">
+                            {isCorrect ? '✅' : '❌'}
+                        </div> */}
+                        <div className="header-content">
+                            <h1>{isCorrect ? 'Correct!' : 'Incorrect!'}</h1>
+                        </div>
                     </div>
+                    <div className="explanation-header-right">{isCorrect && <span className="score-badge">+{displayScore} points</span>}</div>
                 </div>
 
                 {/* Scrollable Content Section */}

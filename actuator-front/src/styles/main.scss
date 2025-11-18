@@ -390,3 +390,129 @@ input {
     font-size: 13px;
     opacity: 0.8;
 }
+
+// ============================================================
+// 로고 스타일
+// ============================================================
+
+.home-logo {
+    height: 48px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+// 게임 헤더의 로고 스타일 (Game.tsx)
+.game-home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    .home-logo {
+        height: 42px;
+    }
+}
+
+// Explanation 헤더 (Explanation.tsx)
+
+
+.explanation-home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    .home-logo {
+        height: 42px;
+    }
+}
+
+
+// Result 헤더의 로고 스타일 (Result.tsx)
+.result-home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    .home-logo {
+        height: 42px;
+    }
+}
+
+// Leaderboard 헤더의 로고 스타일 (Leaderboard.tsx)
+.leaderboard-home-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    .home-logo {
+        height: 42px;
+    }
+}
+
+// Powered by 섹션
+.powered-by {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 0;
+    color: var(--text-secondary);
+    margin-left: 0;
+    margin-right: 0;
+    opacity: 0.8;
+    width: 100%;
+
+    @include mobile {
+        gap: 8px;
+        padding: 15px 0;
+        font-size: 12px;
+        margin-top: 20px;
+    }
+
+    .home-logo {       
+        @include mobile {
+            height: 28px;
+        }
+    }
+}

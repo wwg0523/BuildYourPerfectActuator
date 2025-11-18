@@ -272,6 +272,16 @@ const GameStart: React.FC<GameStartProps> = ({ onStartGame, onBack: _onBack }) =
                         Start Game →
                     </button>
                 </div>
+
+                {/* Powered by Logo */}
+                <div className="powered-by">
+                    Powered by
+                    <img 
+                        src="/images/logo/lebot-logo.png" 
+                        alt="lebot-logo" 
+                        className="home-logo"
+                    />
+                </div>
             </div>
         </div>
     );
