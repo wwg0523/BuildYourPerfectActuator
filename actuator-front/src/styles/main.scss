@@ -343,53 +343,7 @@ input {
     }
 }
 
-// 참가자 배지
-.participant-count-badge {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px 20px;
-    border-radius: 12px;
-    background: #111827;
-    color: #f9fafb;
-}
 
-.status-indicator {
-    position: absolute;
-    top: 8px;
-    right: 10px;
-    font-size: 14px;
-
-    &.offline {
-        opacity: 0.7;
-    }
-}
-
-.count-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-}
-
-.count-label {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.8;
-}
-
-.count-display {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.count-suffix {
-    font-size: 13px;
-    opacity: 0.8;
-}
 
 // ============================================================
 // 로고 스타일
