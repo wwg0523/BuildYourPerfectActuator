@@ -179,7 +179,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
                 <div className="result-header-title">
                     <h2>Game Complete</h2>
                 </div>
-                <button className="result-header-button result-stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
+                <button className="result-header-button result-stats-button" onClick={() => window.location.href = '/minigame/analytics'} title="Stats">
                     📊 STATS
                 </button>
             </div>

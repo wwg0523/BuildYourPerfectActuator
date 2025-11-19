@@ -279,11 +279,13 @@ export default function ActuatorMinigame() {
 
         if (!fromQr) {
             console.log('❌ Not from QR route, ignore QR callback');
+            handleBack();
             return;
         }
 
         if (!pendingToken) {
             console.log('❌ No pending QR Google token found');
+            handleBack();
             return;
         }
 
@@ -292,9 +294,6 @@ export default function ActuatorMinigame() {
         const fakeCredentialResponse: CredentialResponse = {
             credential: pendingToken,
         };
-
-        // 한 번만 쓰고 제거
-        localStorage.removeItem('qrIdToken');
 
         handleGoogleSuccess(fakeCredentialResponse);
     };
@@ -349,6 +348,9 @@ export default function ActuatorMinigame() {
         setUserId('');
         localStorage.removeItem('encryptedUserInfo');
         localStorage.removeItem('qrAccess');
+        localStorage.removeItem('qrIdToken');
+        localStorage.removeItem('googleCredential');
+        localStorage.removeItem('googleTokenId');
         setGameSession(null);
         setLeaderboardEntry(null);
         setIsQrRoute(false);
