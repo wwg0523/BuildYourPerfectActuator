@@ -83,7 +83,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                                 </div>
                                 
                                 <div className="player-info">
-                                    <div className="player-name">{entry.playerName}</div>
+                                    <div className="player-name">{entry.name}</div>
                                     <div className="player-company">{entry.company}</div>
                                 </div>
                                 

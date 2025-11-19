@@ -211,7 +211,7 @@ router.get('/leaderboard', async (req, res) => {
             
             const parsed = fallbackResult.rows.map((row) => ({
                 rank: Number(row.rank),
-                playerName: row.player_name,
+                name: row.player_name,
                 company: row.company,
                 score: Number(row.score ?? 0),
                 completionTime: Number(row.completion_time ?? 0),
@@ -224,7 +224,7 @@ router.get('/leaderboard', async (req, res) => {
 
         const parsed = result.rows.map((row) => ({
             rank: Number(row.rank),
-            playerName: row.player_name,
+            name: row.player_name,
             company: row.company,
             score: Number(row.score ?? 0),
             completionTime: Number(row.completion_time ?? 0),

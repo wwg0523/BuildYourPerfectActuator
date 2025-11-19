@@ -10,6 +10,7 @@ import Game from '../pages/Game/Game';
 import Explanation from '../pages/Explanation/Explanation';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
+import { maskPlayerName } from '../lib/utils';
 import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter, calculateScore, API_BASE_URL } from '../lib/utils';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
@@ -539,7 +540,7 @@ export default function ActuatorMinigame() {
                 if (userForGame) {
                     setLeaderboardEntry({
                         rank: 0,
-                        playerName: userForGame.name,
+                        name: userForGame.name,
                         company: userForGame.company,
                         score: correctAnswers,
                         completionTime: completionTime,
@@ -569,7 +570,7 @@ export default function ActuatorMinigame() {
 
             setLeaderboardEntry({
                 rank: 0,
-                playerName: displayName,
+                name: displayName,
                 company: displayCompany,
                 score: correctAnswers,
                 completionTime: completionTime,
@@ -618,8 +619,8 @@ export default function ActuatorMinigame() {
                 let decryptedCompany = 'Unknown';
 
                 try {
-                    if (row.playerName) {
-                        decryptedName = CryptoJS.AES.decrypt(row.playerName, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Anonymous';
+                    if (row.name) {
+                        decryptedName = maskPlayerName(CryptoJS.AES.decrypt(row.name, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8)) || 'Anonymous';
                     }
                     if (row.company) {
                         decryptedCompany = CryptoJS.AES.decrypt(row.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Unknown';
@@ -630,7 +631,7 @@ export default function ActuatorMinigame() {
 
                 return {
                     rank: row.rank ?? idx + 1,
-                    playerName: decryptedName,
+                    name: decryptedName,
                     company: decryptedCompany,
                     score: Number(row.score ?? 0),
                     completionTime: completionTimeMs,

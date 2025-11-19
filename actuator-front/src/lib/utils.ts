@@ -125,7 +125,7 @@ export interface GameSession {
 
 export interface LeaderboardEntry {
     rank: number;
-    playerName: string;
+    name: string;
     company: string;
     score: number;
     completionTime: number;
@@ -320,7 +320,7 @@ export class LeaderboardManager {
 
         const entry: LeaderboardEntry = {
             rank: 0,
-            playerName: this.maskPlayerName(userInfo.name),
+            name: userInfo.name,
             company: userInfo.company,
             score: correctCount,  // Correct answer count (0~5)
             completionTime: completionTime,
