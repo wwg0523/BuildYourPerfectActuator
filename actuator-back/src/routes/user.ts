@@ -3,7 +3,7 @@ import { pool } from '../db.js';
 
 const router = Router();
 
-// POST /minigame/api/user: 새로운 사용자 생성 또는 기존 사용자 정보 업데이트
+// POST /api/user: 새로운 사용자 생성 또는 기존 사용자 정보 업데이트
 router.post('/', async (req, res) => {
     const { id, name, company, email, phone } = req.body;
 

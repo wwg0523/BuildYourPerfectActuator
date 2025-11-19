@@ -50,7 +50,7 @@ const transporter = emailEnabled ? nodemailer.createTransport({
     },
 }) : null;
 
-// POST /minigame/api/send-email: 이메일 발송
+// POST /api/send-email: 이메일 발송
 router.post('/send-email', async (req, res) => {
     const { userId, recipientEmail, subject, htmlContent, textContent } = req.body;
 
@@ -140,7 +140,7 @@ router.post('/send-email', async (req, res) => {
     }
 });
 
-// GET /minigame/api/email-logs/:userId: 특정 사용자의 이메일 발송 로그 조회
+// GET /api/email-logs/:userId: 특정 사용자의 이메일 발송 로그 조회
 router.get('/email-logs/:userId', async (req, res) => {
     const { userId } = req.params;
 

@@ -18,12 +18,12 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-app.use('/minigame/api/game', gameRouter);
-app.use('/minigame/api/user', userRouter);
-app.use('/minigame/api/delete-user-data', deleteUserDataRoutes);
-app.use('/minigame/api/analytics', analyticsRouter);
-app.use('/minigame/api/counter', counterRouter);
-app.use('/minigame/api', emailRouter);
+app.use('/api/game', gameRouter);
+app.use('/api/user', userRouter);
+app.use('/api/delete-user-data', deleteUserDataRoutes);
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/counter', counterRouter);
+app.use('/api', emailRouter);
 
 // 환경변수 검증
 if (process.env.NODE_ENV === 'production') {

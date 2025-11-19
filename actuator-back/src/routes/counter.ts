@@ -18,7 +18,7 @@ let participantCount = 0;
     }
 })();
 
-// GET /minigame/api/counter: 현재 참가자 수 반환
+// GET /api/counter: 현재 참가자 수 반환
 router.get('/', async (req: Request, res: Response) => {
     try {
         res.json({ value: participantCount });
@@ -28,7 +28,7 @@ router.get('/', async (req: Request, res: Response) => {
     }
 });
 
-// POST /minigame/api/counter/increment: 참가자 수를 1 증가
+// POST /api/counter/increment: 참가자 수를 1 증가
 router.post('/increment', async (req: Request, res: Response) => {
     try {
         participantCount += 1;
