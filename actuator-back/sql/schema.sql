@@ -117,10 +117,7 @@ CREATE VIEW daily_leaderboard AS
 SELECT
   gr.id,
   gr.user_id,
-  CASE 
-    WHEN LENGTH(gu.name) > 2 THEN SUBSTRING(gu.name FROM 1 FOR 1) || '***' || SUBSTRING(gu.name FROM LENGTH(gu.name) FOR 1)
-    ELSE gu.name
-  END AS player_name,
+  gu.name,
   gu.company,
   gr.score,
   gr.completion_time,

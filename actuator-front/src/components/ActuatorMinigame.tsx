@@ -618,8 +618,21 @@ export default function ActuatorMinigame() {
                 let decryptedCompany = 'Unknown';
 
                 try {
-                    if (row.name) decryptedName = row.name;
-                    if (row.company) decryptedCompany = CryptoJS.AES.decrypt(row.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Unknown';
+                    if (row.name) {
+                        try {
+                            console.log('Row name:', row.name);
+                            const plainName = CryptoJS.AES.decrypt(row.name, ENCRYPTION_KEY)
+                                .toString(CryptoJS.enc.Utf8);
+                            console.log('Plain name:', plainName);
+                            decryptedName = row.name;
+                        } catch (e) {
+                            console.error('Failed to decrypt name', e);
+                            decryptedName = 'Anonymous';
+                        }
+                    }
+                    if (row.company) {
+                        decryptedCompany = CryptoJS.AES.decrypt(row.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Unknown';
+                    }
                 } catch (e) {
                     console.warn('⚠️ Failed to decrypt leaderboard row:', e, row);
                 }

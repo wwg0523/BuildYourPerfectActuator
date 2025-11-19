@@ -161,7 +161,7 @@ router.get('/leaderboard', async (req, res) => {
             SELECT 
                 id,
                 user_id,
-                player_name,
+                name,
                 company,
                 score,
                 completion_time,
@@ -188,10 +188,7 @@ router.get('/leaderboard', async (req, res) => {
                 SELECT 
                     gr.id,
                     gr.user_id,
-                    CASE 
-                        WHEN LENGTH(gu.name) > 2 THEN SUBSTRING(gu.name FROM 1 FOR 1) || '***' || SUBSTRING(gu.name FROM LENGTH(gu.name) FOR 1)
-                        ELSE gu.name
-                    END AS player_name,
+                    gu.name,
                     gu.company,
                     COALESCE(SUM(ua.points_earned), 0) as score,
                     gr.completion_time,
@@ -211,7 +208,7 @@ router.get('/leaderboard', async (req, res) => {
             
             const parsed = fallbackResult.rows.map((row) => ({
                 rank: Number(row.rank),
-                name: row.player_name,
+                name: row.name,
                 company: row.company,
                 score: Number(row.score ?? 0),
                 completionTime: Number(row.completion_time ?? 0),
@@ -224,7 +221,7 @@ router.get('/leaderboard', async (req, res) => {
 
         const parsed = result.rows.map((row) => ({
             rank: Number(row.rank),
-            name: row.player_name,
+            name: row.name,
             company: row.company,
             score: Number(row.score ?? 0),
             completionTime: Number(row.completion_time ?? 0),
