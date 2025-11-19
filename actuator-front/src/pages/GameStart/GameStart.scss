@@ -21,7 +21,7 @@
 	flex-direction: column;
 	gap: clamp(20px, 5vw, 30px);
 	max-height: calc(100vh - clamp(40px, 10vw, 80px));
-	overflow: hidden;
+	overflow: visible;
 }
 
 /* ============================================================

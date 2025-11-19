@@ -8,7 +8,7 @@ const QrAuthPage: React.FC = () => {
     console.log('🔍 QR access detected, redirecting to home...');
     
     const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID!;
-    const redirectUri = `${window.location.origin}/qr/google-callback`;
+    const redirectUri = `${window.location.origin}/minigame/qr/google-callback`;
 
     // 필요한 권한: 오직 사용자 식별용이면 이 정도면 충분
     const scope = [

@@ -8,7 +8,7 @@ const QrGoogleCallbackPage: React.FC = () => {
 		if (window.location.pathname !== '/minigame/qr/google-callback' && window.location.pathname !== '/qr/google-callback') {
 			return;
 		}
-		// URL 예시: https://example.com/qr/google-callback#id_token=...&state=qr
+		// URL 예시: https://example.com/minigame/qr/google-callback#id_token=...&state=qr
 		const hash = window.location.hash.startsWith('#')
 			? window.location.hash.substring(1)
 			: window.location.hash;
@@ -29,7 +29,7 @@ const QrGoogleCallbackPage: React.FC = () => {
 				window.location.hash.substring(1) || window.location.search.substring(1)
 			);
 			console.log('🔎 debug params:', Object.fromEntries(debugParams.entries()));
-			navigate('/'); // 실패 시 님으로
+			navigate('/');
 			return;
 		}
 
