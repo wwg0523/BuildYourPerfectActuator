@@ -354,9 +354,7 @@ export default function ActuatorMinigame() {
     };
 
     const handleSubmit = async (finalGameSession?: GameSession) => {
-        if (isSubmitted) {
-            return;
-        }
+        if (isSubmitted) return;
 
         // finalGameSession이 있으면 사용, 없으면 gameSession 사용
         const sessionToSubmit = finalGameSession || gameSession;
@@ -369,30 +367,49 @@ export default function ActuatorMinigame() {
         let completionTime = 0;
 
         try {
-            // localStorage에서 암호화된 정보 가져오기
+            // 1) localStorage에서 암호문 가져오기
             const encryptedUserInfo = localStorage.getItem('encryptedUserInfo');
-            if (!encryptedUserInfo) {
-                throw new Error('User information not found');
+            let encryptedName = '';
+            let encryptedCompany = '';
+            let encryptedEmail = '';
+            let encryptedPhone = '';
+
+            if (encryptedUserInfo) {
+                const parsed = JSON.parse(encryptedUserInfo);
+                encryptedName = parsed.name;
+                encryptedCompany = parsed.company;
+                encryptedEmail = parsed.email;
+                encryptedPhone = parsed.phone;
+            } else {
+                console.warn('⚠️ encryptedUserInfo not found, encrypting current userInfo on the fly');
+
+                // 혹시 모를 fallback: userInfo를 지금 암호화해서라도 보냄
+                encryptedName = CryptoJS.AES.encrypt(userInfo.name || '', ENCRYPTION_KEY).toString();
+                encryptedCompany = CryptoJS.AES.encrypt(userInfo.company || '', ENCRYPTION_KEY).toString();
+                encryptedEmail = CryptoJS.AES.encrypt(userInfo.email || '', ENCRYPTION_KEY).toString();
+                encryptedPhone = CryptoJS.AES.encrypt(userInfo.phone || '', ENCRYPTION_KEY).toString();
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const parsedData = JSON.parse(encryptedUserInfo);
-
-            // UUID 생성 (아직 생성되지 않았으면)
+            // 2) UUID 준비
             let currentUserId = userId;
             if (!currentUserId) {
                 currentUserId = generateUUID();
                 setUserId(currentUserId);
             }
 
-            // 사용자 정보
+            // 3) 화면/리더보드용 평문 유저 정보 (현재 세션에서만 사용)
             userForGame = {
                 id: currentUserId,
-                name: userInfo.name,
+                name: userInfo.name,       // 화면에 보여줄 이름 (평문)
                 company: userInfo.company,
                 email: userInfo.email,
                 phone: userInfo.phone,
             };
+
+            // name이 비어 있으면 애초에 저장 시도 안 함
+            if (!userForGame.name) {
+                throw new Error('User name is empty – cannot save user to DB.');
+            }
 
             // Calculate game completion time and score
             // Use completionTime from gameSession (accurate value calculated from timer)
@@ -437,22 +454,23 @@ export default function ActuatorMinigame() {
             // game_users 테이블에 사용자 저장 (필수!)
             try {
                 console.log(`\n👤 ===== USER SAVE START =====`);
-                console.log(`👤 Sending user data:`, {
+                console.log(`👤 Sending user data (ENCRYPTED):`, {
                     id: currentUserId,
-                    name: userForGame.name,
-                    company: userForGame.company,
-                    email: userForGame.email,
-                    phone: userForGame.phone,
+                    name: encryptedName,
+                    company: encryptedCompany,
+                    email: encryptedEmail,
+                    phone: encryptedPhone,
                 });
+
                 const userResponse = await fetch(`${API_BASE_URL}/user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         id: currentUserId,
-                        name: userForGame.name,
-                        company: userForGame.company,
-                        email: userForGame.email,
-                        phone: userForGame.phone,
+                        name: encryptedName,
+                        company: encryptedCompany,
+                        email: encryptedEmail,
+                        phone: encryptedPhone,
                     }),
                 });
                 if (!userResponse.ok) {
@@ -592,10 +610,24 @@ export default function ActuatorMinigame() {
                 // completionTime은 이미 백엔드에서 ms 단위로 반환됨
                 let completionTimeMs = Number(row.completionTime ?? 0);
 
+                let decryptedName = 'Anonymous';
+                let decryptedCompany = 'Unknown';
+
+                try {
+                    if (row.playerName) {
+                        decryptedName = CryptoJS.AES.decrypt(row.playerName, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Anonymous';
+                    }
+                    if (row.company) {
+                        decryptedCompany = CryptoJS.AES.decrypt(row.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Unknown';
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Failed to decrypt leaderboard row:', e, row);
+                }
+
                 return {
                     rank: row.rank ?? idx + 1,
-                    playerName: row.playerName ?? 'Anonymous',
-                    company: row.company ?? 'Unknown',
+                    playerName: decryptedName,
+                    company: decryptedCompany,
                     score: Number(row.score ?? 0),
                     completionTime: completionTimeMs,
                     finalScore: Number(row.finalScore ?? 0),
