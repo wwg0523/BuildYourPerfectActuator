@@ -42,22 +42,22 @@
 	}
 }
 
-.leaderboard-header-top .leaderboard-header-button {
-	background: rgba(255, 255, 255, 0.2);
-	color: white;
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	border-radius: 6px;
-	padding: 8px 12px;
-	cursor: pointer;
-	font-weight: 600;
-	font-size: 12px;
-	white-space: nowrap;
-	transition: all 0.3s ease;
+// .leaderboard-header-top .leaderboard-header-button {
+// 	background: rgba(255, 255, 255, 0.2);
+// 	color: white;
+// 	border: 1px solid rgba(255, 255, 255, 0.3);
+// 	border-radius: 6px;
+// 	padding: 8px 12px;
+// 	cursor: pointer;
+// 	font-weight: 600;
+// 	font-size: 12px;
+// 	white-space: nowrap;
+// 	transition: all 0.3s ease;
 
-	&:hover {
-		background: rgba(255, 255, 255, 0.3);
-	}
-}
+// 	&:hover {
+// 		background: rgba(255, 255, 255, 0.3);
+// 	}
+// }
 
 /* 메인 카드 컨테이너 */
 .leaderboard-container {
@@ -125,11 +125,8 @@
 .rank-and-badge {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 8px;
-
-	@media (max-width: 640px) {
-		justify-content: center;
-	}
 
 	@media (min-width: 1024px) {
 		gap: 10px;
