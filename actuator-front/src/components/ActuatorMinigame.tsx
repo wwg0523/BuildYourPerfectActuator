@@ -257,45 +257,47 @@ export default function ActuatorMinigame() {
                     })
                 );
 
-                // Generate userId
+                // Generate userId first (proper UUID v4 format)
                 let currentUserId = userId;
                 if (!currentUserId) {
-                    currentUserId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                        const r = (Math.random() * 16) | 0;
-                        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-                        return v.toString(16);
-                    });
+                    currentUserId = generateUUID();
                     setUserId(currentUserId);
                 }
 
-                // 게임 세션 생성
-                const session = gameEngine.generateGameSession(currentUserId);
-                setGameSession(session);
+                setGameSession(gameEngine.generateGameSession(currentUserId));
                 setElapsedTime(0);
+                setScreen('game');
             }
         } catch (error) {
             console.error('Error processing Google login:', error);
         }
     };
 
-    useEffect(() => {
+    const runQrGoogleCallback = () => {
         const fromQr = localStorage.getItem('qrAccess') === 'true';
         const pendingToken = localStorage.getItem('qrIdToken');
 
-        if (fromQr && pendingToken) {
-            console.log('🚀 Detected QR Google callback token, auto calling handleGoogleSuccess');
-
-            const fakeCredentialResponse: CredentialResponse = {
-                credential: pendingToken,
-            };
-
-            // 한 번만 쓰고 제거
-            localStorage.removeItem('qrIdToken');
-
-            handleGoogleSuccess(fakeCredentialResponse);
+        if (!fromQr) {
+            console.log('❌ Not from QR route, ignore QR callback');
+            return;
         }
-    }, [handleGoogleSuccess]);
 
+        if (!pendingToken) {
+            console.log('❌ No pending QR Google token found');
+            return;
+        }
+
+        console.log('🚀 Detected QR Google callback token, calling handleGoogleSuccess by button');
+
+        const fakeCredentialResponse: CredentialResponse = {
+            credential: pendingToken,
+        };
+
+        // 한 번만 쓰고 제거
+        localStorage.removeItem('qrIdToken');
+
+        handleGoogleSuccess(fakeCredentialResponse);
+    };
 
 
     const handleContinue = async () => {
@@ -362,6 +364,8 @@ export default function ActuatorMinigame() {
 
         setIsSubmitted(true);  // 제출 시작
 
+        console.log('🔎 handleGameComplete userInfo at call time:', userInfo);
+
         let userForGame: UserInfo | null = null;
         let correctAnswers = 0;
         let completionTime = 0;
@@ -400,7 +404,7 @@ export default function ActuatorMinigame() {
             // 3) 화면/리더보드용 평문 유저 정보 (현재 세션에서만 사용)
             userForGame = {
                 id: currentUserId,
-                name: userInfo.name,       // 화면에 보여줄 이름 (평문)
+                name: userInfo.name,
                 company: userInfo.company,
                 email: userInfo.email,
                 phone: userInfo.phone,
@@ -986,7 +990,11 @@ export default function ActuatorMinigame() {
                 {screen === 'gamestart' && (
                     <div className="gamestart-card">
                         <GameStart
-                            onStartGame={() => setScreen(isQrRoute ? 'game' : 'info')}
+                            onStartGame={
+                                isQrRoute
+                                    ? runQrGoogleCallback
+                                    : () => setScreen('info')
+                            }
                             onBack={() => setScreen('home')}
                         />
                     </div>
