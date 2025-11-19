@@ -4,7 +4,7 @@ import { pool } from '../db.js';
 
 const router = Router();
 
-// POST /api/game/submit: 게임 결과 저장 및 개별 답변 기록
+// POST /minigame/api/game/submit: 게임 결과 저장 및 개별 답변 기록
 router.post('/submit', async (req, res) => {
     const { userId, completionTime, answers, score } = req.body;
 
@@ -104,7 +104,7 @@ router.post('/submit', async (req, res) => {
                         Number(answer.pointsEarned) || 0,
                     ]
                 );
-                console.log(`  ✅ Answer saved: Q${answer.questionId}, correct=${answer.isCorrect}, points=${answer.pointsEarned}`);
+                console.log(`  ✅ Answer saved: ${answer.questionId}, correct=${answer.isCorrect}, points=${answer.pointsEarned}`);
             }
             console.log(`✅ All ${answers.length} user answers saved`);
         }
@@ -126,7 +126,7 @@ router.post('/submit', async (req, res) => {
     }
 });
 
-// GET /api/game/submit: 결과 조회 (리더보드용 - 포인트 기반)
+// GET /minigame/api/game/submit: 결과 조회 (리더보드용 - 포인트 기반)
 router.get('/submit', async (req, res) => {
     try {
         const result = await pool.query(
@@ -153,7 +153,7 @@ router.get('/submit', async (req, res) => {
 });
 
 
-// GET /api/game/leaderboard: daily_leaderboard VIEW를 기반으로 리더보드 조회 (오늘의 순위)
+// GET /minigame/api/game/leaderboard: daily_leaderboard VIEW를 기반으로 리더보드 조회 (오늘의 순위)
 router.get('/leaderboard', async (req, res) => {
     try {
         // 먼저 VIEW에서 데이터 조회
