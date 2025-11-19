@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import '../styles/main.scss';
 import '../styles/Analytics.scss';
 import { motion } from 'framer-motion';
+import CryptoJS from 'crypto-js';
 import { API_BASE_URL } from '../lib/utils';
 import {
     BarChart,
@@ -90,6 +91,45 @@ const Analytics: React.FC = () => {
         }
     };
 
+    const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
+
+    // 복호화 헬퍼 함수
+    const decryptField = (encryptedValue: string): string => {
+        try {
+            if (!encryptedValue) return '';
+            const decrypted = CryptoJS.AES.decrypt(encryptedValue, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+            return decrypted || '';
+        } catch (e) {
+            console.error('❌ Decryption error:', e);
+            return '';
+        }
+    };
+
+    // 분석 데이터 복호화 함수
+    const decryptAnalyticsData = (data: any) => {
+        if (!data) return data;
+
+        try {
+            console.log('🔐 Decrypting analytics data...');
+
+            // leadQuality (Companies) 데이터 복호화
+            const decryptedLeadQuality = data.leadQuality?.map((item: any) => ({
+                ...item,
+                company: decryptField(item.company),
+            })) || [];
+
+            console.log('✅ Decrypted leadQuality:', decryptedLeadQuality);
+
+            return {
+                ...data,
+                leadQuality: decryptedLeadQuality,
+            };
+        } catch (e) {
+            console.error('❌ Error decrypting analytics data:', e);
+            return data; // 복호화 실패 시 원본 데이터 반환
+        }
+    };
+
     const fetchAnalytics = useCallback(async () => {
         try {
             console.log('🔐 Fetching analytics with password:', password.substring(0, 3) + '***');
@@ -119,9 +159,14 @@ const Analytics: React.FC = () => {
                 throw new Error('Server returned non-JSON response. Check backend /api/analytics endpoint.');
             }
             
-            const data = await response.json();
-            console.log('✅ Analytics data received:', data);
-            setAnalyticsData(data);
+            const rawData = await response.json();
+            console.log('✅ Raw analytics data received:', rawData);
+
+            // 데이터 복호화
+            const decryptedData = decryptAnalyticsData(rawData);
+            console.log('✅ Decrypted analytics data:', decryptedData);
+
+            setAnalyticsData(decryptedData);
             setError('');
         } catch (err: any) {
             console.error('❌ Analytics fetch error:', err);

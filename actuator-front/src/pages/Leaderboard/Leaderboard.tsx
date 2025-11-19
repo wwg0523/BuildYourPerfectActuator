@@ -59,7 +59,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ leaderboardData, fetchLeaderb
                 <div className="leaderboard-header-title">
                     <h2>Today's Rankings</h2>
                 </div>
-                <button className="leaderboard-header-button leaderboard-stats-button" onClick={() => window.location.href = '/analytics'} title="Stats">
+                <button className="leaderboard-header-button leaderboard-stats-button" onClick={() => window.location.href = '/minigame/analytics'} title="Stats">
                     📊 STATS
                 </button>
             </div>
