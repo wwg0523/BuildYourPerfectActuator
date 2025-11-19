@@ -356,7 +356,7 @@ export class LeaderboardManager {
         return totalScore;
     }
 
-    private maskPlayerName(name: string): string {
+    static maskPlayerName(name: string): string {
         return name.length > 2 ? `${name[0]}***${name[name.length - 1]}` : name;
     }
 

@@ -10,7 +10,6 @@ import Game from '../pages/Game/Game';
 import Explanation from '../pages/Explanation/Explanation';
 import Result from '../pages/Result/Result';
 import Leaderboard from '../pages/Leaderboard/Leaderboard';
-import { maskPlayerName } from '../lib/utils';
 import { UserInfo, LeaderboardEntry, IdleDetector, GameSession, GameEngine, LeaderboardManager, deleteUserData, ParticipantCounter, calculateScore, API_BASE_URL } from '../lib/utils';
 
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'your-secret-key-32bytes-long!!!';
@@ -620,7 +619,17 @@ export default function ActuatorMinigame() {
 
                 try {
                     if (row.name) {
-                        decryptedName = maskPlayerName(CryptoJS.AES.decrypt(row.name, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8)) || 'Anonymous';
+                        try {
+                            const plainName = CryptoJS.AES.decrypt(row.name, ENCRYPTION_KEY)
+                                .toString(CryptoJS.enc.Utf8);
+
+                            decryptedName = plainName
+                                ? LeaderboardManager.maskPlayerName(plainName)
+                                : 'Anonymous';
+                        } catch (e) {
+                            console.error('Failed to decrypt name', e);
+                            decryptedName = 'Anonymous';
+                        }
                     }
                     if (row.company) {
                         decryptedCompany = CryptoJS.AES.decrypt(row.company, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8) || 'Unknown';
