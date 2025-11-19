@@ -169,7 +169,7 @@ const Result: React.FC<ResultProps> = ({ gameSession, leaderboardEntry, handlePl
         <div className="page-result">
             {/* Header with Logo, Title, and STATS */}
             <div className="result-header-top">
-                <button className="result-header-button result-home-button" onClick={() => setScreen('home')} title="Home">
+                <button className="result-home-button" onClick={() => setScreen('home')} title="Home">
                     <img 
                         src="/images/logo/lebot-logo.png" 
                         alt="lebot-logo" 
