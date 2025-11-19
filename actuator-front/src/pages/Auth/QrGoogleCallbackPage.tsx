@@ -5,7 +5,7 @@ const QrGoogleCallbackPage: React.FC = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (window.location.pathname !== '/qr/google-callback') {
+		if (window.location.pathname !== '/minigame/qr/google-callback' && window.location.pathname !== '/qr/google-callback') {
 			return;
 		}
 		// URL 예시: https://example.com/qr/google-callback#id_token=...&state=qr
@@ -29,7 +29,7 @@ const QrGoogleCallbackPage: React.FC = () => {
 				window.location.hash.substring(1) || window.location.search.substring(1)
 			);
 			console.log('🔎 debug params:', Object.fromEntries(debugParams.entries()));
-			navigate('/'); // 실패 시 홈으로
+			navigate('/'); // 실패 시 님으로
 			return;
 		}
 

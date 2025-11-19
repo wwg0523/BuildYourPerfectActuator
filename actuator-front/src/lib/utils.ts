@@ -2,7 +2,7 @@ import compatibilityMatrixJson from '../data/compatibilityMatrix.json';
 
 // API Base URL - 환경에 따라 달라짐
 export const API_BASE_URL = process.env.REACT_APP_API_URL || (
-    process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:4005/api'
+    process.env.NODE_ENV === 'production' ? '/minigame/api' : 'http://localhost:4005/minigame/api'
 );
 
 export interface GameComponent {

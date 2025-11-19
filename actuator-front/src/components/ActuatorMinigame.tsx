@@ -620,12 +620,14 @@ export default function ActuatorMinigame() {
                 try {
                     if (row.name) {
                         try {
+                            console.log('Row name:', row.name);
                             const plainName = CryptoJS.AES.decrypt(row.name, ENCRYPTION_KEY)
                                 .toString(CryptoJS.enc.Utf8);
-
+                            console.log('Plain name:', plainName);
                             decryptedName = plainName
                                 ? LeaderboardManager.maskPlayerName(plainName)
                                 : 'Anonymous';
+                            console.log('Decrypted name:', decryptedName);
                         } catch (e) {
                             console.error('Failed to decrypt name', e);
                             decryptedName = 'Anonymous';

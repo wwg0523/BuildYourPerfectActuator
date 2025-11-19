@@ -7,9 +7,10 @@ import Analytics from './components/Analytics';
 import ParticipantCountDisplay from './components/ParticipantCountDisplay';
 
 function App() {
+    const basePath = '/minigame';
     return (
         <ParticipantCounterProvider>
-            <Router>
+            <Router basename={basePath}>
                 <Routes>
                     <Route path="/" element={<ActuatorMinigame />} />
                     <Route path="/qr/auth" element={<QrAuthPage />} />
